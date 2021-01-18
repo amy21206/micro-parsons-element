@@ -4,5 +4,6 @@ export class TestButton implements ITestButton {
     constructor() {
         this.el = document.createElement('button');
         this.el.id = 'test-string-input'
+        this.el.innerText = 'match!';
     }
 }
