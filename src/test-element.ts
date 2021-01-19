@@ -4,6 +4,7 @@ import {TestStringInput} from './TestStringInput';
 import { StatusOutput } from './StatusOutput';
 import { TestButton } from './TestButton';
 import { TestResult } from './TestResult';
+
 // import {pyodide} from '../types/pyodide';
 
 declare global {
@@ -19,6 +20,7 @@ export class TestElement extends HTMLElement {
     public statusOutput: StatusOutput;
     public testButton: TestButton;
     public testResult: TestResult;
+    private checkWhileTyping: boolean;
     constructor() {
         super();
         window.languagePluginUrl = 'https://cdn.jsdelivr.net/pyodide/v0.16.1/full/';
@@ -29,11 +31,27 @@ export class TestElement extends HTMLElement {
         this.appendChild(this.testButton.el);
         this.testButton.el.onclick = this.match;
 
+        const checkbox = document.createElement('input');
+        checkbox.setAttribute('type', 'checkbox');
+        checkbox.checked = false;
+        this.appendChild(checkbox);
+        this.checkWhileTyping = false;
+        checkbox.addEventListener('change', ()=>{
+            this.checkWhileTyping = checkbox.checked;
+            console.log(this.checkWhileTyping);
+        })
+
         this.regexInput = new RegexInput();
         this.appendChild(this.regexInput.el);
 
+        const quillLinkRef = document.createElement('link');
+        quillLinkRef.href = 'https://cdn.quilljs.com/1.3.7/quill.bubble.css';
+        quillLinkRef.rel = 'stylesheet';
+        this.appendChild(quillLinkRef);
+
         this.testStringInput = new TestStringInput();
         this.appendChild(this.testStringInput.el);
+        this.testStringInput.initQuill();
 
         this.statusOutput = new StatusOutput();
         this.appendChild(this.statusOutput.el);
@@ -41,6 +59,8 @@ export class TestElement extends HTMLElement {
 
         this.testResult = new TestResult();
         this.appendChild(this.testResult.el);
+
+        this.checkWhileTyping = false;
     }
 
     private initPyodide = (): void => {
@@ -57,12 +77,13 @@ export class TestElement extends HTMLElement {
 
     public match = (): void => {
       this.statusOutput.el.value=''
-      const pydata='import re\n' + 'pattern="' + this.regexInput.el.value + '"\n' + 'source="""' + this.testStringInput.el.value + '"""\n' + 're.findall(pattern,source)'
+      const pydata='import re\n' + 'pattern="' + this.regexInput.el.value + '"\n' + 'source="""' + this.testStringInput.getText() + '"""\n' + 're.findall(pattern,source)'
       console.log(pydata);
       window.pyodide.runPythonAsync(pydata)
         .then(output => {
             this.addToOutput(output);
-            this.testResult.updateResult(output, this.testStringInput.el.value);
+            this.testStringInput.updateMatchResult(output);
+            this.testResult.updateResult(output, this.testStringInput.getText());
             console.log(output);
         })
         .catch((err) => { this.addToOutput(err) });

@@ -3,7 +3,7 @@ export class TestButton implements ITestButton {
     public el: HTMLButtonElement;
     constructor() {
         this.el = document.createElement('button');
-        this.el.id = 'test-string-input'
+        this.el.id = 'test-button'
         this.el.innerText = 'match!';
     }
 }

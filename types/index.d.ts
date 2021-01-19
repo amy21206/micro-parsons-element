@@ -3,7 +3,7 @@ interface IRegexInput {
 }
 
 interface ITestStringInput {
-    el: HTMLTextAreaElement;
+    el: HTMLDivElement;
 }
 
 interface IStatusOutput {
