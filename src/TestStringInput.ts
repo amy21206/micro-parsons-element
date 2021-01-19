@@ -42,7 +42,7 @@ export class TestStringInput implements ITestStringInput {
             startPos = matchPos + matches[i].length;
             this.quill?.formatText(matchPos, matches[i].length, {
                 'background': 'rgb(251, 255, 130)'
-            });
+            }, 'silent');
         }
     }
 
