@@ -1,11 +1,8 @@
-import {languagePluginLoader} from './external/pyodide';
-import {RegexInput} from './RegexInput';
-import {TestStringInput} from './TestStringInput';
+import { languagePluginLoader } from './external/pyodide';
+import { RegexInput } from './RegexInput';
+import { TestStringInput } from './TestStringInput';
 import { StatusOutput } from './StatusOutput';
 import { TestButton } from './TestButton';
-import { TestResult } from './TestResult';
-
-// import {pyodide} from '../types/pyodide';
 
 declare global {
     interface Window {
@@ -14,24 +11,43 @@ declare global {
     }
 }
 
-export class TestElement extends HTMLElement {
+// Custom element of regex matching
+export class RegexElement extends HTMLElement {
+
+    // The input box for regex pattern
     public regexInput: RegexInput;
+
+    // The input box for test string (with highlight)
     public testStringInput: TestStringInput;
+
+    // Python output
     public statusOutput: StatusOutput;
+
+    // The button to trigger matching
     public testButton: TestButton;
-    // public testResult: TestResult;
+
+    // *temporary: The checkbox to enable always check (will be integrated in options later)
     private checkWhileTyping: boolean;
+
+    // Saving previous checked text, used with checkWhileTyping
     private prevText: string;
+
     constructor() {
         super();
+
+        // init pyodide
         window.languagePluginUrl = 'https://cdn.jsdelivr.net/pyodide/v0.16.1/full/';
         
+        // add style
         this.addStyle();
 
+        // init elements: button
         this.testButton = new TestButton();
         this.appendChild(this.testButton.el);
         this.testButton.el.onclick = this.match;
 
+        // init elements: checkbox
+        // TODO[feature]: replace this with an option module 
         const checkbox = document.createElement('input');
         checkbox.setAttribute('type', 'checkbox');
         checkbox.checked = false;
@@ -45,9 +61,11 @@ export class TestElement extends HTMLElement {
             }
         })
 
+        // init elements: regex input
         this.regexInput = new RegexInput();
         this.appendChild(this.regexInput.el);
 
+        // init elements: test string input
         const quillLinkRef = document.createElement('link');
         quillLinkRef.href = 'https://cdn.quilljs.com/1.3.7/quill.bubble.css';
         quillLinkRef.rel = 'stylesheet';
@@ -67,38 +85,39 @@ export class TestElement extends HTMLElement {
             }
         })
 
+        // init element: python output
         this.statusOutput = new StatusOutput();
         this.appendChild(this.statusOutput.el);
         this.initPyodide();
-
-        // this.testResult = new TestResult();
-        // this.appendChild(this.testResult.el);
-
-        this.checkWhileTyping = false;
     }
 
+    // Initializes Pyodide
+    // ref: https://pyodide.readthedocs.io/en/latest/usage/quickstart.html
     private initPyodide = (): void => {
         languagePluginLoader.then(() => {
             this.statusOutput.el.value += "Init finished.\n";
         });
     }
 
+    // TODO[refactor]: put stylesheet in a separate css/scss file
     private addStyle = (): void => {
         const sheet = document.createElement('style');
         sheet.innerHTML += '.regex-textbox {width: 100%;}\n';
         document.body.appendChild(sheet); 
     }
 
+    /**
+     * Runs re.findall() with data from regex and test string input;
+     * Highlights the result in the test string input;
+     * Prints python output.
+    */
     public match = (): void => {
       this.statusOutput.el.value=''
       const pydata='import re\n' + 'pattern="' + this.regexInput.el.value + '"\n' + 'source="""' + this.testStringInput.getText() + '"""\n' + 're.findall(pattern,source)'
-    //   console.log(pydata);
       window.pyodide.runPythonAsync(pydata)
         .then(output => {
             this.addToOutput(output);
             this.testStringInput.updateMatchResult(output);
-            // this.testResult.updateResult(output, this.testStringInput.getText());
-            // console.log(output);
         })
         .catch((err) => { this.addToOutput(err) });
     }
@@ -108,4 +127,4 @@ export class TestElement extends HTMLElement {
     }
 }
 
-customElements.define('test-element', TestElement);
+customElements.define('regex-element', RegexElement);
