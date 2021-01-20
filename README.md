@@ -1,4 +1,4 @@
-# Regex Helper Component
+# Regex Component
 
 ## Installing dependencies:
 
