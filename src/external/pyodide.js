@@ -7,6 +7,7 @@ export var languagePluginLoader = new Promise((resolve, reject) => {
   // in this template in the Makefile. It's recommended to always set
   // languagePluginUrl in any case.
   var baseURL = self.languagePluginUrl || 'https://cdn.jsdelivr.net/pyodide/v0.16.1/full/';
+  // var baseURL = self.languagePluginUrl || 'http://127.0.0.1:8081/pyodide/';
   baseURL = baseURL.substr(0, baseURL.lastIndexOf('/')) + '/';
 
   ////////////////////////////////////////////////////////////

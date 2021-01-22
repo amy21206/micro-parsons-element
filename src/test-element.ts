@@ -36,7 +36,8 @@ export class RegexElement extends HTMLElement {
         super();
 
         // init pyodide
-        window.languagePluginUrl = 'https://cdn.jsdelivr.net/pyodide/v0.16.1/full/';
+        // window.languagePluginUrl = 'https://cdn.jsdelivr.net/pyodide/v0.16.1/full/';
+        window.languagePluginUrl = 'http://127.0.0.1:8081/pyodide/';
         
         // add style
         this.addStyle();

@@ -4,3 +4,6 @@ packages/
 
 # npm packages
 node_modules/
+
+# pyodide packages
+pyodide/
