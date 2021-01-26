@@ -33,4 +33,5 @@ interface Pyodide {
 	runPython(script: string): void
 	runPythonAsync(script: string, callback?: MessageCallback): Promise<any>
 	version(): string
+	globals: any
 }

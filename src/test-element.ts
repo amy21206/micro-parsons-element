@@ -79,6 +79,8 @@ export class RegexElement extends HTMLElement {
         this.testStringInput.quill?.on('text-change', () => {
             if (this.testStringInput.getText() != this.prevText) {
                 this.prevText = this.testStringInput.getText();
+                // updating test_string in pyodide
+                window.pyodide.globals.test_string = this.testStringInput.getText().slice(0, -1);
                 this.testStringInput.quill?.removeFormat(0, this.testStringInput.quill.getLength() - 1, 'silent');
                 if (this.checkWhileTyping) {
                     this.match();
@@ -114,7 +116,10 @@ export class RegexElement extends HTMLElement {
     */
     public match = (): void => {
       this.statusOutput.el.value=''
-      const pydata='import re\n' + 'pattern="' + this.regexInput.el.value + '"\n' + 'source="""' + this.testStringInput.getText() + '"""\n' + 're.findall(pattern,source)'
+      let pydata='import re\n';
+      pydata += 'pattern="' + this.regexInput.el.value + '"\n';
+      pydata += 'source = test_string\n';
+      pydata += 're.findall(pattern,source)';
       window.pyodide.runPythonAsync(pydata)
         .then(output => {
             this.addToOutput(output);
