@@ -33,6 +33,7 @@ export class TestStringInput implements ITestStringInput {
     }
 
     public updateMatchResult = (matches: Array<string>): void => {
+        this.quill?.removeFormat(0, this.quill.getLength() - 1, 'silent');
         let startPos: number = 0;
         let matchPos: number;
         const testString = this.getText();

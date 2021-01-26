@@ -81,9 +81,10 @@ export class RegexElement extends HTMLElement {
                 this.prevText = this.testStringInput.getText();
                 // updating test_string in pyodide
                 window.pyodide.globals.test_string = this.testStringInput.getText().slice(0, -1);
-                this.testStringInput.quill?.removeFormat(0, this.testStringInput.quill.getLength() - 1, 'silent');
                 if (this.checkWhileTyping) {
                     this.match();
+                } else {
+                    this.testStringInput.quill?.removeFormat(0, this.testStringInput.quill.getLength() - 1, 'silent');
                 }
             }
         })
