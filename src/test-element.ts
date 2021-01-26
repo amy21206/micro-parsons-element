@@ -117,7 +117,8 @@ export class RegexElement extends HTMLElement {
     public match = (): void => {
       this.statusOutput.el.value=''
       let pydata='import re\n';
-      pydata += 'pattern="' + this.regexInput.el.value + '"\n';
+      window.pyodide.globals.regex_input = this.regexInput.el.value;
+      pydata += 'pattern = regex_input\n';
       pydata += 'source = test_string\n';
       pydata += 're.findall(pattern,source)';
       window.pyodide.runPythonAsync(pydata)
