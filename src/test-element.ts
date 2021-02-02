@@ -119,7 +119,7 @@ export class RegexElement extends HTMLElement {
       this.statusOutput.el.value=''
       let pydata='import re\n';
       window.pyodide.globals.regex_input = this.regexInput.el.value;
-      pydata += 'pattern = regex_input\n';
+      pydata += 'pattern = \'(\' + regex_input + \')\'\n';
       pydata += 'source = test_string\n';
       pydata += 're.findall(pattern,source)';
       window.pyodide.runPythonAsync(pydata)
@@ -130,8 +130,12 @@ export class RegexElement extends HTMLElement {
         .catch((err) => { this.addToOutput(err) });
     }
 
-    private addToOutput = (s: string): void => {
-      this.statusOutput.el.value += '>>>' + this.regexInput.el.value + '\n' + s + '\n';
+    private addToOutput = (originalOutput: Array<string|Array<string>>): void => {
+      let output = '';
+      originalOutput.forEach(element => {
+          output += '(' + element.toString() + '),';          
+      });
+      this.statusOutput.el.value += '>>>' + this.regexInput.el.value + '\n' + output + '\n';
     }
 }
 
