@@ -46,3 +46,4 @@ interface MatchGroup {
 
 // definition for randomcolor
 declare module 'randomcolor';
+declare module 'parchment';

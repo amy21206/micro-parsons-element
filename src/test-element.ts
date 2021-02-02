@@ -154,6 +154,7 @@ export class RegexElement extends HTMLElement {
                 this.addMatchResultToOutput();
                 // TODO: (feature)fix highlighting with group information
                 this.testStringInput.updateGroupedMatchResult(this.matchResult, this.groupColor);
+                // this.testStringInput.updateGroupedMatchResult_exp(this.matchResult);
             })
             .catch((err) => { this.addTextToOutput(err) });
     }

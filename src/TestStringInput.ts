@@ -1,6 +1,26 @@
 import Quill from 'quill';
 import {randomColor} from 'randomcolor';
+import Parchment from 'parchment';
 // import {Quill} from '../types/Quill';
+
+// experiments: wrapping classes
+let Inline = Quill.import('blots/inline');
+
+class GroupBlot extends Inline {
+    static create(value: any){
+        let node = super.create();
+        node.setAttribute('class', 'group0');
+        return node;
+    }
+    static formats(domNode: any) {
+        return true;
+    }
+}
+GroupBlot.blotName = 'grouping';
+GroupBlot.className = 'group1';
+GroupBlot.tagName = 'span';
+Quill.register(GroupBlot);
+// end of experiments
 
 export class TestStringInput implements ITestStringInput {
     // The input element
@@ -69,6 +89,17 @@ export class TestStringInput implements ITestStringInput {
                 }, 'silent');
             }
         }
+    }
+
+    public updateGroupedMatchResult_exp = (matches: Array<Array<MatchGroup>>): void => {
+        let i = 0;
+
+            for (let j = 0; j < matches.length; ++ j) {
+                this.quill?.formatText(matches[j][i].start, matches[j][i].end - matches[j][i].start, {
+                    'grouping': true
+                }, 'silent');
+            }
+
     }
 
     // TODO: (structure) move this function to the main element after adding highlight to input
