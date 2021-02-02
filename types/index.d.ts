@@ -1,5 +1,5 @@
 interface IRegexInput {
-    el: HTMLTextAreaElement;
+    el: HTMLDivElement;
 }
 
 interface ITestStringInput {
@@ -42,6 +42,11 @@ interface MatchGroup {
 	end: number
 	data: string
 	name?: string
+}
+
+interface PatternGroup {
+	start: number
+	end: number
 }
 
 // definition for randomcolor

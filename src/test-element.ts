@@ -70,6 +70,7 @@ export class RegexElement extends HTMLElement {
         // init elements: regex input
         this.regexInput = new RegexInput();
         this.appendChild(this.regexInput.el);
+        this.regexInput.initQuill();
 
         // init elements: test string input
         const quillLinkRef = document.createElement('link');
@@ -129,7 +130,7 @@ export class RegexElement extends HTMLElement {
     public match = (): void => {
         this.statusOutput.el.value = ''
         let pydata = 'import re\n';
-        window.pyodide.globals.regex_input = this.regexInput.el.value;
+        window.pyodide.globals.regex_input = this.regexInput.getText();
         pydata += 'pattern = re.compile(regex_input)\n';
         pydata += 'source = test_string\n';
         pydata += 'global match_result\n';
@@ -154,6 +155,7 @@ export class RegexElement extends HTMLElement {
                 this.addMatchResultToOutput();
                 // TODO: (feature)fix highlighting with group information
                 this.testStringInput.updateGroupedMatchResult(this.matchResult, this.groupColor);
+                this.regexInput.highlightGroup(this.groupColor);
                 // this.testStringInput.updateGroupedMatchResult_exp(this.matchResult);
             })
             .catch((err) => { this.addTextToOutput(err) });
@@ -164,11 +166,11 @@ export class RegexElement extends HTMLElement {
         originalOutput.forEach(element => {
             output += '(' + element.toString() + '),';
         });
-        this.statusOutput.el.value += '>>>' + this.regexInput.el.value + '\n' + output + '\n';
+        this.statusOutput.el.value += '>>>' + this.regexInput.getText() + '\n' + output + '\n';
     }
     
     private addTextToOutput = (output: string): void => {
-        this.statusOutput.el.value += '>>>' + this.regexInput.el.value + '\n' + output + '\n';
+        this.statusOutput.el.value += '>>>' + this.regexInput.getText() + '\n' + output + '\n';
     }
 
     private addMatchResultToOutput = (): void => {
