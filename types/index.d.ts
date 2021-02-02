@@ -43,3 +43,6 @@ interface MatchGroup {
 	data: string
 	name?: string
 }
+
+// definition for randomcolor
+declare module 'randomcolor';

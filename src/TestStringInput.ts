@@ -1,4 +1,5 @@
 import Quill from 'quill';
+import {randomColor} from 'randomcolor';
 // import {Quill} from '../types/Quill';
 
 export class TestStringInput implements ITestStringInput {
@@ -44,6 +45,36 @@ export class TestStringInput implements ITestStringInput {
             this.quill?.formatText(matchPos, matches[i].length, {
                 'background': 'rgb(251, 255, 130)'
             }, 'silent');
+        }
+    }
+
+    // TODO: (UI) differentiate between different matches
+    public updateGroupedMatchResult = (matches: Array<Array<MatchGroup>>, colors: Array<string>): void => {
+        this.quill?.removeFormat(0, this.quill.getLength() - 1, 'silent');
+        if (matches.length == 0) {
+            return;
+        }
+
+        // generate new colors for group if current colors are not enough
+        const groupCount = matches[0].length;
+        if (colors.length < groupCount) {
+            this.generateColor(colors, groupCount - colors.length);
+        }
+
+        // highlight the matches in a group sequence such that inner groups' color will cover outer groups'.
+        for (let i = 0; i < groupCount; ++ i) {
+            for (let j = 0; j < matches.length; ++ j) {
+                this.quill?.formatText(matches[j][i].start, matches[j][i].end - matches[j][i].start, {
+                    'background': colors[i]
+                }, 'silent');
+            }
+        }
+    }
+
+    // TODO: (structure) move this function to the main element after adding highlight to input
+    private generateColor = (colors: Array<string>, cnt: number): void => {
+        for(let i = 0; i < cnt; ++ i) {
+            colors.push(randomColor());
         }
     }
 

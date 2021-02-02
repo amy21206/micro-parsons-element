@@ -32,7 +32,10 @@ export class RegexElement extends HTMLElement {
     // Saving previous checked text, used with checkWhileTyping
     private prevText: string;
 
-    private matchResult: null | Array<Array<MatchGroup>>;
+    private matchResult: Array<Array<MatchGroup>>;
+
+    // random color representations for groups
+    public groupColor: Array<string>;
 
     constructor() {
         super();
@@ -96,7 +99,11 @@ export class RegexElement extends HTMLElement {
         this.appendChild(this.statusOutput.el);
         this.initPyodide();
 
-        this.matchResult = null;
+        // initialize the match result array
+        this.matchResult = new Array<Array<MatchGroup>>();
+
+        // initialize the color array
+        this.groupColor = new Array<string>();
     }
 
     // Initializes Pyodide
@@ -142,10 +149,11 @@ export class RegexElement extends HTMLElement {
         pydata += '        match_data[index][\'name\'] = name\n';
         window.pyodide.runPythonAsync(pydata)
             .then(_ => {
+                // TODO: (robustness)test edge cases with no match
                 this.matchResult = window.pyodide.globals.match_result as Array<Array<MatchGroup>>;
-                console.log(this.matchResult)
                 this.addMatchResultToOutput();
                 // TODO: (feature)fix highlighting with group information
+                this.testStringInput.updateGroupedMatchResult(this.matchResult, this.groupColor);
             })
             .catch((err) => { this.addTextToOutput(err) });
     }
@@ -164,21 +172,19 @@ export class RegexElement extends HTMLElement {
 
     private addMatchResultToOutput = (): void => {
         let output = '';
-        if (this.matchResult) {
-            for(let i = 0; i < this.matchResult.length; ++i) {
-                output += 'Match ' + i.toString() + ':\n';
-                for(let j = 0; j < this.matchResult[i].length; ++j ) {
-                    output += 'Group ' + j.toString() + ': ';
-                    output += this.matchResult[i][j].data + ' span(' + this.matchResult[i][j].start + ', ' + this.matchResult[i][j].end + ') ';
-                    if (this.matchResult[i][j].name) {
-                        output += this.matchResult[i][j].name;
-                    } 
-                    output += '\n';
-                }
+        for(let i = 0; i < this.matchResult.length; ++i) {
+            output += 'Match ' + i.toString() + ':\n';
+            for(let j = 0; j < this.matchResult[i].length; ++j ) {
+                output += 'Group ' + j.toString() + ': ';
+                output += this.matchResult[i][j].data + ' span(' + this.matchResult[i][j].start + ', ' + this.matchResult[i][j].end + ') ';
+                if (this.matchResult[i][j].name) {
+                    output += this.matchResult[i][j].name;
+                } 
                 output += '\n';
             }
-            this.statusOutput.el.value += '>>>\n' + output;
+            output += '\n';
         }
+        this.statusOutput.el.value += '>>>\n' + output;
     }
 }
 
