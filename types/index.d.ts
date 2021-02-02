@@ -35,3 +35,11 @@ interface Pyodide {
 	version(): string
 	globals: any
 }
+
+interface MatchGroup {
+	group_id: number
+	start: number
+	end: number
+	data: string
+	name?: string
+}

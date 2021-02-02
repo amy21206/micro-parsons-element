@@ -32,13 +32,15 @@ export class RegexElement extends HTMLElement {
     // Saving previous checked text, used with checkWhileTyping
     private prevText: string;
 
+    private matchResult: null | Array<Array<MatchGroup>>;
+
     constructor() {
         super();
 
         // init pyodide
         // window.languagePluginUrl = 'https://cdn.jsdelivr.net/pyodide/v0.16.1/full/';
         window.languagePluginUrl = 'http://127.0.0.1:8081/pyodide/';
-        
+
         // add style
         this.addStyle();
 
@@ -55,7 +57,7 @@ export class RegexElement extends HTMLElement {
         this.appendChild(checkbox);
         this.append('always check on test string input');
         this.checkWhileTyping = false;
-        checkbox.addEventListener('change', ()=>{
+        checkbox.addEventListener('change', () => {
             this.checkWhileTyping = checkbox.checked;
             if (this.checkWhileTyping) {
                 this.match();
@@ -93,6 +95,8 @@ export class RegexElement extends HTMLElement {
         this.statusOutput = new StatusOutput();
         this.appendChild(this.statusOutput.el);
         this.initPyodide();
+
+        this.matchResult = null;
     }
 
     // Initializes Pyodide
@@ -107,7 +111,7 @@ export class RegexElement extends HTMLElement {
     private addStyle = (): void => {
         const sheet = document.createElement('style');
         sheet.innerHTML += '.regex-textbox {width: 100%;}\n';
-        document.body.appendChild(sheet); 
+        document.body.appendChild(sheet);
     }
 
     /**
@@ -116,26 +120,65 @@ export class RegexElement extends HTMLElement {
      * Prints python output.
     */
     public match = (): void => {
-      this.statusOutput.el.value=''
-      let pydata='import re\n';
-      window.pyodide.globals.regex_input = this.regexInput.el.value;
-      pydata += 'pattern = \'(\' + regex_input + \')\'\n';
-      pydata += 'source = test_string\n';
-      pydata += 're.findall(pattern,source)';
-      window.pyodide.runPythonAsync(pydata)
-        .then(output => {
-            this.addToOutput(output);
-            this.testStringInput.updateMatchResult(output);
-        })
-        .catch((err) => { this.addToOutput(err) });
+        this.statusOutput.el.value = ''
+        let pydata = 'import re\n';
+        window.pyodide.globals.regex_input = this.regexInput.el.value;
+        pydata += 'pattern = re.compile(regex_input)\n';
+        pydata += 'source = test_string\n';
+        pydata += 'global match_result\n';
+        pydata += 'match_result = []\n';
+        // TODO: (performance)try to reduce assigning data here
+        pydata += 'for match_obj in re.finditer(pattern, source):\n';
+        pydata += '    match_data = []\n';
+        pydata += '    match_result.append(match_data)\n';
+        pydata += '    for group_id in range(pattern.groups + 1):\n';
+        pydata += '        group_data = {}\n';
+        pydata += '        match_data.append(group_data)\n';
+        pydata += '        group_data[\'group_id\'] = group_id\n';
+        pydata += '        group_data[\'start\'] = match_obj.start(group_id)\n';
+        pydata += '        group_data[\'end\'] = match_obj.end(group_id)\n';
+        pydata += '        group_data[\'data\'] = match_obj.group(group_id)\n';
+        pydata += '    for name, index in pattern.groupindex.items():\n';
+        pydata += '        match_data[index][\'name\'] = name\n';
+        window.pyodide.runPythonAsync(pydata)
+            .then(_ => {
+                this.matchResult = window.pyodide.globals.match_result as Array<Array<MatchGroup>>;
+                console.log(this.matchResult)
+                this.addMatchResultToOutput();
+                // TODO: (feature)fix highlighting with group information
+            })
+            .catch((err) => { this.addTextToOutput(err) });
     }
 
-    private addToOutput = (originalOutput: Array<string|Array<string>>): void => {
-      let output = '';
-      originalOutput.forEach(element => {
-          output += '(' + element.toString() + '),';          
-      });
-      this.statusOutput.el.value += '>>>' + this.regexInput.el.value + '\n' + output + '\n';
+    private addToOutput = (originalOutput: Array<string | Array<string>>): void => {
+        let output = '';
+        originalOutput.forEach(element => {
+            output += '(' + element.toString() + '),';
+        });
+        this.statusOutput.el.value += '>>>' + this.regexInput.el.value + '\n' + output + '\n';
+    }
+    
+    private addTextToOutput = (output: string): void => {
+        this.statusOutput.el.value += '>>>' + this.regexInput.el.value + '\n' + output + '\n';
+    }
+
+    private addMatchResultToOutput = (): void => {
+        let output = '';
+        if (this.matchResult) {
+            for(let i = 0; i < this.matchResult.length; ++i) {
+                output += 'Match ' + i.toString() + ':\n';
+                for(let j = 0; j < this.matchResult[i].length; ++j ) {
+                    output += 'Group ' + j.toString() + ': ';
+                    output += this.matchResult[i][j].data + ' span(' + this.matchResult[i][j].start + ', ' + this.matchResult[i][j].end + ') ';
+                    if (this.matchResult[i][j].name) {
+                        output += this.matchResult[i][j].name;
+                    } 
+                    output += '\n';
+                }
+                output += '\n';
+            }
+            this.statusOutput.el.value += '>>>\n' + output;
+        }
     }
 }
 
