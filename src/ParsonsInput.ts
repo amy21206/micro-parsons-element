@@ -38,11 +38,8 @@ export class ParsonsInput implements IParsonsInput {
             direction: 'horizontal',
             animation: 150
         });
+        this._initSortable();
 
-        const sheet = document.createElement('style');
-        sheet.innerHTML += '.parsons-block {display: inline-block; font-family: monospace; font-size: large; background-color: white; padding: 0 3px 0 3px;}\n';
-        // sheet.innerHTML += '.parsons-block:hover, .parsons-block:focus { border:solid ;}\n';
-        document.body.appendChild(sheet);
     }
 
     public getText = (): string => {
@@ -76,6 +73,10 @@ export class ParsonsInput implements IParsonsInput {
             newBlock.classList.add('parsons-block');
         }
 
+        this._initSortable();
+    }
+    
+    private _initSortable = (): void => {
         this._dragSortable = new Sortable(this._dragArea, {
             group: {
                 name: 'shared',
@@ -84,13 +85,32 @@ export class ParsonsInput implements IParsonsInput {
             },
             sort: false,
             direction: 'horizontal',
-            animation: 150
+            animation: 150,
+            onStart(event: Sortable.SortableEvent) {
+                console.log('drag');
+                console.log(event);
+            }
+            // onEnd: this._onDropDraggingEnd,
         });
 
         this._dropSortable = new Sortable(this._dropArea, {
             group: 'shared',
             direction: 'horizontal',
-            animation: 150
+            animation: 150,
+            onStart(event: Sortable.SortableEvent) {
+                console.log('drop');
+                console.log(event);
+            }
         });
     }
+
+    private _onDropDraggingEnd = (event: Sortable.SortableEvent): void => {
+        console.log('onEnd');
+        console.log(event);
+    }
+
+    // private _onDropDraggingEnd = (event: Sortable.SortableEvent): void => {
+    //     console.log('onEnd');
+    //     console.log(event);
+    // }
 }

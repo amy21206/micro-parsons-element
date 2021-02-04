@@ -13,6 +13,9 @@ declare global {
 }
 
 export class ParsonsElement extends HTMLElement {
+    
+    private root: ShadowRoot;
+
     private _parsonsData: Array<string>;
     private parsonsInput: ParsonsInput;
 
@@ -39,6 +42,8 @@ export class ParsonsElement extends HTMLElement {
     constructor() {
         super();
 
+        this.root = this.attachShadow({mode: 'open'});
+
         // init pyodide
         // window.languagePluginUrl = 'https://cdn.jsdelivr.net/pyodide/v0.16.1/full/';
         window.languagePluginUrl = 'http://127.0.0.1:8081/pyodide/';
@@ -48,7 +53,7 @@ export class ParsonsElement extends HTMLElement {
 
         // init elements: button
         this.testButton = new TestButton();
-        this.appendChild(this.testButton.el);
+        this.root.appendChild(this.testButton.el);
         this.testButton.el.onclick = this.match;
 
         // init elements: checkbox
@@ -56,8 +61,8 @@ export class ParsonsElement extends HTMLElement {
         const checkbox = document.createElement('input');
         checkbox.setAttribute('type', 'checkbox');
         checkbox.checked = false;
-        this.appendChild(checkbox);
-        this.append('always check on test string input');
+        this.root.appendChild(checkbox);
+        this.root.append('always check on test string input');
         this.checkWhileTyping = false;
         checkbox.addEventListener('change', () => {
             this.checkWhileTyping = checkbox.checked;
@@ -70,16 +75,22 @@ export class ParsonsElement extends HTMLElement {
 
         // init elements: parsons regex input
         this.parsonsInput = new ParsonsInput();
-        this.appendChild(this.parsonsInput.el);
+        this.root.appendChild(this.parsonsInput.el);
 
         // init elements: test string input
+        // TODO: (bug) stylesheet isn't working with shadowroot
         const quillLinkRef = document.createElement('link');
         quillLinkRef.href = 'https://cdn.quilljs.com/1.3.7/quill.bubble.css';
         quillLinkRef.rel = 'stylesheet';
-        this.appendChild(quillLinkRef);
+        this.root.appendChild(quillLinkRef);
+
+        const slot = document.createElement('slot');
+        slot.name = 'test-string-input'
+        this.root.appendChild(slot);
 
         this.testStringInput = new TestStringInput();
         this.appendChild(this.testStringInput.el);
+        this.testStringInput.el.slot = 'test-string-input';
         this.testStringInput.initQuill();
         this.prevText = this.testStringInput.getText();
         this.testStringInput.quill?.on('text-change', () => {
@@ -97,7 +108,7 @@ export class ParsonsElement extends HTMLElement {
 
         // init element: python output
         this.statusOutput = new StatusOutput();
-        this.appendChild(this.statusOutput.el);
+        this.root.appendChild(this.statusOutput.el);
         this.initPyodide();
 
         // initialize the match result array
@@ -129,7 +140,11 @@ export class ParsonsElement extends HTMLElement {
     private addStyle = (): void => {
         const sheet = document.createElement('style');
         sheet.innerHTML += '.regex-textbox {width: 100%;}\n';
+        sheet.innerHTML += '.parsons-selected {background-color: red;}\n';
+        sheet.innerHTML += '.parsons-block {display: inline-block; font-family: monospace; font-size: large; background-color: white; padding: 0 3px 0 3px;}\n';
+        // sheet.innerHTML += '.parsons-block:hover, .parsons-block:focus { border:solid ;}\n';
         document.body.appendChild(sheet);
+        this.root.appendChild(sheet);
     }
 
     /**
