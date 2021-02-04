@@ -1,3 +1,7 @@
 .textbox {
     width: 100%;
 }
+
+.parsons-block {
+    display: inline-block;
+}

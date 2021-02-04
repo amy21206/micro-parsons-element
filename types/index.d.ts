@@ -1,5 +1,6 @@
 interface IRegexInput {
-    el: HTMLDivElement;
+	el: HTMLDivElement;
+	getText(): string
 }
 
 interface ITestStringInput {
