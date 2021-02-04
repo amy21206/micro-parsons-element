@@ -1,6 +1,9 @@
+import {ParsonsInput} from './ParsonsInput';
+
 export class ParsonsElement extends HTMLElement {
     private textChild: HTMLSpanElement;
     private _parsonsData: Array<string>;
+    private parsonsInput: ParsonsInput;
 
     constructor() {
         super();
@@ -10,6 +13,9 @@ export class ParsonsElement extends HTMLElement {
         this.textChild.innerText = 'text not set';
 
         this._parsonsData = new Array<string>();
+
+        this.parsonsInput = new ParsonsInput();
+        this.appendChild(this.parsonsInput.el);
     }
 
     set parsonsData(data: Array<string>) {
