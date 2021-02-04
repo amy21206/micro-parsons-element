@@ -49,6 +49,10 @@ interface PatternGroup {
 	end: number
 }
 
+interface IParsonsInput {
+	el: HTMLDivElement
+}
+
 // definition for randomcolor
 declare module 'randomcolor';
 declare module 'parchment';
