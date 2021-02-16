@@ -18,6 +18,7 @@ export class RegexElement extends HTMLElement {
     private root: ShadowRoot;
 
     private _parsonsData: Array<string>;
+    public parsonsExplanation: Array<string>|null;
     private regexInput: IRegexInput;
     private inputType: string;
 
@@ -80,6 +81,7 @@ export class RegexElement extends HTMLElement {
         let inputType = this.getAttribute('input-type');
         this.inputType = inputType == 'parsons' ? 'parsons' : 'text';
         this._parsonsData = new Array<string>();
+        this.parsonsExplanation = null;
         const inputDiv = document.createElement('div');
         this.root.append(inputDiv);
         inputDiv.classList.add('regex-input-div');
@@ -153,7 +155,7 @@ export class RegexElement extends HTMLElement {
     set parsonsData(data: Array<string>) {
         this._parsonsData = data;
         if (this.inputType == 'parsons') {
-            (this.regexInput as ParsonsInput).setSourceBlocks(data);
+            (this.regexInput as ParsonsInput).setSourceBlocks(data,this.parsonsExplanation);
         }
     }
 
@@ -176,8 +178,11 @@ export class RegexElement extends HTMLElement {
         const sheet = document.createElement('style');
         sheet.innerHTML += '.regex-textbox {width: 100%;}\n';
         sheet.innerHTML += '.parsons-selected {background-color: red;}\n';
+        // parsons block
         sheet.innerHTML += '.parsons-block {display: inline-block; font-family: monospace; font-size: large; background-color: white; padding: 1px 2px; border: 1px solid; border-color:gray; margin: 0 1px; border-radius: 2px;}\n';
         sheet.innerHTML += '.parsons-block:hover, .parsons-block:focus { border-color: black; padding: 0 6px; border: 2px solid;}\n';
+        sheet.innerHTML += '.parsons-block .tooltip { visibility: hidden; width: 120px;  background-color: black; color: #fff; text-align: center; padding: 5px 0; border-radius: 6px;  position: absolute; z-index: 1; margin: 0 10px; }\n';
+        sheet.innerHTML += '.drag-area .parsons-block:hover .tooltip { visibility: visible;}\n';
         sheet.innerHTML += '.regex-test-string-div, .regex-input-div { margin: 8px 0; }\n';
         sheet.innerHTML += '.regex-input-div > div {display:inline-block;}\n'
         // the dropdown menu for regex options

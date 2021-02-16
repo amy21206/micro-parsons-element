@@ -15,6 +15,7 @@ export class ParsonsInput implements IParsonsInput {
 
         this._dragArea = document.createElement('div');
         this.el.appendChild(this._dragArea);
+        this._dragArea.classList.add('drag-area');
         this._dragArea.style.height = '20px';
         this._dragArea.style.backgroundColor = '#fffcc4';
 
@@ -60,13 +61,14 @@ export class ParsonsInput implements IParsonsInput {
         }
     }
 
-    public setSourceBlocks = (data: Array<string>): void => {
+    public setSourceBlocks = (data: Array<string>, tooltips:Array<string>|null): void => {
         // reset
         // this._dragSortable.destroy();
         // this._dropSortable.destroy();
 
         this._dragArea.innerHTML = '';
         this._dropArea.innerHTML = '';
+        console.log(tooltips);
 
         for (let i = 0; i < data.length; ++i) {
             const newBlock = document.createElement('div');
@@ -74,6 +76,12 @@ export class ParsonsInput implements IParsonsInput {
             newBlock.innerText = data[i];
             newBlock.style.display = 'inline-block';
             newBlock.classList.add('parsons-block');
+            if (tooltips) {
+                const tooltip = document.createElement('span');
+                newBlock.appendChild(tooltip);
+                tooltip.innerText = tooltips[i];
+                tooltip.classList.add('tooltip');
+            }
         }
 
         this._initSortable();
