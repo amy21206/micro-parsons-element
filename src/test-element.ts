@@ -12,7 +12,7 @@ declare global {
 }
 
 // Custom element of regex matching
-export class RegexElement extends HTMLElement {
+export class TextRegexElement extends HTMLElement {
 
     // The input box for regex pattern
     public regexInput: RegexInput;
@@ -197,4 +197,4 @@ export class RegexElement extends HTMLElement {
 
 }
 
-customElements.define('regex-element', RegexElement);
+customElements.define('text-regex-element', TextRegexElement);

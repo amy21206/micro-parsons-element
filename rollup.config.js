@@ -4,7 +4,8 @@ import commonjs from '@rollup/plugin-commonjs';
 
 const INPUTS = [
   'test-element',
-  'parsons-element'
+  'parsons-element',
+  'regex-element'
 ];
 
 export default INPUTS.map((input) => {
