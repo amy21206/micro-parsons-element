@@ -9,6 +9,7 @@ export class RegexInput implements IRegexInput {
     constructor() {
         this.el = document.createElement('div');
         this.el.id = 'regex-input'
+        this.el.classList.add('regex-input');
         
         this.quill = null;
         

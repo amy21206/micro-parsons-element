@@ -30,6 +30,7 @@ export class TestStringInput implements ITestStringInput {
     constructor() {
         this.el = document.createElement('div');
         this.el.id = 'test-string-input'
+        this.el.classList.add('regex-test-string');
         this.quill = null;
         // console.log(Quill);
     }
@@ -41,7 +42,6 @@ export class TestStringInput implements ITestStringInput {
                 toolbar: false
             },
             placeholder: 'type the test string',
-            theme: 'bubble',
         })
     }
 

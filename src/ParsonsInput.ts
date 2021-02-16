@@ -11,15 +11,19 @@ export class ParsonsInput implements IParsonsInput {
         this.el = document.createElement('div');
         this.el.id = 'parsons-input'
 
-        this._dropArea = document.createElement('div');
-        this.el.appendChild(this._dropArea);
-        this._dropArea.style.height = '20px';
-        this._dropArea.style.backgroundColor = '#bcebd7';
+        this.el.append('Drag or click to select from the symbols below to form your regex')
 
         this._dragArea = document.createElement('div');
         this.el.appendChild(this._dragArea);
         this._dragArea.style.height = '20px';
         this._dragArea.style.backgroundColor = '#fffcc4';
+
+        this.el.append('Regex:')
+
+        this._dropArea = document.createElement('div');
+        this.el.appendChild(this._dropArea);
+        this._dropArea.style.height = '20px';
+        this._dropArea.style.backgroundColor = '#bcebd7';
 
         this._dragSortable = new Sortable(this._dragArea, {
             group: {
@@ -99,7 +103,8 @@ export class ParsonsInput implements IParsonsInput {
             onEnd: (event: any) => {
                 // TODO: (bug) This is a workaround that only works in the demo.
                 // compare clientY with the position of item.
-                if (event.originalEvent.clientY > 60) {
+                console.log(event.originalEvent.clientY);
+                if (event.originalEvent.clientY > 230) {
                     const item = event.item as HTMLElement;
                     if (item.parentNode) {
                         item.parentNode.removeChild(item);

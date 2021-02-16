@@ -4,6 +4,7 @@ import { RegexInput } from './RegexInput';
 import { TestStringInput } from './TestStringInput';
 import { StatusOutput } from './StatusOutput';
 import { TestButton } from './TestButton';
+import './style/regex.css';
 
 declare global {
     interface Window {
@@ -73,18 +74,23 @@ export class RegexElement extends HTMLElement {
         })
 
         // init regex input based on the input type
+        // TODO: (bug) fix always check for parsons
         let inputType = this.getAttribute('input-type');
         this.inputType = inputType == 'parsons' ? 'parsons' : 'text';
         this._parsonsData = new Array<string>();
+        const inputDiv = document.createElement('div');
+        this.root.append(inputDiv);
+        inputDiv.classList.add('regex-input-div');
+        inputDiv.append('REGULAR EXPRESSION:');
         if (this.inputType == 'parsons') {
             // init elements: parsons regex input
             this.regexInput = new ParsonsInput();
-            this.root.appendChild(this.regexInput.el);
+            inputDiv.appendChild(this.regexInput.el);
         } else {
             // (this.inputType == 'text')
             const regex_slot = document.createElement('slot');
             regex_slot.name = 'regex-input'
-            this.root.appendChild(regex_slot);
+            inputDiv.appendChild(regex_slot);
             // TODO: (refactor) rename RegexInput
             this.regexInput = new RegexInput();
             this.appendChild(this.regexInput.el);
@@ -97,11 +103,15 @@ export class RegexElement extends HTMLElement {
         const quillLinkRef = document.createElement('link');
         quillLinkRef.href = 'https://cdn.quilljs.com/1.3.7/quill.bubble.css';
         quillLinkRef.rel = 'stylesheet';
-        this.root.appendChild(quillLinkRef);
+        this.appendChild(quillLinkRef);
 
+        const testStringDiv = document.createElement('div');
+        this.root.append(testStringDiv);
+        testStringDiv.classList.add('regex-test-string-div');
+        testStringDiv.append('TEST STRING:');
         const slot = document.createElement('slot');
         slot.name = 'test-string-input'
-        this.root.appendChild(slot);
+        testStringDiv.appendChild(slot);
 
         this.testStringInput = new TestStringInput();
         this.appendChild(this.testStringInput.el);
@@ -130,6 +140,7 @@ export class RegexElement extends HTMLElement {
         this.matchResult = new Array<Array<MatchGroup>>();
 
         // initialize the color array
+        // TODO: (UI) only light colors that do not obfuscates the word
         this.groupColor = new Array<string>();
     }
 
@@ -159,10 +170,14 @@ export class RegexElement extends HTMLElement {
         const sheet = document.createElement('style');
         sheet.innerHTML += '.regex-textbox {width: 100%;}\n';
         sheet.innerHTML += '.parsons-selected {background-color: red;}\n';
-        sheet.innerHTML += '.parsons-block {display: inline-block; font-family: monospace; font-size: large; background-color: white; padding: 0 3px 0 3px;}\n';
-        sheet.innerHTML += '.parsons-block:hover, .parsons-block:focus { border:solid ;}\n';
+        sheet.innerHTML += '.parsons-block {display: inline-block; font-family: monospace; font-size: large; background-color: white; padding: 1px 2px; border: 1px solid; border-color:gray; margin: 0 1px; border-radius: 2px;}\n';
+        sheet.innerHTML += '.parsons-block:hover, .parsons-block:focus { border-color: black; padding: 0 6px; border: 2px solid;}\n';
+        sheet.innerHTML += '.regex-test-string-div, .regex-input-div { margin: 8px 0; }\n';
         document.body.appendChild(sheet);
         this.root.appendChild(sheet);
+        const global_sheet = document.createElement('style');
+        global_sheet.innerHTML += '.regex-test-string .ql-editor, .regex-input .ql-editor { padding: 5px; border: 1px solid; border-radius: 3px; font-family: monospace; font-size: 14px; box-shadow: inset 0 1px 2px rgb(0 0 0 / 10%); line-height: 18px; letter-spacing: 0.5px;}\n';
+        this.appendChild(global_sheet);
     }
 
     /**
