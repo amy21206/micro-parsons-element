@@ -13,8 +13,8 @@ match any price in the form $3.45 or $23.32 or $400; <b>Make sure to capture the
 </div>
 <div class="test-div"></div>
 <script type="module">
-import "./packages/test-element/test-element.js";
-document.querySelector('.test-div').innerHTML = `<text-regex-element id="abcd"></text-regex-element>`;
+import "./packages/regex-element/regex-element.js";
+document.querySelector('.test-div').innerHTML = `<regex-element id="abcd"></regex-element>`;
 let regexElement = document.querySelector('#abcd');
 regexElement.setTestString('match:\n$3.45\n$23.32\n$400\n\ndo mot match:\n$.23\n$400.1\n');
 </script>

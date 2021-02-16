@@ -1,5 +1,4 @@
 import Sortable, { MoveEvent } from 'sortablejs';
-import { ParsonsElement } from './parsons-element';
 
 export class ParsonsInput implements IParsonsInput {
     // The input element
@@ -97,28 +96,6 @@ export class ParsonsInput implements IParsonsInput {
             direction: 'horizontal',
             animation: 150,
             draggable: '.parsons-block',
-            // dragoverBubble: true,
-            // onStart(event: Sortable.SortableEvent) {
-            //     console.log('drop');
-            //     console.log(event);
-            // },
-            // onMove(event: MoveEvent, originalEvent: Event): boolean|void|1|-1 {
-            //     console.log('droponmove');
-            //     console.log(event);
-            //     return true;
-            // },
-            // onChoose(event: Sortable.SortableEvent) {
-            //     console.log('onchoose');
-            //     console.log(event);
-            // },
-            // onUnchoose(event: Sortable.SortableEvent) {
-            //     console.log('onunchoose');
-            //     console.log(event);
-            // },
-            // onStart(event: Sortable.SortableEvent) {
-            //     console.log('drag');
-            //     console.log(event);
-            // },
             onEnd: (event: any) => {
                 // TODO: (bug) This is a workaround that only works in the demo.
                 // compare clientY with the position of item.
@@ -129,34 +106,6 @@ export class ParsonsInput implements IParsonsInput {
                     }
                 }
             },
-            // onAdd(event: Sortable.SortableEvent) {
-            //     console.log('onadd');
-            //     console.log(event);
-            // },
-            // onUpdate(event: Sortable.SortableEvent) {
-            //     console.log('onupdate');
-            //     console.log(event);
-            // },
-            // onRemove(event: Sortable.SortableEvent) {
-            //     console.log('onremove');
-            //     console.log(event);
-            // },
-            // onMove(event: MoveEvent, originalEvent: Event): boolean|void|1|-1 {
-            //     console.log('onmove');
-            //     console.log(event);
-            //     console.log(originalEvent);
-            //     return true;
-            // },
         });
     }
-
-    private _onDropDraggingEnd = (event: Sortable.SortableEvent): void => {
-        console.log('onEnd');
-        console.log(event);
-    }
-
-    // private _onDropDraggingEnd = (event: Sortable.SortableEvent): void => {
-    //     console.log('onEnd');
-    //     console.log(event);
-    // }
 }

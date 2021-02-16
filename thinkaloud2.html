@@ -12,8 +12,8 @@ Capture A “Firstname Lastname” name at the beginning of each line, e.g. Ziha
 </div>
 <div class="test-div"></div>
 <script type="module">
-import "./packages/test-element/test-element.js";
-document.querySelector('.test-div').innerHTML = `<text-regex-element id="abcd"></text-regex-element>`;
+import "./packages/regex-element/regex-element.js";
+document.querySelector('.test-div').innerHTML = `<regex-element id="abcd"></regex-element>`;
 let regexElement = document.querySelector('#abcd');
 regexElement.setTestString('match:\nZihan Wu\nZ Wu\n\ndo mot match:\nzihan wu\nzihan Zihan Wu\nzi-han Wu\nzihan zihan wu\n');
 </script>
