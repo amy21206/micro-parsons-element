@@ -4,7 +4,7 @@ import { RegexInput } from './RegexInput';
 import { TestStringInput } from './TestStringInput';
 import { StatusOutput } from './StatusOutput';
 import { TestButton } from './TestButton';
-import './style/regex.css';
+import { RegexOptions } from './RegexOptions';
 
 declare global {
     interface Window {
@@ -40,6 +40,8 @@ export class RegexElement extends HTMLElement {
 
     // random color representations for groups
     public groupColor: Array<string>;
+
+    private regexOptions: RegexOptions;
 
     constructor() {
         super();
@@ -97,6 +99,10 @@ export class RegexElement extends HTMLElement {
             this.regexInput.el.slot = 'regex-input';
             (this.regexInput as RegexInput).initQuill();
         }
+
+        // init elements: regex options dropdown
+        this.regexOptions = new RegexOptions();
+        inputDiv.appendChild(this.regexOptions.el);
 
         // init elements: test string input
         // TODO: (bug) stylesheet isn't working with shadowroot
@@ -173,8 +179,19 @@ export class RegexElement extends HTMLElement {
         sheet.innerHTML += '.parsons-block {display: inline-block; font-family: monospace; font-size: large; background-color: white; padding: 1px 2px; border: 1px solid; border-color:gray; margin: 0 1px; border-radius: 2px;}\n';
         sheet.innerHTML += '.parsons-block:hover, .parsons-block:focus { border-color: black; padding: 0 6px; border: 2px solid;}\n';
         sheet.innerHTML += '.regex-test-string-div, .regex-input-div { margin: 8px 0; }\n';
+        sheet.innerHTML += '.regex-input-div > div {display:inline-block;}\n'
+        // the dropdown menu for regex options
+        sheet.innerHTML += '.regex-options-dropdown-btn { background-color: #3498DB; color: white; padding: 10px; font-size: 16px; border: none; cursor: pointer;}\n';
+        sheet.innerHTML += '.regex-options-dropdown-btn:hover, .regex-options-dropdown-btn:focus { background-color: #2980B9;}\n';
+        sheet.innerHTML += '.regex-options-dropdown { position: relative; display: inline-block; }\n';
+        sheet.innerHTML += '.regex-options-container { display: none; position: absolute; background-color: #f1f1f1; min-width: 160px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);z-index: 1;}\n'
+        sheet.innerHTML += '.regex-options-container > button{ color: black; padding: 12px 16px; text-decoration: none; display: block; width: -webkit-fill-available;}\n';
+        sheet.innerHTML += '.regex-options-container .selected{ background-color: pink;}\n'
+        sheet.innerHTML += '.show {display:block;}\n';
+
         document.body.appendChild(sheet);
         this.root.appendChild(sheet);
+
         const global_sheet = document.createElement('style');
         global_sheet.innerHTML += '.regex-test-string .ql-editor, .regex-input .ql-editor { padding: 5px; border: 1px solid; border-radius: 3px; font-family: monospace; font-size: 14px; box-shadow: inset 0 1px 2px rgb(0 0 0 / 10%); line-height: 18px; letter-spacing: 0.5px;}\n';
         this.appendChild(global_sheet);
@@ -190,7 +207,12 @@ export class RegexElement extends HTMLElement {
         let pydata = 'import re\n';
         window.pyodide.globals.test_string = this.prevText;
         window.pyodide.globals.regex_input = this.regexInput.getText();
-        pydata += 'pattern = re.compile(regex_input, re.MULTILINE)\n';
+        console.log(this.regexOptions.getFlags());
+        if (this.regexOptions.getFlags() != null) {
+            pydata += 'pattern = re.compile(regex_input, '+this.regexOptions.getFlags()+')\n';
+        } else {
+            pydata += 'pattern = re.compile(regex_input)\n';
+        }
         pydata += 'source = test_string\n';
         pydata += 'global match_result\n';
         pydata += 'match_result = []\n';

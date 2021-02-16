@@ -19,6 +19,11 @@ interface ITestResult {
     el: HTMLDivElement;
 }
 
+interface IRegexOptions {
+	el: HTMLDivElement;
+	getFlags(): string?;
+}
+
 interface Pyodide {
 	_module: PyodideModule
 
