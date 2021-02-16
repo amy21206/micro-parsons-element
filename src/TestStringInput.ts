@@ -109,4 +109,7 @@ export class TestStringInput implements ITestStringInput {
         }
     }
 
+    public setText(text: string) {
+        this.quill?.setText(text);
+    }
 }

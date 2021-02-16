@@ -133,6 +133,7 @@ export class ParsonsElement extends HTMLElement {
     private initPyodide = (): void => {
         languagePluginLoader.then(() => {
             this.statusOutput.el.value += "Init finished.\n";
+            window.pyodide.globals.test_string = this.prevText;
         });
     }
 
@@ -142,7 +143,7 @@ export class ParsonsElement extends HTMLElement {
         sheet.innerHTML += '.regex-textbox {width: 100%;}\n';
         sheet.innerHTML += '.parsons-selected {background-color: red;}\n';
         sheet.innerHTML += '.parsons-block {display: inline-block; font-family: monospace; font-size: large; background-color: white; padding: 0 3px 0 3px;}\n';
-        // sheet.innerHTML += '.parsons-block:hover, .parsons-block:focus { border:solid ;}\n';
+        sheet.innerHTML += '.parsons-block:hover, .parsons-block:focus { border:solid ;}\n';
         document.body.appendChild(sheet);
         this.root.appendChild(sheet);
     }
@@ -155,8 +156,9 @@ export class ParsonsElement extends HTMLElement {
     public match = (): void => {
         this.statusOutput.el.value = ''
         let pydata = 'import re\n';
+        window.pyodide.globals.test_string = this.prevText;
         window.pyodide.globals.regex_input = this.parsonsInput.getText();
-        pydata += 'pattern = re.compile(regex_input)\n';
+        pydata += 'pattern = re.compile(regex_input, re.MULTILINE)\n';
         pydata += 'source = test_string\n';
         pydata += 'global match_result\n';
         pydata += 'match_result = []\n';
@@ -213,6 +215,11 @@ export class ParsonsElement extends HTMLElement {
         }
         this.statusOutput.el.value += '>>>\n' + output;
     }
+
+    public setTestString(text: string) {
+        this.testStringInput.setText(text);
+    }
+
 }
 
 customElements.define('parsons-element', ParsonsElement);

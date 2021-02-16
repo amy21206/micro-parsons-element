@@ -3,7 +3,7 @@ import typescript from '@rollup/plugin-typescript';
 import commonjs from '@rollup/plugin-commonjs';
 
 const INPUTS = [
-  // 'test-element',
+  'test-element',
   'parsons-element'
 ];
 

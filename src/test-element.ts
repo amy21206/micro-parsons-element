@@ -130,8 +130,9 @@ export class RegexElement extends HTMLElement {
     public match = (): void => {
         this.statusOutput.el.value = ''
         let pydata = 'import re\n';
+        window.pyodide.globals.test_string = this.prevText;
         window.pyodide.globals.regex_input = this.regexInput.getText();
-        pydata += 'pattern = re.compile(regex_input)\n';
+        pydata += 'pattern = re.compile(regex_input, re.MULTILINE)\n';
         pydata += 'source = test_string\n';
         pydata += 'global match_result\n';
         pydata += 'match_result = []\n';
@@ -189,6 +190,11 @@ export class RegexElement extends HTMLElement {
         }
         this.statusOutput.el.value += '>>>\n' + output;
     }
+
+    public setTestString(text: string) {
+        this.testStringInput.setText(text);
+    }
+
 }
 
 customElements.define('regex-element', RegexElement);

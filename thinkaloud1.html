@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+
+<body>
+<h2>problem 1</h2>
+<div>
+Capture words that start with a vowel letter(aeiou), but ends with a non-vowel letter, e.g. unicorn, element, should not match: banana, apple. All letters are lowercase.
+
+
+</div>
+<div class="test-div"></div>
+<script type="module">
+import "./packages/parsons-element/parsons-element.js";
+document.querySelector('.test-div').innerHTML = `<parsons-element id="abcd"></parsons-element>`;
+let parsonsElement = document.querySelector('#abcd');
+parsonsElement.parsonsData = ['(', ')', '[', ']', 'a', 'e', 'i', 'o', 'u', 'z', '-', '*', '^'];
+parsonsElement.setTestString('match:\nunicorn\nelement\n\ndo not match:\nbanana\napple\n');
+</script>
+</body>
+
+</html>
