@@ -16,7 +16,7 @@ import "./packages/regex-element/regex-element.js";
 document.querySelector('.test-div').innerHTML = `<regex-element input-type='parsons' id="abcd"></regex-element>`;
 let parsonsElement = document.querySelector('#abcd');
 parsonsElement.parsonsData = ['(', ')', '\\w', '@', '\\.', '+', '*'];
-parsonsElement.setTestString('match:\nziwu@umich.edu\n8ab.c_def9@example.regex.com\n\ndo not match:\nabc@asd@efsg\nabc@ def\nab..abc@.def\n');
+parsonsElement.setInitialTestString('match:\nziwu@umich.edu\n8ab.c_def9@example.regex.com\n\ndo not match:\nabc@asd@efsg\nabc@ def\nab..abc@.def\n');
 </script>
 </body>
 

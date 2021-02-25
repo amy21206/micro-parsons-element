@@ -17,8 +17,8 @@ document.querySelector('.test-div').innerHTML = `<regex-element input-type='pars
 let parsonsElement = document.querySelector('#abcd');
 parsonsElement.parsonsExplanation = ['start capturing group', 'end capturing group', 'match a single character in the list','match a single character in the list', 'a', 'e', 'i', 'o', 'u', 'z', '-', 'Repeat between zero and unlimited times', 'asserts position at start of the string'];
 parsonsElement.parsonsData = ['(', ')', '[', ']', 'a', 'e', 'i', 'o', 'u', 'z', '-', '*', '^'];
-parsonsElement.setTestCases([{input: 'unicorn', expect: ['unicorn'], notes:'testing unicorn'}, {input: 'element', expect:['element']}, {input: 'banana', expect: []}, {input: 'apple', expect: []}]);
-parsonsElement.setTestString('match:\nunicorn\nelement\n\ndo not match:\nbanana\napple\n');
+parsonsElement.setTestCases([{input: 'unicorn', expect: ['unicorn'], notes:'testing unicorn'}, {input: 'element', expect:['element']}, {input: 'banana', expect: []}, {input: 'apple\n', expect: []}]);
+parsonsElement.setInitialTestString('match:\nunicorn\nelement\n\ndo not match:\nbanana\napple\n');
 </script>
 </body>
 

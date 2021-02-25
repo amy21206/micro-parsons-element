@@ -25,6 +25,7 @@ export class RegexElement extends HTMLElement {
 
     // The input box for test string (with highlight)
     public testStringInput: TestStringInput;
+    private initialTestString: string;
 
     // Python output
     public statusOutput: StatusOutput;
@@ -129,7 +130,13 @@ export class RegexElement extends HTMLElement {
         const testStringDiv = document.createElement('div');
         this.root.append(testStringDiv);
         testStringDiv.classList.add('regex-test-string-div');
-        testStringDiv.append('TEST STRING:');
+        testStringDiv.append('TEST STRING:Feel free to experiment with your own test cases. Click "reset" to reset this area to initial state.');
+        const resetTestStringButton = document.createElement('button');
+        testStringDiv.appendChild(resetTestStringButton);
+        resetTestStringButton.innerText = 'reset'
+        resetTestStringButton.onclick = this.resetTestString;
+
+        this.initialTestString = '';
         const slot = document.createElement('slot');
         slot.name = 'test-string-input'
         testStringDiv.appendChild(slot);
@@ -143,7 +150,7 @@ export class RegexElement extends HTMLElement {
             if (this.testStringInput.getText() != this.prevText) {
                 this.prevText = this.testStringInput.getText();
                 // updating test_string in pyodide
-                window.pyodide.globals.test_string = this.testStringInput.getText().slice(0, -1);
+                // window.pyodide.globals.test_string = this.testStringInput.getText().slice(0, -1);
                 if (this.checkWhileTyping) {
                     this.match();
                 } else {
@@ -295,12 +302,17 @@ export class RegexElement extends HTMLElement {
         this.statusOutput.el.value += '>>>\n' + output;
     }
 
-    public setTestString(text: string) {
+    public setInitialTestString(text: string) {
         this.testStringInput.setText(text);
+        this.initialTestString = text;
     }
 
     public setTestCases(testCases: Array<TestCase>) {
         this.unitTestTable.testCases = testCases;
+    }
+
+    private resetTestString = () : void => {
+        this.testStringInput.setText(this.initialTestString);
     }
 
 }
