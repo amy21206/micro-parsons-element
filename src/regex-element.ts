@@ -5,6 +5,7 @@ import { TestStringInput } from './TestStringInput';
 import { StatusOutput } from './StatusOutput';
 import { TestButton } from './TestButton';
 import { RegexOptions } from './RegexOptions';
+import { UnitTestTable } from './UnitTestTable';
 
 declare global {
     interface Window {
@@ -44,6 +45,9 @@ export class RegexElement extends HTMLElement {
 
     private regexOptions: RegexOptions;
 
+    // unit tests
+    private unitTestTable: UnitTestTable;
+
     constructor() {
         super();
 
@@ -56,7 +60,14 @@ export class RegexElement extends HTMLElement {
         // add style
         this.addStyle();
 
-        // init elements: button
+        // init element: button for unittest
+        const unitTestButton = document.createElement('button');
+        unitTestButton.innerText = 'RUN UNIT TEST';
+        this.root.appendChild(unitTestButton);
+        unitTestButton.onclick = () => this.unitTestTable.check(this.regexInput.getText());
+
+        // init elements: button for match
+        this.root.appendChild(document.createElement('br'));
         this.testButton = new TestButton();
         this.root.appendChild(this.testButton.el);
         this.testButton.el.onclick = this.match;
@@ -76,6 +87,7 @@ export class RegexElement extends HTMLElement {
             }
         })
 
+
         // init regex input based on the input type
         // TODO: (bug) fix always check for parsons
         let inputType = this.getAttribute('input-type');
@@ -86,6 +98,7 @@ export class RegexElement extends HTMLElement {
         this.root.append(inputDiv);
         inputDiv.classList.add('regex-input-div');
         inputDiv.append('REGULAR EXPRESSION:');
+        // todo:(UI) fix the css for the input
         if (this.inputType == 'parsons') {
             // init elements: parsons regex input
             this.regexInput = new ParsonsInput();
@@ -144,6 +157,10 @@ export class RegexElement extends HTMLElement {
         this.root.appendChild(this.statusOutput.el);
         this.initPyodide();
 
+        // init element: unit test table
+        this.unitTestTable = new UnitTestTable();
+        this.root.appendChild(this.unitTestTable.el);
+
         // initialize the match result array
         this.matchResult = new Array<Array<MatchGroup>>();
 
@@ -194,6 +211,9 @@ export class RegexElement extends HTMLElement {
         sheet.innerHTML += '.regex-options-container > button{ color: black; padding: 12px 16px; text-decoration: none; display: block; width: -webkit-fill-available;}\n';
         sheet.innerHTML += '.regex-options-container .selected{ background-color: pink;}\n'
         sheet.innerHTML += '.show {display:block;}\n';
+        // unittest
+        sheet.innerHTML += '.regex-unittest > table, .regex-unittest td {border: 1px solid black; padding: 3px; text-align: center; border-collapse: collapse;}\n'
+        sheet.innerHTML += '.regex-unittest.collapse{visibility: collapse;}\n'
 
         document.body.appendChild(sheet);
         this.root.appendChild(sheet);
@@ -277,6 +297,10 @@ export class RegexElement extends HTMLElement {
 
     public setTestString(text: string) {
         this.testStringInput.setText(text);
+    }
+
+    public setTestCases(testCases: Array<TestCase>) {
+        this.unitTestTable.testCases = testCases;
     }
 
 }

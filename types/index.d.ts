@@ -4,19 +4,19 @@ interface IRegexInput {
 }
 
 interface ITestStringInput {
-    el: HTMLDivElement;
+	el: HTMLDivElement;
 }
 
 interface IStatusOutput {
-    el: HTMLTextAreaElement;
+	el: HTMLTextAreaElement;
 }
 
 interface ITestButton {
-    el: HTMLButtonElement;
+	el: HTMLButtonElement;
 }
 
 interface ITestResult {
-    el: HTMLDivElement;
+	el: HTMLDivElement;
 }
 
 interface IRegexOptions {
@@ -57,6 +57,25 @@ interface PatternGroup {
 
 interface IParsonsInput {
 	el: HTMLDivElement
+}
+
+type TestCase = {
+	input: string;
+	expect: Array<string>;
+	notes?: string;
+}
+
+type UnitTestResult = {
+	success: boolean;
+	match: Array<string>?;
+	errorMessage: string?;
+}
+
+interface IUnitTestTable {
+	el: HTMLDivElement;
+	flags: string;
+	testCases: Array<TestCase>
+	check(regex: string): void
 }
 
 // definition for randomcolor
