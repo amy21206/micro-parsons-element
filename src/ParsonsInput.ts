@@ -68,7 +68,6 @@ export class ParsonsInput implements IParsonsInput {
 
         this._dragArea.innerHTML = '';
         this._dropArea.innerHTML = '';
-        console.log(tooltips);
 
         for (let i = 0; i < data.length; ++i) {
             const newBlock = document.createElement('div');
@@ -111,7 +110,6 @@ export class ParsonsInput implements IParsonsInput {
             onEnd: (event: any) => {
                 // TODO: (bug) This is a workaround that only works in the demo.
                 // compare clientY with the position of item.
-                console.log(event.originalEvent.clientY);
                 if (event.originalEvent.clientY > 230) {
                     const item = event.item as HTMLElement;
                     if (item.parentNode) {
