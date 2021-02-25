@@ -308,7 +308,7 @@ export class RegexElement extends HTMLElement {
     }
 
     public setTestCases(testCases: Array<TestCase>) {
-        this.unitTestTable.testCases = testCases;
+        this.unitTestTable.setTestCases(testCases);
     }
 
     private resetTestString = () : void => {

@@ -6,6 +6,8 @@ export class UnitTestTable implements IUnitTestTable {
 	public testCases: Array<TestCase>;
     // if the matched groups should also be identical
     public strictGroup: boolean;
+    public hintRevealed: Array<boolean>;
+    private latestResults: Array<UnitTestResult>;
     constructor() {
         // init the element in HTML 
         this.el = document.createElement('div');
@@ -25,6 +27,8 @@ export class UnitTestTable implements IUnitTestTable {
 
         // this.testCases = [{input: 'unicorn', expect: ['unicorn'], notes:'testing unicorn'}, {input: 'element', expect:['element']}, {input: 'banana', expect: []}, {input: 'apple', expect: []}];
         this.testCases = [];
+        this.hintRevealed = [];
+        this.latestResults = [];
 
         // not matching groups strictly by default
         this.strictGroup = false;
@@ -38,17 +42,17 @@ export class UnitTestTable implements IUnitTestTable {
         }
         // clean up previous unit test result 
         this.table.innerHTML = this.table.rows[0].innerHTML;
-        this.testCases.forEach(testCase => {
-            // while(window.pyodide.globals.running)
-            this.match(regex, testCase);
-        })
+        this.latestResults = [];
+        for (let index = 0; index < this.testCases.length; ++ index) {
+            this.match(index, regex, this.testCases[index]);
+        }
     }
     /**
      * Runs re.findall() with data from regex and test string input;
      * Highlights the result in the test string input;
      * Prints python output.
     */
-    private match = (regex: string, testCase: TestCase): void => {
+    private match = (index: number, regex: string, testCase: TestCase): void => {
         const result: UnitTestResult = {success: false, match: null, errorMessage: null}; 
         let pydata = 'import re\n';
         window.pyodide.globals.running = true;
@@ -66,24 +70,23 @@ export class UnitTestTable implements IUnitTestTable {
             window.pyodide.runPython(pydata);
             result.success = true;
             result.match = window.pyodide.globals.unit_match_result as Array<string>;
-            this._createRow(testCase, result);
+            this._createRow(index, testCase, result);
         } catch(err) {
             result.success = false;
             result.errorMessage = String(err).replaceAll('<', '&lt;').replaceAll('>','&gt;').replaceAll('\n','<br/>').replaceAll(' ', '&nbsp;');
             // console.log(err);
-            this._createRow(testCase, result);
+            this._createRow(index, testCase, result);
         }
     }
 
-    private _createRow = (testCase: TestCase, result: UnitTestResult): void => {
+    private _createRow = (index: number, testCase: TestCase, result: UnitTestResult): void => {
         // console.log(testCase);
         // console.log(result);
+        this.latestResults.push(result);
+        // creating the status(the first) column
         const row = document.createElement('tr');
-        let test1: string = result.success? String(JSON.stringify(result.match) === JSON.stringify(testCase.expect)) : 'error';
-        let test2: string = result.success? JSON.stringify(result.match) : String(result.errorMessage);
-        let test3: string = JSON.stringify(testCase.expect);
-        let test4: string = testCase.notes ? String(testCase.notes) : '--';
-        const rowContent: string = '<td>'+test1+'</td><td>'+test2+'</td><td>'+test3+'</td><td>"'+testCase.input+'"</td><td>'+test4+'</td>';
+        let status: string = result.success? String(JSON.stringify(result.match) === JSON.stringify(testCase.expect)) : 'error';
+        const rowContent: string = '<td>'+status+'</td>';
         row.innerHTML = rowContent;
         this.table.append(row);
         if (!result.success) {
@@ -93,5 +96,50 @@ export class UnitTestTable implements IUnitTestTable {
         } else {
             (row.firstChild as HTMLTableDataCellElement).style.backgroundColor = 'orange';
         }
+        if (this.hintRevealed[index]) {
+            row.innerHTML += this._getRevealedRow(testCase, result);
+        } else {
+            row.appendChild(this._getUnrevealedRow(index));
+        }
+    }
+    
+    // html for a revealed row
+    private _getRevealedRow = (testCase: TestCase, result: UnitTestResult): string => {
+        let actualOutput: string = result.success? JSON.stringify(result.match) : String(result.errorMessage);
+        let expectedOutput: string = JSON.stringify(testCase.expect);
+        let input: string = testCase.input;
+        let notes: string = testCase.notes ? String(testCase.notes) : '--';
+        const rowContent: string = '<td>'+actualOutput+'</td><td>'+expectedOutput+'</td><td>"'+input+'"</td><td>'+notes+'</td>';
+        return rowContent;
+    }
+
+    private _getUnrevealedRow = (index: number): HTMLTableDataCellElement => {
+        const td = document.createElement('td');
+        td.colSpan = 4;
+        const button = document.createElement('button');
+        td.appendChild(button);
+        button.innerText = 'Reveal Test Case ' + index.toString();
+        button.setAttribute('id', index.toString());
+        button.onclick = () => {
+            this._revealRow(index);
+        }
+        return td;
+    }
+
+    // TODO
+    private _revealRow = (index: number): void => {
+        console.log('reveal row');
+        console.log(index);
+        this.hintRevealed[index] = true;
+        const row = this.table.rows[index+1];
+        if (row.lastChild) {
+            row.removeChild(row.lastChild);
+        }
+        row.innerHTML += this._getRevealedRow(this.testCases[index], this.latestResults[index]);
+    }
+
+    public setTestCases = (testCases: Array<TestCase>): void => {
+        this.testCases = testCases;
+        this.hintRevealed = Array(testCases.length).fill(false);
     }
 }
