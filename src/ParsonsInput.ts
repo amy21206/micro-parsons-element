@@ -107,15 +107,19 @@ export class ParsonsInput implements IParsonsInput {
             direction: 'horizontal',
             animation: 150,
             draggable: '.parsons-block',
+            onAdd: () => {
+                this.el.dispatchEvent(new Event('regexChanged'));
+            },
             onEnd: (event: any) => {
                 // TODO: (bug) This is a workaround that only works in the demo.
                 // compare clientY with the position of item.
-                if (event.originalEvent.clientY > 230) {
+                if (event.originalEvent.clientY > 250) {
                     const item = event.item as HTMLElement;
                     if (item.parentNode) {
                         item.parentNode.removeChild(item);
                     }
                 }
+                this.el.dispatchEvent(new Event('regexChanged'));
             },
         });
     }

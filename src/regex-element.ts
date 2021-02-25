@@ -79,7 +79,7 @@ export class RegexElement extends HTMLElement {
         checkbox.setAttribute('type', 'checkbox');
         checkbox.checked = false;
         this.root.appendChild(checkbox);
-        this.root.append('always check on test string input');
+        this.root.append('always check on input');
         this.checkWhileTyping = false;
         checkbox.addEventListener('change', () => {
             this.checkWhileTyping = checkbox.checked;
@@ -104,6 +104,11 @@ export class RegexElement extends HTMLElement {
             // init elements: parsons regex input
             this.regexInput = new ParsonsInput();
             inputDiv.appendChild(this.regexInput.el);
+            this.regexInput.el.addEventListener('regexChanged', () => {
+                if (this.checkWhileTyping) {
+                    this.match();
+                }
+            }, false)
         } else {
             // (this.inputType == 'text')
             const regex_slot = document.createElement('slot');
@@ -114,6 +119,11 @@ export class RegexElement extends HTMLElement {
             this.appendChild(this.regexInput.el);
             this.regexInput.el.slot = 'regex-input';
             (this.regexInput as RegexInput).initQuill();
+            (this.regexInput as RegexInput).quill?.on('text-change', () => {
+                if (this.checkWhileTyping) {
+                    this.match();
+                }
+            })
         }
 
         // init elements: regex options dropdown
