@@ -26,6 +26,7 @@ export class TestStringInput implements ITestStringInput {
     // The input element
     public el: HTMLDivElement;
     public quill: Quill | null;
+    public droppedText: boolean;
 
     constructor() {
         this.el = document.createElement('div');
@@ -33,6 +34,7 @@ export class TestStringInput implements ITestStringInput {
         this.el.classList.add('regex-test-string');
         this.quill = null;
         // console.log(Quill);
+        this.droppedText = false;
     }
     
     public initQuill = (): void => {
@@ -43,6 +45,33 @@ export class TestStringInput implements ITestStringInput {
             },
             placeholder: 'type the test string',
         })
+        this.quill.keyboard.addBinding({
+                key:'C',
+                shortKey: true,
+            },
+            (range, context) => {
+                console.log(range);
+                console.log(context);
+                console.log('ctrl-c');
+                return true;
+            },
+        );
+        this.quill.keyboard.addBinding({
+                key:'V',
+                shortKey: true,
+            },
+            (range, context) => {
+                console.log(range);
+                console.log(context);
+                console.log('ctrl-v');
+                return true;
+            },
+        );
+        this.el.ondrop = (event) => {
+            this.droppedText = true;
+            // console.log('ondrop');
+            // console.log(event);
+        }
     }
 
     public getText = (): string => {

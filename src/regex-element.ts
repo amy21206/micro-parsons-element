@@ -119,7 +119,8 @@ export class RegexElement extends HTMLElement {
             this.appendChild(this.regexInput.el);
             this.regexInput.el.slot = 'regex-input';
             (this.regexInput as RegexInput).initQuill();
-            (this.regexInput as RegexInput).quill?.on('text-change', () => {
+            (this.regexInput as RegexInput).quill?.on('text-change', (delta) => {
+                console.log(delta);
                 if (this.checkWhileTyping) {
                     this.match();
                 }
@@ -156,7 +157,11 @@ export class RegexElement extends HTMLElement {
         this.testStringInput.el.slot = 'test-string-input';
         this.testStringInput.initQuill();
         this.prevText = this.testStringInput.getText();
-        this.testStringInput.quill?.on('text-change', () => {
+        this.testStringInput.quill?.on('text-change', (delta, _, source) => {
+            console.log("dropped: ", this.testStringInput.droppedText);
+            this.testStringInput.droppedText = false;
+            console.log(delta);
+            console.log(source);
             if (this.testStringInput.getText() != this.prevText) {
                 this.prevText = this.testStringInput.getText();
                 // updating test_string in pyodide
@@ -184,6 +189,27 @@ export class RegexElement extends HTMLElement {
         // initialize the color array
         // TODO: (UI) only light colors that do not obfuscates the word
         this.groupColor = new Array<string>();
+
+        // test page visibility
+        if (typeof document.addEventListener === "undefined" || document.hidden === undefined) {
+            console.log("visibility not working");
+        } else {
+            console.log("add visibility change");
+            document.addEventListener("visibilitychange", (event) => {
+                if (document.hidden) {
+                    console.log('hidden');
+                }
+                console.log("visibility change");
+                console.log(event);
+            }, false);
+        }
+        // test window blur & focus
+        window.addEventListener('blur', () => {
+            console.log('window blurred');
+        })
+        window.addEventListener('focus', () => {
+            console.log('window focused');
+        })
     }
 
     set parsonsData(data: Array<string>) {
