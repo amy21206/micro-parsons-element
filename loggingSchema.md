@@ -2,6 +2,9 @@
 
 ## Regex input events
 ### Parsons 
+
+- Parsons input events
+
 ```json
 {
   "student-id": "student-a", // depends on the identification method 
@@ -16,6 +19,21 @@
 }
 ```
 
+- Showing tooltip for a parsons block
+
+```json
+{
+  "student-id": "student-a", // depends on the identification method 
+  "problem-id": "test1",
+  "event-type": "parsons-tooltip",
+  "input-type": "parsons", // the type of input: parsons or free
+  "block": "$", // the block hovered on,
+  "tooltip": "matches the end of a line", // content of the tooltip
+  "timestamp": "yy-MM-dd HH:mm:ss" // local timestamp of client
+}
+```
+
+
 ### Free-write
 
 Uses the [delta object](https://quilljs.com/docs/delta/) in Quill.js to represent changes.
@@ -26,10 +44,25 @@ Uses the [delta object](https://quilljs.com/docs/delta/) in Quill.js to represen
   "problem-id": "test1",
   "event-type": "regex-input",
   "input-type": "free", // the type of input: parsons or free
+  "dropped": false, // if the data was dropped from somewhere instead of typed
   "delta": { // Delta type from Quill.js: describes the change in text
       "ops": [ {retain: 3}, {delete: 1}] // retains the first 3 characters and delete one after. See the link above for details
   },
   "result": "abcd", // the result after input
+  "timestamp": "yy-MM-dd HH:mm:ss" // local timestamp of client
+}
+```
+
+- Captures the keyboard event
+Only captures ctrl-v for now.
+
+```json
+{
+  "student-id": "student-a", // depends on the identification method 
+  "problem-id": "test1",
+  "event-type": "keyboard-regex-input",
+  "input-type": "free", // the type of input: parsons or free
+  "keys": ["ctrl", "v"], // key event captured
   "timestamp": "yy-MM-dd HH:mm:ss" // local timestamp of client
 }
 ```
@@ -45,6 +78,7 @@ Similar to the free write input for regex, uses the delta object(ops) in quill.j
   "problem-id": "test1",
   "event-type": "test-string-input",
   "input-type": "free", // the type of regex input: parsons or free
+  "dropped": false, // if the data was dropped from somewhere instead of typed
   "delta": { // Delta type from Quill.js: describes the change in text
       "ops": [ {retain: 3}, {delete: 1}] // retains the first 3 characters and delete one after. See https://quilljs.com/docs/delta/ for details
   },
@@ -127,3 +161,16 @@ Similar to the free write input for regex, uses the delta object(ops) in quill.j
 }
 ```
 
+## Page focus and visibility
+
+```json
+{
+  "student-id": "student-a", // depends on the identification method 
+  "problem-id": "test1",
+  "event-type": "page-status",
+  "status-type": "focus", // name of status: focus or visibility
+  "input-type": "free", // the type of regex input: parsons or free
+  "result": true, // indicate the status after the event
+  "timestamp": "yy-MM-dd HH:mm:ss" // local timestamp of client
+}
+```
