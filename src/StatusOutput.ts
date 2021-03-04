@@ -1,12 +1,15 @@
 export class StatusOutput implements IStatusOutput {
     // The input element
-    public el: HTMLTextAreaElement;
+    public el: HTMLDivElement;
+    public text: HTMLTextAreaElement;
     constructor() {
-        this.el = document.createElement('textarea');
-        this.el.id = 'status-output'
-        this.el.classList.add('regex-textbox')
-        this.el.setAttribute("rows", "10");
+        this.el = document.createElement('div');
+        this.text = document.createElement('textarea');
+        this.el.appendChild(this.text);
+        this.text.id = 'status-output';
+        this.el.classList.add('regex-textbox');
+        this.text.setAttribute("rows", "10");
 
-        this.el.value = 'initializing...\n';
+        this.text.value = 'initializing...\n';
     }
 }

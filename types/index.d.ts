@@ -8,7 +8,7 @@ interface ITestStringInput {
 }
 
 interface IStatusOutput {
-	el: HTMLTextAreaElement;
+	el: HTMLDivElement;
 }
 
 interface ITestButton {

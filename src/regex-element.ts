@@ -62,31 +62,35 @@ export class RegexElement extends HTMLElement {
         this.addStyle();
 
         // init element: button for unittest
-        const unitTestButton = document.createElement('button');
-        unitTestButton.innerText = 'RUN UNIT TEST';
-        this.root.appendChild(unitTestButton);
-        unitTestButton.onclick = () => this.unitTestTable.check(this.regexInput.getText());
+        // const unitTestButton = document.createElement('button');
+        // unitTestButton.innerText = 'Run Unit Test';
+        // this.root.appendChild(unitTestButton);
+        // unitTestButton.onclick = () => this.unitTestTable.check(this.regexInput.getText());
 
         // init elements: button for match
-        this.root.appendChild(document.createElement('br'));
+        // TODO: disabled the button for study 0 and 1.
+        // this.root.appendChild(document.createElement('br'));
         this.testButton = new TestButton();
-        this.root.appendChild(this.testButton.el);
-        this.testButton.el.onclick = this.match;
+        // this.root.appendChild(this.testButton.el);
+        // this.testButton.el.onclick = this.match;
 
         // init elements: checkbox
         // TODO[feature]: replace this with an option module 
-        const checkbox = document.createElement('input');
-        checkbox.setAttribute('type', 'checkbox');
-        checkbox.checked = false;
-        this.root.appendChild(checkbox);
-        this.root.append('always check on input');
-        this.checkWhileTyping = false;
-        checkbox.addEventListener('change', () => {
-            this.checkWhileTyping = checkbox.checked;
-            if (this.checkWhileTyping) {
-                this.match();
-            }
-        })
+        // const checkbox = document.createElement('input');
+        // checkbox.setAttribute('type', 'checkbox');
+        // checkbox.checked = false;
+        // this.root.appendChild(checkbox);
+        // this.root.append('always check on input');
+        // this.checkWhileTyping = false;
+        // checkbox.addEventListener('change', () => {
+        //     this.checkWhileTyping = checkbox.checked;
+        //     if (this.checkWhileTyping) {
+        //         this.match();
+        //     }
+        // })
+
+        // TODO: make this an option; for now always enabled the 'always check' for study 0 and 1.
+        this.checkWhileTyping = true;
 
 
         // init regex input based on the input type
@@ -106,6 +110,7 @@ export class RegexElement extends HTMLElement {
             inputDiv.appendChild(this.regexInput.el);
             this.regexInput.el.addEventListener('regexChanged', () => {
                 if (this.checkWhileTyping) {
+                    this.unitTestTable.check(this.regexInput.getText());
                     this.match();
                 }
             }, false)
@@ -122,6 +127,7 @@ export class RegexElement extends HTMLElement {
             (this.regexInput as RegexInput).quill?.on('text-change', (delta) => {
                 console.log(delta);
                 if (this.checkWhileTyping) {
+                    this.unitTestTable.check(this.regexInput.getText());
                     this.match();
                 }
             })
@@ -129,7 +135,7 @@ export class RegexElement extends HTMLElement {
 
         // init elements: regex options dropdown
         this.regexOptions = new RegexOptions();
-        inputDiv.appendChild(this.regexOptions.el);
+        // inputDiv.appendChild(this.regexOptions.el);
 
         // init elements: test string input
         // TODO: (bug) stylesheet isn't working with shadowroot
@@ -141,10 +147,13 @@ export class RegexElement extends HTMLElement {
         const testStringDiv = document.createElement('div');
         this.root.append(testStringDiv);
         testStringDiv.classList.add('regex-test-string-div');
-        testStringDiv.append('TEST STRING:Feel free to experiment with your own test cases. Click "reset" to reset this area to initial state.');
+        testStringDiv.append('TEST STRING:');
+        testStringDiv.appendChild(document.createElement('br'));
+        testStringDiv.append('Feel free to experiment with your own test cases. Click "Reset" to reset this area to initial state.');
         const resetTestStringButton = document.createElement('button');
+        testStringDiv.appendChild(document.createElement('br'));
         testStringDiv.appendChild(resetTestStringButton);
-        resetTestStringButton.innerText = 'reset'
+        resetTestStringButton.innerText = 'Reset'
         resetTestStringButton.onclick = this.resetTestString;
 
         this.initialTestString = '';
@@ -174,14 +183,14 @@ export class RegexElement extends HTMLElement {
             }
         })
 
+        // init element: unit test table
+        this.unitTestTable = new UnitTestTable();
+        this.root.appendChild(this.unitTestTable.el);
+
         // init element: python output
         this.statusOutput = new StatusOutput();
         this.root.appendChild(this.statusOutput.el);
         this.initPyodide();
-
-        // init element: unit test table
-        this.unitTestTable = new UnitTestTable();
-        this.root.appendChild(this.unitTestTable.el);
 
         // initialize the match result array
         this.matchResult = new Array<Array<MatchGroup>>();
@@ -228,7 +237,7 @@ export class RegexElement extends HTMLElement {
     // ref: https://pyodide.readthedocs.io/en/latest/usage/quickstart.html
     private initPyodide = (): void => {
         languagePluginLoader.then(() => {
-            this.statusOutput.el.value += "Init finished.\n";
+            this.statusOutput.text.value += "Init finished.\n";
             window.pyodide.globals.test_string = this.prevText;
         });
     }
@@ -236,7 +245,7 @@ export class RegexElement extends HTMLElement {
     // TODO[refactor]: put stylesheet in a separate css/scss file
     private addStyle = (): void => {
         const sheet = document.createElement('style');
-        sheet.innerHTML += '.regex-textbox {width: 100%;}\n';
+        sheet.innerHTML += '.regex-textbox {width: 100%; visibility: collapse;}\n';
         sheet.innerHTML += '.parsons-selected {background-color: red;}\n';
         // parsons block
         sheet.innerHTML += '.parsons-block {display: inline-block; font-family: monospace; font-size: large; background-color: white; padding: 1px 2px; border: 1px solid; border-color:gray; margin: 0 1px; border-radius: 2px;}\n';
@@ -272,7 +281,7 @@ export class RegexElement extends HTMLElement {
      * Prints python output.
     */
     public match = (): void => {
-        this.statusOutput.el.value = ''
+        this.statusOutput.text.value = ''
         let pydata = 'import re\n';
         window.pyodide.globals.test_string = this.prevText;
         window.pyodide.globals.regex_input = this.regexInput.getText();
@@ -314,11 +323,11 @@ export class RegexElement extends HTMLElement {
         originalOutput.forEach(element => {
             output += '(' + element.toString() + '),';
         });
-        this.statusOutput.el.value += '>>>' + this.regexInput.getText() + '\n' + output + '\n';
+        this.statusOutput.text.value += '>>>' + this.regexInput.getText() + '\n' + output + '\n';
     }
     
     private addTextToOutput = (output: string): void => {
-        this.statusOutput.el.value += '>>>' + this.regexInput.getText() + '\n' + output + '\n';
+        this.statusOutput.text.value += '>>>' + this.regexInput.getText() + '\n' + output + '\n';
     }
 
     private addMatchResultToOutput = (): void => {
@@ -335,7 +344,7 @@ export class RegexElement extends HTMLElement {
             }
             output += '\n';
         }
-        this.statusOutput.el.value += '>>>\n' + output;
+        this.statusOutput.text.value += '>>>\n' + output;
     }
 
     public setInitialTestString(text: string) {

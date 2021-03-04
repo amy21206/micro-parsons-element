@@ -8,6 +8,8 @@ export class UnitTestTable implements IUnitTestTable {
     public strictGroup: boolean;
     public hintRevealed: Array<boolean>;
     private latestResults: Array<UnitTestResult>;
+
+    private columnsEnabled: Array<string>;
     constructor() {
         // init the element in HTML 
         this.el = document.createElement('div');
@@ -16,10 +18,14 @@ export class UnitTestTable implements IUnitTestTable {
         // the element is hidden initially.
         this.el.classList.add('collapse');
 
+        // columns enabled besides the status column
+        // TODO: only enabled notes for study 0 and 1
+        this.columnsEnabled = ['notes'];
+
         this.table = document.createElement('table');
         this.el.appendChild(this.table);
         const tableHead = document.createElement('tr');
-        tableHead.innerHTML = '<td>Result</td><td>Actual Value</td><td>Expected Value</td><td>Test Case</td><td>Notes</td>'
+        tableHead.innerHTML = this._getTableHead();
         this.table.appendChild(tableHead);
 
         // no flags specified by default
@@ -105,12 +111,11 @@ export class UnitTestTable implements IUnitTestTable {
     
     // html for a revealed row
     private _getRevealedRow = (testCase: TestCase, result: UnitTestResult): string => {
-        let actualOutput: string = result.success? JSON.stringify(result.match) : String(result.errorMessage);
-        let expectedOutput: string = JSON.stringify(testCase.expect);
-        let input: string = testCase.input;
-        let notes: string = testCase.notes ? String(testCase.notes) : '--';
-        const rowContent: string = '<td>'+actualOutput+'</td><td>'+expectedOutput+'</td><td>"'+input+'"</td><td>'+notes+'</td>';
-        return rowContent;
+        let actualOutput: string = this.columnsEnabled.indexOf('actualOutput') == -1 ? '' : '<td>' + ( result.success? JSON.stringify(result.match) : String(result.errorMessage)) + '</td>';
+        let expectedOutput: string = this.columnsEnabled.indexOf('expectedOutput') == -1 ? '' : '<td>' + JSON.stringify(testCase.expect) + '</td>';
+        let input: string = this.columnsEnabled.indexOf('input') == -1 ? '' : '<td>' + testCase.input + '</td>';
+        let notes: string = this.columnsEnabled.indexOf('notes') == -1 ? '' : '<td>' + (testCase.notes ? String(testCase.notes) : '--') + '</td>';
+        return actualOutput + expectedOutput + input + notes;
     }
 
     private _getUnrevealedRow = (index: number): HTMLTableDataCellElement => {
@@ -140,6 +145,15 @@ export class UnitTestTable implements IUnitTestTable {
 
     public setTestCases = (testCases: Array<TestCase>): void => {
         this.testCases = testCases;
-        this.hintRevealed = Array(testCases.length).fill(false);
+        // TODO: make this an option. Set all revealed for study 0 and 1.
+        this.hintRevealed = Array(testCases.length).fill(true);
+    }
+
+    private _getTableHead = (): string => {
+        let actualOutput: string = this.columnsEnabled.indexOf('actualOutput') == -1 ? '' : '<td>Actual Value</td>';
+        let expectedOutput: string = this.columnsEnabled.indexOf('expectedOutput') == -1 ? '' : '<td>Expected Value</td>';
+        let input: string = this.columnsEnabled.indexOf('input') == -1 ? '' : '<td>Test Case</td>';
+        let notes: string = this.columnsEnabled.indexOf('notes') == -1 ? '' : '<td>Notes</td>';
+        return '<td>Result</td>' + actualOutput + expectedOutput + input + notes;
     }
 }
