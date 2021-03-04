@@ -6,6 +6,8 @@ import { StatusOutput } from './StatusOutput';
 import { TestButton } from './TestButton';
 import { RegexOptions } from './RegexOptions';
 import { UnitTestTable } from './UnitTestTable';
+import {ConsoleLogger} from './ConsoleLogger';
+import {Logger} from 'schema_logger';
 
 declare global {
     interface Window {
@@ -49,8 +51,12 @@ export class RegexElement extends HTMLElement {
     // unit tests
     private unitTestTable: UnitTestTable;
 
+    private logger: Logger;
+
     constructor() {
         super();
+
+        this.logger = new ConsoleLogger();
 
         this.root = this.attachShadow({mode: 'open'});
 
@@ -215,10 +221,12 @@ export class RegexElement extends HTMLElement {
         // test window blur & focus
         window.addEventListener('blur', () => {
             console.log('window blurred');
+            this.logger.log({test: 'a'});
         })
         window.addEventListener('focus', () => {
             console.log('window focused');
         })
+
     }
 
     set parsonsData(data: Array<string>) {

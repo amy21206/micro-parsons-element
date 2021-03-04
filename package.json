@@ -13,10 +13,12 @@
     "parchment": "^2.0.0-dev.2",
     "quill": "^1.3.7",
     "randomcolor": "^0.6.2",
+    "schema_logger": "git+https://github.com/educational-technology-collective/schema-logger.git",
     "sortablejs": "^1.13.0"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^17.0.0",
+    "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^11.1.0",
     "@rollup/plugin-typescript": "^8.1.0",
     "@types/quill": "^2.0.4",
