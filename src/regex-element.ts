@@ -8,6 +8,7 @@ import { RegexOptions } from './RegexOptions';
 import { UnitTestTable } from './UnitTestTable';
 import {ConsoleLogger} from './ConsoleLogger';
 import {Logger} from 'schema_logger';
+import { RegexStatusTag } from './RegexStatusTag';
 
 declare global {
     interface Window {
@@ -24,6 +25,8 @@ export class RegexElement extends HTMLElement {
     public parsonsExplanation: Array<string>|null;
     private regexInput: IRegexInput;
     private inputType: string;
+
+    private regexStatus: RegexStatusTag;
 
     // The input box for test string (with highlight)
     public testStringInput: TestStringInput;
@@ -109,6 +112,8 @@ export class RegexElement extends HTMLElement {
         this.root.append(inputDiv);
         inputDiv.classList.add('regex-input-div');
         inputDiv.append('REGULAR EXPRESSION:');
+        this.regexStatus = new RegexStatusTag();
+        inputDiv.appendChild(this.regexStatus.el);
         // todo:(UI) fix the css for the input
         if (this.inputType == 'parsons') {
             // init elements: parsons regex input
@@ -116,6 +121,11 @@ export class RegexElement extends HTMLElement {
             inputDiv.appendChild(this.regexInput.el);
             this.regexInput.el.addEventListener('regexChanged', () => {
                 if (this.checkWhileTyping) {
+                    if (this.pyodide_compilePattern()) {
+                        this.regexStatus.updateStatus('valid');
+                    } else {
+                        this.regexStatus.updateStatus('error');
+                    }
                     // check and update the background color of the parsons input based on the unit test results
                     this.regexInput.updateTestStatus(this.unitTestTable.check(this.regexInput.getText()));
                     this.match();
@@ -134,6 +144,11 @@ export class RegexElement extends HTMLElement {
             (this.regexInput as RegexInput).quill?.on('text-change', (delta) => {
                 console.log(delta);
                 if (this.checkWhileTyping) {
+                    if (this.pyodide_compilePattern()) {
+                        this.regexStatus.updateStatus('valid');
+                    } else {
+                        this.regexStatus.updateStatus('error');
+                    }
                     // check and update the background color of the parsons input based on the unit test results
                     this.regexInput.updateTestStatus(this.unitTestTable.check(this.regexInput.getText()));
                     this.match();
@@ -256,6 +271,10 @@ export class RegexElement extends HTMLElement {
     private addStyle = (): void => {
         const sheet = document.createElement('style');
         sheet.innerHTML += '.regex-textbox {width: 100%; visibility: collapse;}\n';
+        // regex status tag
+        sheet.innerHTML += '.regex-status { border-radius: 4px; visibility: collapse; font-family: monospace; padding: 3px 6px; margin: 2px 10px; color: #fff; }\n';
+        sheet.innerHTML += '.regex-status.error { visibility: visible; background-color: red; }\n';
+        sheet.innerHTML += '.regex-status.valid { visibility: visible; background-color: green; }\n';
         sheet.innerHTML += '.parsons-selected {background-color: red;}\n';
         // parsons block
         sheet.innerHTML += '.parsons-block {display: inline-block; font-family: monospace; font-size: large; background-color: white; padding: 1px 2px; border: 1px solid; border-color:gray; margin: 0 1px; border-radius: 2px;}\n';
@@ -334,6 +353,24 @@ export class RegexElement extends HTMLElement {
                 // this.testStringInput.updateGroupedMatchResult_exp(this.matchResult);
             })
             .catch((err) => { this.addTextToOutput(err) });
+    }
+
+    /**
+     * Runs re.compile() without flags
+    */
+    public pyodide_compilePattern = (): boolean => {
+        this.statusOutput.text.value = ''
+        let pydata = 'import re\n';
+        window.pyodide.globals.regex_input = this.regexInput.getText();
+        pydata += 'compiled_pattern = re.compile(regex_input)\n';
+        let successFlag = false;
+        try {
+            window.pyodide.runPython(pydata);
+            successFlag = true;
+        } catch(err) {
+            successFlag = false;
+        }
+        return successFlag;
     }
 
     private addToOutput = (originalOutput: Array<string | Array<string>>): void => {

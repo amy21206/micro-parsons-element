@@ -4,6 +4,11 @@ interface IRegexInput {
 	updateTestStatus(string): void;
 }
 
+interface IRegexStatusTag {
+	el: HTMLSpanElement;
+	updateStatus(string): void;
+}
+
 interface ITestStringInput {
 	el: HTMLDivElement;
 }
