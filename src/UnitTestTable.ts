@@ -162,4 +162,16 @@ export class UnitTestTable implements IUnitTestTable {
         let notes: string = this.columnsEnabled.indexOf('notes') == -1 ? '' : '<td>Notes</td>';
         return '<td>Result</td>' + actualOutput + expectedOutput + input + notes;
     }
+
+    public setError = (): void => {
+        if (this.el.classList.contains('collapse')) {
+            this.el.classList.remove('collapse');
+        }
+        // clean up previous unit test result 
+        this.table.innerHTML = this.table.rows[0].innerHTML;
+        this.latestResults = [];
+        for (let index = 0; index < this.testCases.length; ++ index) {
+            this._createRow(index, this.testCases[index], {success: false, match: [], errorMessage: 'Pattern Error'});
+        }
+    }
 }

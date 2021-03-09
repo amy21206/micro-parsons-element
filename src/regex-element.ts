@@ -56,6 +56,8 @@ export class RegexElement extends HTMLElement {
 
     private logger: Logger;
 
+    private patternValidFlag: boolean;
+
     constructor() {
         super();
 
@@ -104,6 +106,7 @@ export class RegexElement extends HTMLElement {
 
         // init regex input based on the input type
         // TODO: (bug) fix always check for parsons
+        this.patternValidFlag = true;
         let inputType = this.getAttribute('input-type');
         this.inputType = inputType == 'parsons' ? 'parsons' : 'text';
         this._parsonsData = new Array<string>();
@@ -121,14 +124,18 @@ export class RegexElement extends HTMLElement {
             inputDiv.appendChild(this.regexInput.el);
             this.regexInput.el.addEventListener('regexChanged', () => {
                 if (this.checkWhileTyping) {
-                    if (this.pyodide_compilePattern()) {
+                    this.patternValidFlag = this.pyodide_compilePattern();
+                    if (this.patternValidFlag) {
                         this.regexStatus.updateStatus('valid');
+                        // check and update the background color of the parsons input based on the unit test results
+                        this.regexInput.updateTestStatus(this.unitTestTable.check(this.regexInput.getText()));
+                        this.match();
                     } else {
                         this.regexStatus.updateStatus('error');
+                        this.regexInput.updateTestStatus('Error');
+                        this.testStringInput.quill?.removeFormat(0, this.testStringInput.quill.getLength() - 1, 'silent');
+                        this.unitTestTable.setError();
                     }
-                    // check and update the background color of the parsons input based on the unit test results
-                    this.regexInput.updateTestStatus(this.unitTestTable.check(this.regexInput.getText()));
-                    this.match();
                 }
             }, false)
         } else {
@@ -145,13 +152,17 @@ export class RegexElement extends HTMLElement {
                 console.log(delta);
                 if (this.checkWhileTyping) {
                     if (this.pyodide_compilePattern()) {
+                        // only match when the pattern is valid
                         this.regexStatus.updateStatus('valid');
+                        this.regexInput.updateTestStatus(this.unitTestTable.check(this.regexInput.getText()));
+                        this.match();
                     } else {
                         this.regexStatus.updateStatus('error');
+                        this.regexInput.updateTestStatus('Error');
+                        this.testStringInput.quill?.removeFormat(0, this.testStringInput.quill.getLength() - 1, 'silent');
+                        this.unitTestTable.setError();
                     }
                     // check and update the background color of the parsons input based on the unit test results
-                    this.regexInput.updateTestStatus(this.unitTestTable.check(this.regexInput.getText()));
-                    this.match();
                 }
             })
         }
@@ -198,7 +209,7 @@ export class RegexElement extends HTMLElement {
                 this.prevText = this.testStringInput.getText();
                 // updating test_string in pyodide
                 // window.pyodide.globals.test_string = this.testStringInput.getText().slice(0, -1);
-                if (this.checkWhileTyping) {
+                if (this.checkWhileTyping && this.patternValidFlag) {
                     this.match();
                 } else {
                     this.testStringInput.quill?.removeFormat(0, this.testStringInput.quill.getLength() - 1, 'silent');
