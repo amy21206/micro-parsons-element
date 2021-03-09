@@ -27,6 +27,7 @@ export class RegexElement extends HTMLElement {
     private inputType: string;
 
     private regexStatus: RegexStatusTag;
+    private regexErrorMessage: HTMLDivElement;
 
     // The input box for test string (with highlight)
     public testStringInput: TestStringInput;
@@ -166,6 +167,9 @@ export class RegexElement extends HTMLElement {
                 }
             })
         }
+        this.regexErrorMessage = document.createElement('div');
+        this.regexErrorMessage.classList.add('regex-error-message');
+        inputDiv.appendChild(this.regexErrorMessage);
 
         // init elements: regex options dropdown
         this.regexOptions = new RegexOptions();
@@ -287,6 +291,9 @@ export class RegexElement extends HTMLElement {
         sheet.innerHTML += '.regex-status.error { visibility: visible; background-color: red; }\n';
         sheet.innerHTML += '.regex-status.valid { visibility: visible; background-color: green; }\n';
         sheet.innerHTML += '.parsons-selected {background-color: red;}\n';
+        // regex error message
+        sheet.innerHTML += '.regex-error-message {color: red; font-family: monospace; font-size: 15px;}\n';
+        sheet.innerHTML += '.regex-error-message.hidden {visibility: collapse;}\n';
         // parsons block
         sheet.innerHTML += '.parsons-block {display: inline-block; font-family: monospace; font-size: large; background-color: white; padding: 1px 2px; border: 1px solid; border-color:gray; margin: 0 1px; border-radius: 2px;}\n';
         sheet.innerHTML += '.parsons-block:hover, .parsons-block:focus { border-color: black; padding: 0 6px; border: 2px solid;}\n';
@@ -378,8 +385,18 @@ export class RegexElement extends HTMLElement {
         try {
             window.pyodide.runPython(pydata);
             successFlag = true;
+            this.regexErrorMessage.classList.add('hidden');
+            this.regexErrorMessage.innerText = 'No Error';
         } catch(err) {
             successFlag = false;
+            // updates error message
+            const regexError = String(err).split('\n');
+            const errorMessage = regexError[regexError.length - 2];
+            console.log(errorMessage);
+            this.regexErrorMessage.innerText = errorMessage;
+            if (this.regexErrorMessage.classList.contains('hidden')) {
+                this.regexErrorMessage.classList.remove('hidden');
+            }
         }
         return successFlag;
     }
