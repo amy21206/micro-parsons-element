@@ -40,9 +40,11 @@ export class UnitTestTable implements IUnitTestTable {
         this.strictGroup = false;
     }
 
-	public check = (regex: string) : void => {
+    // Return value: 'Pass' if all pass, 'Error' if one error, 'Fail' if no error but at least one fail
+	public check = (regex: string) : string => {
         // assume pyodide is initiallized.
         // TODO: (robustness) test if pyodide is initialized
+        let status: string = 'Pass';
         if (this.el.classList.contains('collapse')) {
             this.el.classList.remove('collapse');
         }
@@ -50,15 +52,17 @@ export class UnitTestTable implements IUnitTestTable {
         this.table.innerHTML = this.table.rows[0].innerHTML;
         this.latestResults = [];
         for (let index = 0; index < this.testCases.length; ++ index) {
-            this.match(index, regex, this.testCases[index]);
+            const caseStatus = this.match(index, regex, this.testCases[index]);
+            status = caseStatus == 'Error' ? 'Error' : (caseStatus == 'Fail' ? 'Fail' : status);
         }
+        return status;
     }
     /**
      * Runs re.findall() with data from regex and test string input;
      * Highlights the result in the test string input;
      * Prints python output.
     */
-    private match = (index: number, regex: string, testCase: TestCase): void => {
+    private match = (index: number, regex: string, testCase: TestCase): string => {
         const result: UnitTestResult = {success: false, match: null, errorMessage: null}; 
         let pydata = 'import re\n';
         window.pyodide.globals.running = true;
@@ -76,16 +80,17 @@ export class UnitTestTable implements IUnitTestTable {
             window.pyodide.runPython(pydata);
             result.success = true;
             result.match = window.pyodide.globals.unit_match_result as Array<string>;
-            this._createRow(index, testCase, result);
+            return this._createRow(index, testCase, result);
         } catch(err) {
             result.success = false;
             result.errorMessage = String(err).replaceAll('<', '&lt;').replaceAll('>','&gt;').replaceAll('\n','<br/>').replaceAll(' ', '&nbsp;');
             // console.log(err);
-            this._createRow(index, testCase, result);
+            return this._createRow(index, testCase, result);
         }
     }
 
-    private _createRow = (index: number, testCase: TestCase, result: UnitTestResult): void => {
+    // returns: 'Pass' if pass, 'Fail' if fail, 'Error' if error
+    private _createRow = (index: number, testCase: TestCase, result: UnitTestResult): string => {
         // console.log(testCase);
         // console.log(result);
         this.latestResults.push(result);
@@ -107,6 +112,7 @@ export class UnitTestTable implements IUnitTestTable {
         } else {
             row.appendChild(this._getUnrevealedRow(index));
         }
+        return status;
     }
     
     // html for a revealed row

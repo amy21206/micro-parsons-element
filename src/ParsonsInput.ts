@@ -1,6 +1,6 @@
 import Sortable, { MoveEvent } from 'sortablejs';
 
-export class ParsonsInput implements IParsonsInput {
+export class ParsonsInput implements IRegexInput {
     // The input element
     public el: HTMLDivElement;
     private _dropArea: HTMLDivElement;
@@ -23,8 +23,9 @@ export class ParsonsInput implements IParsonsInput {
 
         this._dropArea = document.createElement('div');
         this.el.appendChild(this._dropArea);
+        this._dropArea.classList.add('drop-area');
         this._dropArea.style.height = '20px';
-        this._dropArea.style.backgroundColor = '#bcebd7';
+        // this._dropArea.style.backgroundColor = '#bcebd7';
 
         this._dragSortable = new Sortable(this._dragArea, {
             group: {
@@ -122,5 +123,21 @@ export class ParsonsInput implements IParsonsInput {
                 this.el.dispatchEvent(new Event('regexChanged'));
             },
         });
+    }
+
+    public updateTestStatus = (result: string): void => {
+        if (this._dropArea.classList.contains(result)) {
+            return;
+        }
+        if (this._dropArea.classList.contains('Pass')) {
+            this._dropArea.classList.remove('Pass');
+        }
+        else if (this._dropArea.classList.contains('Fail')) {
+            this._dropArea.classList.remove('Fail');
+        }
+        else if (this._dropArea.classList.contains('Error')) {
+            this._dropArea.classList.remove('Error');
+        }
+        this._dropArea.classList.add(result);
     }
 }

@@ -116,7 +116,8 @@ export class RegexElement extends HTMLElement {
             inputDiv.appendChild(this.regexInput.el);
             this.regexInput.el.addEventListener('regexChanged', () => {
                 if (this.checkWhileTyping) {
-                    this.unitTestTable.check(this.regexInput.getText());
+                    // check and update the background color of the parsons input based on the unit test results
+                    this.regexInput.updateTestStatus(this.unitTestTable.check(this.regexInput.getText()));
                     this.match();
                 }
             }, false)
@@ -133,7 +134,8 @@ export class RegexElement extends HTMLElement {
             (this.regexInput as RegexInput).quill?.on('text-change', (delta) => {
                 console.log(delta);
                 if (this.checkWhileTyping) {
-                    this.unitTestTable.check(this.regexInput.getText());
+                    // check and update the background color of the parsons input based on the unit test results
+                    this.regexInput.updateTestStatus(this.unitTestTable.check(this.regexInput.getText()));
                     this.match();
                 }
             })
@@ -258,6 +260,10 @@ export class RegexElement extends HTMLElement {
         // parsons block
         sheet.innerHTML += '.parsons-block {display: inline-block; font-family: monospace; font-size: large; background-color: white; padding: 1px 2px; border: 1px solid; border-color:gray; margin: 0 1px; border-radius: 2px;}\n';
         sheet.innerHTML += '.parsons-block:hover, .parsons-block:focus { border-color: black; padding: 0 6px; border: 2px solid;}\n';
+        sheet.innerHTML += '.drop-area { background-color: #b1dafa; }\n';
+        sheet.innerHTML += '.drop-area.Pass { background-color: #bcebd7; }\n';
+        sheet.innerHTML += '.drop-area.Fail { background-color: #ebd071; }\n';
+        sheet.innerHTML += '.drop-area.Error { background-color: #ff99b3; }\n';
         // TODO:(UI) move the tooltip to the top of the line
         sheet.innerHTML += '.parsons-block .tooltip { visibility: hidden; width: 120px;  background-color: black; color: #fff; text-align: center; padding: 5px 0; border-radius: 6px;  position: absolute; z-index: 1; margin: 0 10px; }\n';
         sheet.innerHTML += '.drag-area .parsons-block:hover .tooltip { visibility: visible;}\n';
@@ -280,6 +286,10 @@ export class RegexElement extends HTMLElement {
 
         const global_sheet = document.createElement('style');
         global_sheet.innerHTML += '.regex-test-string .ql-editor, .regex-input .ql-editor { padding: 5px; border: 1px solid; border-radius: 3px; font-family: monospace; font-size: 14px; box-shadow: inset 0 1px 2px rgb(0 0 0 / 10%); line-height: 18px; letter-spacing: 0.5px;}\n';
+        global_sheet.innerHTML += '.ql-editor { box-shadow: 0 0 2px 5px #b1dafa; margin: 5px; }\n';
+        global_sheet.innerHTML += '.Pass .ql-editor { box-shadow: 0 0 2px 5px #bcebd7; margin: 5px; }\n';
+        global_sheet.innerHTML += '.Fail .ql-editor { box-shadow: 0 0 2px 5px #ebd071; margin: 5px; }\n';
+        global_sheet.innerHTML += '.Error .ql-editor { box-shadow: 0 0 2px 5px #ff99b3; margin: 5px; }\n';
         this.appendChild(global_sheet);
     }
 
@@ -361,6 +371,7 @@ export class RegexElement extends HTMLElement {
     }
 
     public setTestCases(testCases: Array<TestCase>) {
+        console.log('set test cases');
         this.unitTestTable.setTestCases(testCases);
     }
 

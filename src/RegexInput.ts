@@ -78,4 +78,20 @@ export class RegexInput implements IRegexInput {
             colors.push(randomColor());
         }
     }
+
+    public updateTestStatus = (result: string): void => {
+        if (this.el.classList.contains(result)) {
+            return;
+        }
+        if (this.el.classList.contains('Pass')) {
+            this.el.classList.remove('Pass');
+        }
+        else if (this.el.classList.contains('Fail')) {
+            this.el.classList.remove('Fail');
+        }
+        else if (this.el.classList.contains('Error')) {
+            this.el.classList.remove('Error');
+        }
+        this.el.classList.add(result);
+    }
 }
