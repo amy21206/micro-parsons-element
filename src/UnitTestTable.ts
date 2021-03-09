@@ -91,7 +91,7 @@ export class UnitTestTable implements IUnitTestTable {
         this.latestResults.push(result);
         // creating the status(the first) column
         const row = document.createElement('tr');
-        let status: string = result.success? String(JSON.stringify(result.match) === JSON.stringify(testCase.expect)) : 'error';
+        let status: string = result.success? (JSON.stringify(result.match) === JSON.stringify(testCase.expect) ? 'Pass' : 'Fail') : 'Error';
         const rowContent: string = '<td>'+status+'</td>';
         row.innerHTML = rowContent;
         this.table.append(row);
