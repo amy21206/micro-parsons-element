@@ -1,4 +1,9 @@
 import Sortable, { MoveEvent } from 'sortablejs';
+import { RegexEvent } from './LoggingEvents';
+
+declare class RegexElement{
+    logEvent(event: any): void;
+}
 
 export class ParsonsInput implements IRegexInput {
     // The input element
@@ -7,6 +12,7 @@ export class ParsonsInput implements IRegexInput {
     private _dragArea: HTMLDivElement;
     private _dropSortable: Sortable;
     private _dragSortable: Sortable;
+    public parentElement: RegexElement | null;
     constructor() {
         this.el = document.createElement('div');
         this.el.id = 'parsons-input'
@@ -45,6 +51,7 @@ export class ParsonsInput implements IRegexInput {
         });
         this._initSortable();
 
+        this.parentElement = null;
     }
 
     public getText = (): string => {
@@ -121,6 +128,15 @@ export class ParsonsInput implements IRegexInput {
                     }
                 }
                 this.el.dispatchEvent(new Event('regexChanged'));
+                const parsonsEvent: RegexEvent.ParsonsInputEvent = {
+                    eventType: 'parsons',
+                    action: RegexEvent.ParsonsInputAction.MOVE,
+                    position: [1, 2],
+                    answer: ['abcde']
+                };
+                if (this.parentElement) {
+                    this.parentElement.logEvent(parsonsEvent);
+                }
             },
         });
     }

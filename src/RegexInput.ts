@@ -1,11 +1,16 @@
 import Quill from 'quill';
 import {randomColor} from 'randomcolor';
 
+declare class RegexElement{
+    logEvent(event: any): void;
+}
+
 export class RegexInput implements IRegexInput {
     // The input element
     public el: HTMLDivElement;
     public quill: Quill | null;
     private groups: Array<PatternGroup>;
+    public parentElement: RegexElement | null;
     constructor() {
         this.el = document.createElement('div');
         this.el.id = 'regex-input'
@@ -17,6 +22,7 @@ export class RegexInput implements IRegexInput {
 
         // this.el.classList.add('regex-textbox')
         // this.el.setAttribute("rows", "1");
+        this.parentElement = null;
     }
     
     public initQuill = (): void => {

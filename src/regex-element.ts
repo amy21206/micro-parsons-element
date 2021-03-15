@@ -9,6 +9,7 @@ import { UnitTestTable } from './UnitTestTable';
 import {ConsoleLogger} from './ConsoleLogger';
 import {Logger} from 'schema_logger';
 import { RegexStatusTag } from './RegexStatusTag';
+import { RegexEvent } from './LoggingEvents';
 
 declare global {
     interface Window {
@@ -58,6 +59,10 @@ export class RegexElement extends HTMLElement {
     private logger: Logger;
 
     private patternValidFlag: boolean;
+
+    // data for logging
+    public studentId: string;
+    public problemId: string;
 
     constructor() {
         super();
@@ -167,6 +172,7 @@ export class RegexElement extends HTMLElement {
                 }
             })
         }
+        this.regexInput.parentElement = this;
         this.regexErrorMessage = document.createElement('div');
         this.regexErrorMessage.classList.add('regex-error-message');
         inputDiv.appendChild(this.regexErrorMessage);
@@ -259,6 +265,10 @@ export class RegexElement extends HTMLElement {
             console.log('window focused');
         })
 
+
+        // stub for student and problem id
+        this.studentId = 'student-id';
+        this.problemId = 'problem-id';
     }
 
     set parsonsData(data: Array<string>) {
@@ -442,6 +452,24 @@ export class RegexElement extends HTMLElement {
 
     private resetTestString = () : void => {
         this.testStringInput.setText(this.initialTestString);
+    }
+
+    public logEvent = (eventContent: any): void => {
+        const basicEvent: RegexEvent.BasicEvent = {
+            studentId: this.studentId,
+            problemId: this.problemId,
+            clientTimestamp: this._getTimestamp()
+        };
+        console.log('log event');
+        this.logger.log({
+            ...basicEvent,
+            ...eventContent
+        });
+    }
+
+    private _getTimestamp = (): string => {
+        const timestamp = new Date();
+        return timestamp.getFullYear() + '/' + (timestamp.getMonth() + 1) + '/' + timestamp.getDate() + '/' + timestamp.getHours() + '/' + timestamp.getMinutes() + '/' + timestamp.getSeconds() + '/' + timestamp.getMilliseconds();
     }
 
 }
