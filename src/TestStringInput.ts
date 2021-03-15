@@ -1,5 +1,6 @@
 import Quill from 'quill';
 import {randomColor} from 'randomcolor';
+import { RegexEvent } from './LoggingEvents';
 import Parchment from 'parchment';
 // import {Quill} from '../types/Quill';
 
@@ -22,11 +23,16 @@ GroupBlot.tagName = 'span';
 Quill.register(GroupBlot);
 // end of experiments
 
+declare class RegexElement{
+    logEvent(event: any): void;
+}
+
 export class TestStringInput implements ITestStringInput {
     // The input element
     public el: HTMLDivElement;
     public quill: Quill | null;
     public droppedText: boolean;
+    public parentElement: RegexElement | null;
 
     constructor() {
         this.el = document.createElement('div');
@@ -35,6 +41,7 @@ export class TestStringInput implements ITestStringInput {
         this.quill = null;
         // console.log(Quill);
         this.droppedText = false;
+        this.parentElement = null;
     }
     
     public initQuill = (): void => {
@@ -50,9 +57,14 @@ export class TestStringInput implements ITestStringInput {
                 shortKey: true,
             },
             (range, context) => {
-                console.log(range);
-                console.log(context);
-                console.log('ctrl-c');
+                const testStringKeyboardEvent: RegexEvent.TestStringKeyboardEvent = {
+                    'event-type': 'test-string-keyboard',
+                    range: range,
+                    keys: ['ctrl', 'c'] 
+                }
+                if (this.parentElement) {
+                    this.parentElement.logEvent(testStringKeyboardEvent);
+                }
                 return true;
             },
         );
@@ -61,9 +73,14 @@ export class TestStringInput implements ITestStringInput {
                 shortKey: true,
             },
             (range, context) => {
-                console.log(range);
-                console.log(context);
-                console.log('ctrl-v');
+                const testStringKeyboardEvent: RegexEvent.TestStringKeyboardEvent = {
+                    'event-type': 'test-string-keyboard',
+                    range: range,
+                    keys: ['ctrl', 'v'] 
+                }
+                if (this.parentElement) {
+                    this.parentElement.logEvent(testStringKeyboardEvent);
+                }
                 return true;
             },
         );

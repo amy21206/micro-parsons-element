@@ -55,6 +55,16 @@ export class RegexOptions implements IRegexOptions {
         }
     }
 
+    public getFlagList = (): Array<string> => {
+        let flags: Array<string> = [];
+        this.buttons.forEach(button => {
+            if(button.classList.contains('selected')) {
+                flags.push(button.innerText);
+            }
+        })
+        return flags;
+    }
+
     private onTriggerButtonClicked = (): void => {
         this.containerDiv.classList.toggle('show');
     }

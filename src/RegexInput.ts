@@ -1,5 +1,6 @@
 import Quill from 'quill';
 import {randomColor} from 'randomcolor';
+import { RegexEvent } from './LoggingEvents';
 
 declare class RegexElement{
     logEvent(event: any): void;
@@ -11,6 +12,7 @@ export class RegexInput implements IRegexInput {
     public quill: Quill | null;
     private groups: Array<PatternGroup>;
     public parentElement: RegexElement | null;
+    public droppedText: boolean;
     constructor() {
         this.el = document.createElement('div');
         this.el.id = 'regex-input'
@@ -23,6 +25,7 @@ export class RegexInput implements IRegexInput {
         // this.el.classList.add('regex-textbox')
         // this.el.setAttribute("rows", "1");
         this.parentElement = null;
+        this.droppedText = false;
     }
     
     public initQuill = (): void => {
@@ -33,6 +36,41 @@ export class RegexInput implements IRegexInput {
             },
             theme: 'bubble',
         })
+        this.quill.keyboard.addBinding({
+                key:'C',
+                shortKey: true,
+            },
+            (range, context) => {
+                const freeKeyboardEvent: RegexEvent.FreeKeyboardEvent = {
+                    'event-type': 'free-input-keyboard',
+                    range: range,
+                    keys: ['ctrl', 'c'] 
+                }
+                if (this.parentElement) {
+                    this.parentElement.logEvent(freeKeyboardEvent);
+                }
+                return true;
+            },
+        );
+        this.quill.keyboard.addBinding({
+                key:'V',
+                shortKey: true,
+            },
+            (range, context) => {
+                const freeKeyboardEvent: RegexEvent.FreeKeyboardEvent = {
+                    'event-type': 'free-input-keyboard',
+                    range: range,
+                    keys: ['ctrl', 'v'] 
+                }
+                if (this.parentElement) {
+                    this.parentElement.logEvent(freeKeyboardEvent);
+                }
+                return true;
+            },
+        );
+        this.el.ondrop = (event) => {
+            this.droppedText = true;
+        }
     }
 
     public getText = (): string => {

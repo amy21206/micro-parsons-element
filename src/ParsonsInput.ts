@@ -3,6 +3,7 @@ import { RegexEvent } from './LoggingEvents';
 
 declare class RegexElement{
     logEvent(event: any): void;
+    public temporaryInputEvent: any;
 }
 
 export class ParsonsInput implements IRegexInput {
@@ -13,6 +14,7 @@ export class ParsonsInput implements IRegexInput {
     private _dropSortable: Sortable;
     private _dragSortable: Sortable;
     public parentElement: RegexElement | null;
+    private _prevPosition: number;
     constructor() {
         this.el = document.createElement('div');
         this.el.id = 'parsons-input'
@@ -32,6 +34,7 @@ export class ParsonsInput implements IRegexInput {
         this._dropArea.classList.add('drop-area');
         this._dropArea.style.height = '20px';
         // this._dropArea.style.backgroundColor = '#bcebd7';
+        this._prevPosition = -1;
 
         this._dragSortable = new Sortable(this._dragArea, {
             group: {
@@ -88,6 +91,16 @@ export class ParsonsInput implements IRegexInput {
                 newBlock.appendChild(tooltip);
                 tooltip.innerText = tooltips[i];
                 tooltip.classList.add('tooltip');
+                newBlock.onmouseover = () => {
+                    if ((newBlock.parentNode as HTMLDivElement).classList.contains('drag-area')) {
+                        const parsonsTooltipEvent: RegexEvent.ParsonsTooltipEvent = {
+                            'event-type': 'parsons-tooltip',
+                            block: data[i],
+                            tooltip: tooltips[i]
+                        }
+                        this.parentElement?.logEvent(parsonsTooltipEvent);
+                    }
+                }
             }
         }
 
@@ -115,31 +128,45 @@ export class ParsonsInput implements IRegexInput {
             direction: 'horizontal',
             animation: 150,
             draggable: '.parsons-block',
-            onAdd: () => {
+            onAdd: (event) => {
+                // getting the position 
+                if (this.parentElement) {
+                    this.parentElement.temporaryInputEvent = {
+                        'event-type': 'parsons',
+                        action: RegexEvent.ParsonsInputAction.ADD,
+                        position: [-1, this._getBlockPosition(event.item)],
+                        answer: this._getTextArray()
+                    };
+                }
                 this.el.dispatchEvent(new Event('regexChanged'));
             },
-            onStart: () => {
-                console.log('onstart');
+            onStart: (event) => {
+                this._prevPosition = this._getBlockPosition(event.item);
             },
-            onEnd: (event: any) => {
+            onEnd: (event) => {
                 // TODO: (bug) This is a workaround that only works in the demo.
                 // compare clientY with the position of item.
-                if (event.originalEvent.clientY > 250) {
+                let endposition = 0;
+                let action = RegexEvent.ParsonsInputAction.MOVE;
+                if ((event as any).originalEvent.clientY > 250) {
                     const item = event.item as HTMLElement;
                     if (item.parentNode) {
                         item.parentNode.removeChild(item);
                     }
+                    endposition = -1;
+                    action = RegexEvent.ParsonsInputAction.REMOVE;
+                } else {
+                    endposition = this._getBlockPosition(event.item);
+                }
+                if (this.parentElement) {
+                    this.parentElement.temporaryInputEvent = {
+                        'event-type': 'parsons',
+                        action: action,
+                        position: [this._prevPosition, endposition],
+                        answer: this._getTextArray()
+                    };
                 }
                 this.el.dispatchEvent(new Event('regexChanged'));
-                // const parsonsEvent: RegexEvent.ParsonsInputEvent = {
-                //     eventType: 'parsons',
-                //     action: RegexEvent.ParsonsInputAction.MOVE,
-                //     position: [1, 2],
-                //     answer: ['abcde']
-                // };
-                // if (this.parentElement) {
-                //     this.parentElement.logEvent(parsonsEvent);
-                // }
             },
         });
     }
@@ -158,5 +185,31 @@ export class ParsonsInput implements IRegexInput {
             this._dropArea.classList.remove('Error');
         }
         this._dropArea.classList.add(result);
+    }
+
+    private _getBlockPosition = (block: HTMLElement): number => {
+        let position = 0;
+        const parent = block.parentNode;
+        if (parent) {
+            for (position = 0; position < parent.childNodes.length; ++position) {
+                if(parent.childNodes[position] === block) {
+                    break;
+                }
+            }
+        }
+        return position;
+    }
+
+    private _getTextArray = (): Array<string> => {
+        let answer: Array<string> = [];
+        if (this._dropArea.hasChildNodes()) {
+            let el = this._dropArea.firstChild as HTMLDivElement;
+            answer.push(el.innerText);
+            while (el.nextSibling) {
+                el = el.nextSibling as HTMLDivElement;
+                answer.push(el.innerText);
+            }
+        }
+        return answer;
     }
 }
