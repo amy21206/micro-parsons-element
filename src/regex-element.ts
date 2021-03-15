@@ -243,28 +243,57 @@ export class RegexElement extends HTMLElement {
         // TODO: (UI) only light colors that do not obfuscates the word
         this.groupColor = new Array<string>();
 
-        // test page visibility
+        // logging page visibility
         if (typeof document.addEventListener === "undefined" || document.hidden === undefined) {
+            const visibilityStatusEvent: RegexEvent.PageVisibilityCapturable = {
+                'event-type': 'page-visibility-status',
+                enabled: false
+            }
+            this.logEvent(visibilityStatusEvent);
             console.log("visibility not working");
         } else {
+            const visibilityStatusEvent: RegexEvent.PageVisibilityCapturable = {
+                'event-type': 'page-visibility-status',
+                enabled: true 
+            }
+            this.logEvent(visibilityStatusEvent);
             console.log("add visibility change");
             document.addEventListener("visibilitychange", (event) => {
+                let pageStatusEvent: RegexEvent.PageStatusEvent;
                 if (document.hidden) {
-                    console.log('hidden');
+                    pageStatusEvent = {
+                        'event-type': 'page-status',
+                        'status-type': RegexEvent.PageStatus.VISIBILITY,
+                        result: false
+                    }
+                } else {
+                    pageStatusEvent = {
+                        'event-type': 'page-status',
+                        'status-type': RegexEvent.PageStatus.VISIBILITY,
+                        result: true 
+                    }
                 }
-                console.log("visibility change");
-                console.log(event);
+                this.logEvent(pageStatusEvent);
             }, false);
         }
-        // test window blur & focus
+
+        // logging window blur & focus
         window.addEventListener('blur', () => {
-            console.log('window blurred');
-            this.logger.log({test: 'a'});
+            const blurEvent: RegexEvent.PageStatusEvent = {
+                'event-type': 'page-status',
+                'status-type': RegexEvent.PageStatus.FOCUS,
+                result: false
+            } 
+            this.logEvent(blurEvent);
         })
         window.addEventListener('focus', () => {
-            console.log('window focused');
+            const focusEvent: RegexEvent.PageStatusEvent = {
+                'event-type': 'page-status',
+                'status-type': RegexEvent.PageStatus.FOCUS,
+                result: true 
+            } 
+            this.logEvent(focusEvent);
         })
-
 
         // stub for student and problem id
         this.studentId = 'student-id';
@@ -456,9 +485,9 @@ export class RegexElement extends HTMLElement {
 
     public logEvent = (eventContent: any): void => {
         const basicEvent: RegexEvent.BasicEvent = {
-            studentId: this.studentId,
-            problemId: this.problemId,
-            clientTimestamp: this._getTimestamp()
+            'student-id': this.studentId,
+            'problem-id': this.problemId,
+            'client-timestamp': this._getTimestamp()
         };
         this.logger.log({
             ...basicEvent,

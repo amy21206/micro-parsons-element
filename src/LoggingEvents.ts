@@ -1,8 +1,8 @@
 export namespace RegexEvent {
     export type BasicEvent = {
-        studentId: string;
-        problemId: string;
-        clientTimestamp: string;
+        'student-id': string;
+        'problem-id': string;
+        'client-timestamp': string;
     }
 
     export enum ParsonsInputAction {
@@ -18,50 +18,50 @@ export namespace RegexEvent {
 
     // not implemented 
     export type ParsonsInputEvent = {
-        eventType: 'parsons';
+        'event-type': 'parsons';
         action: ParsonsInputAction;
         position: [number, number];
         answer: Array<string>;
         status: RegexCompilationStatus;
-        errorMessage: string | null;
+        'error-message': string | null;
     }
 
     // not implemented 
     export type ParsonsTooltipEvent = {
-        eventType: 'parsons-tooltip';
+        'event-type': 'parsons-tooltip';
         block: string;
         tooltip: string;
     }
 
     // not implemented 
     export type FreeInputEvent = {
-        eventType: 'free-input';
+        'event-type': 'free-input';
         dropped: boolean; 
         delta: any;
         answer: string;
         status: RegexCompilationStatus;
-        errorMessage: string | null;
+        'error-message': string | null;
     }
 
     // not implemented 
     export type FreeKeyboardEvent = {
-        eventType: 'free-input-keyboard';
+        'event-type': 'free-input-keyboard';
         keys: Array<string>; 
     }
 
     // not implemented 
     export type TestStringInputEvent = {
-        eventType: 'test-string-input';
+        'event-type': 'test-string-input';
         dropped: boolean;
         delta: any;
-        testString: string;
+        'test-string': string;
     }
 
     // not implemented 
     export type TestStringResetEvent = {
-        eventType: 'test-string-reset';
+        'event-type': 'test-string-reset';
         delta: any;
-        testString: string;
+        'test-string': string;
     }
 
     export enum MatchTriggerType {
@@ -71,12 +71,12 @@ export namespace RegexEvent {
 
     // not implemented 
     export type MatchTestStringEvent = {
-        eventType: 'match';
+        'event-type': 'match';
         trigger: MatchTriggerType;
         regex: string;
-        testString: string;
+        'test-string': string;
         flags: Array<string>;
-        matchResult: Array<Array<MatchGroup>>;
+        'match-result': Array<Array<MatchGroup>>;
     }
 
     // not implemented and not used in the current version
@@ -92,9 +92,15 @@ export namespace RegexEvent {
     }
 
     // not implemented 
-    export type PageViewingStatus = {
-        eventType: 'page-status';
-        statusType: PageStatus;
+    export type PageStatusEvent = {
+        'event-type': 'page-status';
+        'status-type': PageStatus;
         result: boolean;
+    }
+
+    // not implemented 
+    export type PageVisibilityCapturable = {
+        'event-type': 'page-visibility-status';
+        enabled: boolean;
     }
 }
