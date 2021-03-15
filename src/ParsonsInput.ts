@@ -118,6 +118,9 @@ export class ParsonsInput implements IRegexInput {
             onAdd: () => {
                 this.el.dispatchEvent(new Event('regexChanged'));
             },
+            onStart: () => {
+                console.log('onstart');
+            },
             onEnd: (event: any) => {
                 // TODO: (bug) This is a workaround that only works in the demo.
                 // compare clientY with the position of item.
@@ -128,15 +131,15 @@ export class ParsonsInput implements IRegexInput {
                     }
                 }
                 this.el.dispatchEvent(new Event('regexChanged'));
-                const parsonsEvent: RegexEvent.ParsonsInputEvent = {
-                    eventType: 'parsons',
-                    action: RegexEvent.ParsonsInputAction.MOVE,
-                    position: [1, 2],
-                    answer: ['abcde']
-                };
-                if (this.parentElement) {
-                    this.parentElement.logEvent(parsonsEvent);
-                }
+                // const parsonsEvent: RegexEvent.ParsonsInputEvent = {
+                //     eventType: 'parsons',
+                //     action: RegexEvent.ParsonsInputAction.MOVE,
+                //     position: [1, 2],
+                //     answer: ['abcde']
+                // };
+                // if (this.parentElement) {
+                //     this.parentElement.logEvent(parsonsEvent);
+                // }
             },
         });
     }

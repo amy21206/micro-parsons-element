@@ -460,7 +460,6 @@ export class RegexElement extends HTMLElement {
             problemId: this.problemId,
             clientTimestamp: this._getTimestamp()
         };
-        console.log('log event');
         this.logger.log({
             ...basicEvent,
             ...eventContent
