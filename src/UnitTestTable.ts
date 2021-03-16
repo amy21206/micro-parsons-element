@@ -4,6 +4,7 @@ export class UnitTestTable implements IUnitTestTable {
     public table: HTMLTableElement;
 	public flags: string;
 	public testCases: Array<TestCase>;
+    public testCaseCount: number;
     // if the matched groups should also be identical
     public strictGroup: boolean;
     public hintRevealed: Array<boolean>;
@@ -33,6 +34,7 @@ export class UnitTestTable implements IUnitTestTable {
 
         // this.testCases = [{input: 'unicorn', expect: ['unicorn'], notes:'testing unicorn'}, {input: 'element', expect:['element']}, {input: 'banana', expect: []}, {input: 'apple', expect: []}];
         this.testCases = [];
+        this.testCaseCount = 0;
         this.hintRevealed = [];
         this.latestResults = [];
 
@@ -40,11 +42,13 @@ export class UnitTestTable implements IUnitTestTable {
         this.strictGroup = false;
     }
 
-    // Return value: 'Pass' if all pass, 'Error' if one error, 'Fail' if no error but at least one fail
-	public check = (regex: string) : string => {
+    // not used: Return value: 'Pass' if all pass, 'Error' if one error, 'Fail' if no error but at least one fail
+    // return number of test cases passed
+	public check = (regex: string) : number => {
         // assume pyodide is initiallized.
         // TODO: (robustness) test if pyodide is initialized
         let status: string = 'Pass';
+        let passCount: number = 0;
         if (this.el.classList.contains('collapse')) {
             this.el.classList.remove('collapse');
         }
@@ -54,8 +58,11 @@ export class UnitTestTable implements IUnitTestTable {
         for (let index = 0; index < this.testCases.length; ++ index) {
             const caseStatus = this.match(index, regex, this.testCases[index]);
             status = caseStatus == 'Error' ? 'Error' : (caseStatus == 'Fail' ? 'Fail' : status);
+            if (caseStatus == 'Pass') {
+                passCount += 1;
+            }
         }
-        return status;
+        return passCount;
     }
     /**
      * Runs re.findall() with data from regex and test string input;
@@ -153,6 +160,7 @@ export class UnitTestTable implements IUnitTestTable {
         this.testCases = testCases;
         // TODO: make this an option. Set all revealed for study 0 and 1.
         this.hintRevealed = Array(testCases.length).fill(true);
+        this.testCaseCount = testCases.length;
     }
 
     private _getTableHead = (): string => {

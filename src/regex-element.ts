@@ -68,6 +68,8 @@ export class RegexElement extends HTMLElement {
 
     private pyodideInitialized: boolean;
 
+    private _testStatusDiv: HTMLDivElement;
+
     constructor() {
         super();
 
@@ -115,6 +117,11 @@ export class RegexElement extends HTMLElement {
         // TODO: make this an option; for now always enabled the 'always check' for study 0 and 1.
         this.checkWhileTyping = true;
 
+        // a div wrapping the input and the test case status
+        const inputAndTestStatusDiv = document.createElement('div');
+        this.root.append(inputAndTestStatusDiv);
+        inputAndTestStatusDiv.classList.add('regex-input-and-test-status');
+
         // init regex input based on the input type
         // TODO: (bug) fix always check for parsons
         this.patternValidFlag = true;
@@ -123,11 +130,12 @@ export class RegexElement extends HTMLElement {
         this._parsonsData = new Array<string>();
         this.parsonsExplanation = null;
         const inputDiv = document.createElement('div');
-        this.root.append(inputDiv);
+        inputAndTestStatusDiv.appendChild(inputDiv);
         inputDiv.classList.add('regex-input-div');
         inputDiv.append('REGULAR EXPRESSION:');
         this.regexStatus = new RegexStatusTag();
         inputDiv.appendChild(this.regexStatus.el);
+        inputDiv.appendChild(document.createElement('br'));
         // todo:(UI) fix the css for the input
         if (this.inputType == 'parsons') {
             // init elements: parsons regex input
@@ -141,12 +149,18 @@ export class RegexElement extends HTMLElement {
                     if (this.patternValidFlag) {
                         this.regexStatus.updateStatus('valid');
                         // check and update the background color of the parsons input based on the unit test results
-                        this.regexInput.updateTestStatus(this.unitTestTable.check(this.regexInput.getText()));
+                        const passCount = this.unitTestTable.check(this.regexInput.getText());
+                        this.regexInput.updateTestStatus(passCount == this.unitTestTable.testCaseCount ? 'Pass' : 'Fail');
+                        this._testStatusDiv.className = '';
+                        this._testStatusDiv.classList.add('regex-test-status');
+                        this._testStatusDiv.classList.add(passCount == this.unitTestTable.testCaseCount ? 'Pass' : 'Fail');
+                        this._testStatusDiv.innerText = 'Test cases passed: ' + passCount + '/' + this.unitTestTable.testCaseCount;
                         this.match();
                     } else {
                         this.regexStatus.updateStatus('error');
                         this.regexInput.updateTestStatus('Error');
                         this.testStringInput.quill?.removeFormat(0, this.testStringInput.quill.getLength() - 1, 'silent');
+                        this._testStatusDiv.innerText = 'Test cases passed: 0/' + this.unitTestTable.testCaseCount;
                         this.unitTestTable.setError();
                     }
                 }
@@ -180,11 +194,17 @@ export class RegexElement extends HTMLElement {
                 if (this.checkWhileTyping) {
                     if (this.patternValidFlag) {
                         // only match when the pattern is valid
-                        this.regexInput.updateTestStatus(this.unitTestTable.check(this.regexInput.getText()));
+                        const passCount = this.unitTestTable.check(this.regexInput.getText());
+                        this.regexInput.updateTestStatus(passCount == this.unitTestTable.testCaseCount ? 'Pass' : 'Fail');
+                        this._testStatusDiv.innerText = 'Test cases passed: ' + passCount + '/' + this.unitTestTable.testCaseCount;
+                        this._testStatusDiv.className = '';
+                        this._testStatusDiv.classList.add('regex-test-status');
+                        this._testStatusDiv.classList.add(passCount == this.unitTestTable.testCaseCount ? 'Pass' : 'Fail');
                         this.match();
                     } else {
                         this.regexInput.updateTestStatus('Error');
                         this.testStringInput.quill?.removeFormat(0, this.testStringInput.quill.getLength() - 1, 'silent');
+                        this._testStatusDiv.innerText = 'Test cases passed: 0/' + this.unitTestTable.testCaseCount;
                         this.unitTestTable.setError();
                     }
                     // check and update the background color of the parsons input based on the unit test results
@@ -199,6 +219,10 @@ export class RegexElement extends HTMLElement {
         // init elements: regex options dropdown
         this.regexOptions = new RegexOptions();
         // inputDiv.appendChild(this.regexOptions.el);
+
+        this._testStatusDiv = document.createElement('div');
+        inputAndTestStatusDiv.appendChild(this._testStatusDiv);
+        this._testStatusDiv.classList.add('regex-test-status');
 
         // init elements: test string input
         // TODO: (bug) stylesheet isn't working with shadowroot
@@ -353,6 +377,10 @@ export class RegexElement extends HTMLElement {
     private addStyle = (): void => {
         const sheet = document.createElement('style');
         sheet.innerHTML += '.regex-textbox {width: 100%; visibility: collapse;}\n';
+        sheet.innerHTML += '.regex-input-and-test-status {display: flex; flex-wrap: nowrap;}\n';
+        sheet.innerHTML += '.regex-test-status {font-family: monospace; font-size: 15px; color:black;}\n';
+        sheet.innerHTML += '.regex-test-status.Fail {font-family: monospace; font-size: 15px; color:#ebd071;}\n';
+        sheet.innerHTML += '.regex-test-status.Pass {font-family: monospace; font-size: 15px; color:green;}\n';
         // regex status tag
         sheet.innerHTML += '.regex-status { border-radius: 4px; visibility: collapse; font-family: monospace; padding: 3px 6px; margin: 2px 10px; color: #fff; }\n';
         sheet.innerHTML += '.regex-status.error { visibility: visible; background-color: red; }\n';
@@ -372,6 +400,7 @@ export class RegexElement extends HTMLElement {
         sheet.innerHTML += '.parsons-block .tooltip { visibility: hidden; width: 120px;  background-color: black; color: #fff; text-align: center; padding: 5px 0; border-radius: 6px;  position: absolute; z-index: 1; margin: 0 10px; }\n';
         sheet.innerHTML += '.drag-area .parsons-block:hover .tooltip { visibility: visible;}\n';
         sheet.innerHTML += '.regex-test-string-div, .regex-input-div { margin: 8px 0; }\n';
+        sheet.innerHTML += '.regex-input-div { width: 80%; }\n';
         sheet.innerHTML += '.regex-input-div > div {display:inline-block;}\n'
         // the dropdown menu for regex options
         sheet.innerHTML += '.regex-options-dropdown-btn { background-color: #3498DB; color: white; padding: 10px; font-size: 16px; border: none; cursor: pointer;}\n';
@@ -384,6 +413,8 @@ export class RegexElement extends HTMLElement {
         // unittest
         sheet.innerHTML += '.regex-unittest > table, .regex-unittest td {border: 1px solid black; padding: 3px; text-align: center; border-collapse: collapse;}\n'
         sheet.innerHTML += '.regex-unittest.collapse{visibility: collapse;}\n'
+        // for study 0: hide the table
+        sheet.innerHTML += '.regex-unittest{visibility: collapse;}\n'
 
         document.body.appendChild(sheet);
         this.root.appendChild(sheet);
