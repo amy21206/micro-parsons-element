@@ -96,9 +96,28 @@ export class ParsonsInput implements IRegexInput {
                         const parsonsTooltipEvent: RegexEvent.ParsonsTooltipEvent = {
                             'event-type': 'parsons-tooltip',
                             block: data[i],
-                            tooltip: tooltips[i]
+                            tooltip: tooltips[i],
+                            start: true
                         }
                         this.parentElement?.logEvent(parsonsTooltipEvent);
+                    }
+                }
+                newBlock.onmouseout = () => {
+                    if ((newBlock.parentNode as HTMLDivElement).classList.contains('drag-area')) {
+                        const parsonsTooltipEvent: RegexEvent.ParsonsTooltipEvent = {
+                            'event-type': 'parsons-tooltip',
+                            block: data[i],
+                            tooltip: tooltips[i],
+                            start: false
+                        }
+                        this.parentElement?.logEvent(parsonsTooltipEvent);
+                    }
+                }
+                newBlock.onclick = () => {
+                    if ((newBlock.parentNode as HTMLDivElement).classList.contains('drag-area')) {
+                        let newBlockCopy = newBlock.cloneNode(true);
+                        this._dropArea.appendChild(newBlockCopy);
+                        this.el.dispatchEvent(new Event('regexChanged'));
                     }
                 }
             }

@@ -29,6 +29,7 @@ export namespace RegexEvent {
         'event-type': 'parsons-tooltip';
         block: string;
         tooltip: string;
+        start: boolean; // true if start showing the tooltip, false if stop showing the tooltip.
     }
 
     export type FreeInputEvent = {
