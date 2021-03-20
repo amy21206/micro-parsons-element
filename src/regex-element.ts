@@ -6,8 +6,7 @@ import { StatusOutput } from './StatusOutput';
 import { TestButton } from './TestButton';
 import { RegexOptions } from './RegexOptions';
 import { UnitTestTable } from './UnitTestTable';
-import { ConsoleLogger } from './ConsoleLogger';
-import { Logger } from 'schema_logger';
+import { RegexToolS3BucketLogger } from 'schema_logger/dist/loggers/regex_tool_s3_bucket_logger';
 import { RegexStatusTag } from './RegexStatusTag';
 import { RegexEvent } from './LoggingEvents';
 
@@ -56,7 +55,8 @@ export class RegexElement extends HTMLElement {
     // unit tests
     private unitTestTable: UnitTestTable;
 
-    private logger: Logger;
+    // private logger: Logger;
+    private logger: RegexToolS3BucketLogger;
 
     private patternValidFlag: boolean;
 
@@ -73,7 +73,12 @@ export class RegexElement extends HTMLElement {
     constructor() {
         super();
 
-        this.logger = new ConsoleLogger();
+        // this.logger = new ConsoleLogger();
+        this.logger = new RegexToolS3BucketLogger({
+            api: "https://03csaskfi1.execute-api.us-east-1.amazonaws.com/regex-tool-aws-edtech-labs-si-umich-edu",
+            bucket: "regex-tool-aws-edtech-labs-si-umich-edu",
+            path: "test"
+        });
 
         this.root = this.attachShadow({ mode: 'open' });
 
@@ -570,7 +575,7 @@ export class RegexElement extends HTMLElement {
             'problem-id': this.problemId,
             'client-timestamp': this._getTimestamp()
         };
-        this.logger.log({
+        this.logger.info({
             ...basicEvent,
             ...eventContent
         });
