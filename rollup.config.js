@@ -24,10 +24,10 @@ export default INPUTS.map((input) => {
       //   showMinifiedSize: false,
       //   showBeforeSizes: 'build'
       // }),
-      typescript(),
+      typescript({module: 'CommonJS'}),
       nodeResolve(),
       // nodePolyfills(),
-      commonjs(),
+      commonjs({extensions: ['.js', '.ts']}),
       css(),
       json()
     ],

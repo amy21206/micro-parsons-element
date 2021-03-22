@@ -13,7 +13,7 @@ Capture A “Firstname Lastname” name at the beginning of each line, e.g. Ziha
 <div class="test-div"></div>
 <script type="module">
 import "./packages/regex-element/regex-element.js";
-document.querySelector('.test-div').innerHTML = `<regex-element id="abcd"></regex-element>`;
+document.querySelector('.test-div').innerHTML = `<regex-element id="abcd" problem-id='thinkaloud2'></regex-element>`;
 let regexElement = document.querySelector('#abcd');
 regexElement.setTestCases([{input: 'Zihan Wu', expect: ['Zihan Wu'], notes:'A matching testcase'}, {input: 'Z Wu', expect:['Z Wu'], notes: 'A matching testcase'}, {input: 'zihan wu', expect: [], notes:'A name with lower case letters'}, {input: 'zi-han Wu', expect: [], notes: 'A name with a dash in the middle.'}]);
 regexElement.setInitialTestString('match:\nZihan Wu\nZ Wu\n\ndo mot match:\nzihan wu\nzihan Zihan Wu\nzi-han Wu\nzihan zihan wu\n');

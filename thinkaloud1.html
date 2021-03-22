@@ -13,7 +13,7 @@ Capture words that start with a vowel letter(aeiou), but ends with a non-vowel l
 <div class="test-div"></div>
 <script type="module">
 import "./packages/regex-element/regex-element.js";
-document.querySelector('.test-div').innerHTML = `<regex-element input-type='parsons' id="abcd"></regex-element>`;
+document.querySelector('.test-div').innerHTML = `<regex-element input-type='parsons' id="abcd" problem-id='thinkaloud1'></regex-element>`;
 let parsonsElement = document.querySelector('#abcd');
 parsonsElement.parsonsExplanation = ['start capturing group', 'end capturing group', 'match a single character in the list','match a single character in the list', 'a', 'e', 'i', 'o', 'u', 'z', '-', 'Repeat between zero and unlimited times', 'asserts position at start of the string'];
 parsonsElement.parsonsData = ['(', ')', '[', ']', 'a', 'e', 'i', 'o', 'u', 'z', '-', '*', '^'];

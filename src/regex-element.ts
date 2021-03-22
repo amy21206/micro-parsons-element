@@ -350,8 +350,10 @@ export class RegexElement extends HTMLElement {
         })
 
         // stub for student and problem id
-        this.studentId = 'student-id';
-        this.problemId = 'problem-id';
+        this.studentId = this._getStudentIdFromURL();
+        this.problemId = this.getAttribute('problem-id') || 'stub-problem-id';
+        console.log(this.studentId);
+        console.log(this.problemId);
 
         this.temporaryInputEvent = null;
     }
@@ -597,6 +599,13 @@ export class RegexElement extends HTMLElement {
             regexInputEvent['error-message'] = this.regexErrorMessage.innerText;
         }
         this.logEvent(regexInputEvent);
+    }
+
+    private _getStudentIdFromURL = (): string => {
+        const queryString = document.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const studentId = urlParams.get('student-id') || 'stub-student-id';
+        return studentId;
     }
 
 }
