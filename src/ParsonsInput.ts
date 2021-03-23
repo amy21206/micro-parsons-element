@@ -9,6 +9,9 @@ declare class RegexElement{
 export class ParsonsInput implements IRegexInput {
     // The input element
     public el: HTMLDivElement;
+    // TODO(refactor): make expandable blocks more easy to use
+    public expandableBlocks: Array<string>;
+    public expandableBlockTooltips: Array<string> | null;
     private _dropArea: HTMLDivElement;
     private _dragArea: HTMLDivElement;
     private _dropSortable: Sortable;
@@ -35,6 +38,9 @@ export class ParsonsInput implements IRegexInput {
         this._dropArea.style.height = '20px';
         // this._dropArea.style.backgroundColor = '#bcebd7';
         this._prevPosition = -1;
+
+        this.expandableBlocks = [];
+        this.expandableBlockTooltips = null;
 
         this._dragSortable = new Sortable(this._dragArea, {
             group: {
@@ -76,10 +82,78 @@ export class ParsonsInput implements IRegexInput {
         // reset
         // this._dragSortable.destroy();
         // this._dropSortable.destroy();
-
+        
+        // clearing previous settings 
         this._dragArea.innerHTML = '';
         this._dropArea.innerHTML = '';
 
+        // adding expandable blocks
+        for (let i = 0; i < this.expandableBlocks.length; ++i) {
+            const newBlock = document.createElement('div');
+            this._dragArea.appendChild(newBlock);
+            newBlock.innerText = this.expandableBlocks[i];
+            newBlock.style.display = 'inline-block';
+            newBlock.classList.add('parsons-block');
+            newBlock.classList.add('expandable-block');
+            if (this.expandableBlockTooltips) {
+                const tooltip = document.createElement('span');
+                newBlock.appendChild(tooltip);
+                tooltip.innerText = this.expandableBlockTooltips[i];
+                tooltip.classList.add('tooltip');
+                newBlock.onmouseover = () => {
+                    if ((newBlock.parentNode as HTMLDivElement).classList.contains('drag-area')) {
+                        const parsonsTooltipEvent: RegexEvent.ParsonsTooltipEvent = {
+                            'event-type': 'parsons-tooltip',
+                            block: this.expandableBlocks[i],
+                            tooltip: tooltip.innerText,
+                            start: true
+                        }
+                        this.parentElement?.logEvent(parsonsTooltipEvent);
+                    }
+                }
+                newBlock.onmouseout = () => {
+                    if ((newBlock.parentNode as HTMLDivElement).classList.contains('drag-area')) {
+                        const parsonsTooltipEvent: RegexEvent.ParsonsTooltipEvent = {
+                            'event-type': 'parsons-tooltip',
+                            block: this.expandableBlocks[i],
+                            tooltip: tooltip.innerText,
+                            start: false
+                        }
+                        this.parentElement?.logEvent(parsonsTooltipEvent);
+                    }
+                }
+            }
+            newBlock.onclick = () => {
+                console.log('onclick');
+                if ((newBlock.parentNode as HTMLDivElement).classList.contains('drag-area')) {
+                    const text = this.expandableBlocks[i];
+                    let firstBlock = null;
+                    for (let i = 0; i < text.length; ++i) {
+                        const newBlock = document.createElement('div');
+                        this._dropArea.appendChild(newBlock);
+                        newBlock.innerText = text.charAt(i);
+                        newBlock.style.display = 'inline-block';
+                        newBlock.classList.add('parsons-block');
+                        if (firstBlock == null) {
+                            firstBlock = newBlock;
+                        }
+                    }
+                    if (this.parentElement && firstBlock) {
+                        this.parentElement.temporaryInputEvent = {
+                            'event-type': 'parsons',
+                            action: RegexEvent.ParsonsInputAction.ADD,
+                            position: [-1, this._getBlockPosition(firstBlock as HTMLElement)],
+                            answer: this._getTextArray(),
+                            'is-expandable': true,
+                            'add-by-click': true
+                        };
+                    }
+                    this.el.dispatchEvent(new Event('regexChanged'));
+                }
+            }
+        }
+
+        // adding normal blocks
         for (let i = 0; i < data.length; ++i) {
             const newBlock = document.createElement('div');
             this._dragArea.appendChild(newBlock);
@@ -99,7 +173,7 @@ export class ParsonsInput implements IRegexInput {
                             tooltip: tooltips[i],
                             start: true
                         }
-                        this.parentElement?.logEvent(parsonsTooltipEvent);
+                        this.parentElement?.logEvent(parsonsTooltipEvent)
                     }
                 }
                 newBlock.onmouseout = () => {
@@ -113,12 +187,22 @@ export class ParsonsInput implements IRegexInput {
                         this.parentElement?.logEvent(parsonsTooltipEvent);
                     }
                 }
-                newBlock.onclick = () => {
-                    if ((newBlock.parentNode as HTMLDivElement).classList.contains('drag-area')) {
-                        let newBlockCopy = newBlock.cloneNode(true);
-                        this._dropArea.appendChild(newBlockCopy);
-                        this.el.dispatchEvent(new Event('regexChanged'));
+            }
+            newBlock.onclick = () => {
+                if ((newBlock.parentNode as HTMLDivElement).classList.contains('drag-area')) {
+                    let newBlockCopy = newBlock.cloneNode(true);
+                    this._dropArea.appendChild(newBlockCopy);
+                    if (this.parentElement) {
+                        this.parentElement.temporaryInputEvent = {
+                            'event-type': 'parsons',
+                            action: RegexEvent.ParsonsInputAction.ADD,
+                            position: [-1, this._getBlockPosition(newBlockCopy as HTMLElement)],
+                            answer: this._getTextArray(),
+                            'is-expandable': false,
+                            'add-by-click': true
+                        };
                     }
+                    this.el.dispatchEvent(new Event('regexChanged'));
                 }
             }
         }
@@ -149,13 +233,29 @@ export class ParsonsInput implements IRegexInput {
             draggable: '.parsons-block',
             onAdd: (event) => {
                 // getting the position 
+                const isExpandable = event.item.classList.contains('expandable-block');
+                console.log(isExpandable);
                 if (this.parentElement) {
                     this.parentElement.temporaryInputEvent = {
                         'event-type': 'parsons',
                         action: RegexEvent.ParsonsInputAction.ADD,
                         position: [-1, this._getBlockPosition(event.item)],
-                        answer: this._getTextArray()
+                        answer: this._getTextArray(),
+                        'is-expandable': isExpandable,
+                        'add-by-click': false 
                     };
+                }
+                if (isExpandable) {
+                    const parentNode = event.item.parentNode;
+                    const text = event.item.innerText;
+                    parentNode?.removeChild(event.item);
+                    for (let i = 0; i < text.length; ++i) {
+                        const newBlock = document.createElement('div');
+                        this._dropArea.appendChild(newBlock);
+                        newBlock.innerText = text.charAt(i);
+                        newBlock.style.display = 'inline-block';
+                        newBlock.classList.add('parsons-block');
+                    }
                 }
                 this.el.dispatchEvent(new Event('regexChanged'));
             },
@@ -182,7 +282,7 @@ export class ParsonsInput implements IRegexInput {
                         'event-type': 'parsons',
                         action: action,
                         position: [this._prevPosition, endposition],
-                        answer: this._getTextArray()
+                        answer: this._getTextArray(),
                     };
                 }
                 this.el.dispatchEvent(new Event('regexChanged'));
@@ -204,6 +304,10 @@ export class ParsonsInput implements IRegexInput {
             this._dropArea.classList.remove('Error');
         }
         this._dropArea.classList.add(result);
+    }
+
+    public setExpandableBlocks = (expandableBlocks: Array<string>): void => {
+        this.expandableBlocks = expandableBlocks;
     }
 
     private _getBlockPosition = (block: HTMLElement): number => {

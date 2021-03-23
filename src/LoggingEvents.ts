@@ -22,6 +22,8 @@ export namespace RegexEvent {
         position: [number, number];
         answer: Array<string>;
         valid: boolean;
+        'add-by-click': boolean | null;
+        'is-expandable': boolean | null;
         'error-message': string | null;
     }
 

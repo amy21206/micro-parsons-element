@@ -23,7 +23,7 @@ export class RegexElement extends HTMLElement {
 
     private _parsonsData: Array<string>;
     public parsonsExplanation: Array<string> | null;
-    private regexInput: IRegexInput;
+    public regexInput: IRegexInput;
     private inputType: string;
 
     private regexStatus: RegexStatusTag;
@@ -577,6 +577,7 @@ export class RegexElement extends HTMLElement {
             'problem-id': this.problemId,
             'client-timestamp': this._getTimestamp()
         };
+        // console.log({...basicEvent, ...eventContent});
         this.logger.info({
             ...basicEvent,
             ...eventContent
