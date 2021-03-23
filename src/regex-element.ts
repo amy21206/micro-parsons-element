@@ -75,8 +75,8 @@ export class RegexElement extends HTMLElement {
 
         // this.logger = new ConsoleLogger();
         this.logger = new RegexToolS3BucketLogger({
-            api: "https://03csaskfi1.execute-api.us-east-1.amazonaws.com/regex-tool-aws-edtech-labs-si-umich-edu",
-            bucket: "regex-tool-aws-edtech-labs-si-umich-edu",
+            api: "https://cjglpwd044.execute-api.us-east-1.amazonaws.com/regex-tool-api-aws-edtech-labs-si-umich-edu",
+            bucket: "regex-tool-s3-aws-edtech-labs-si-umich-edu",
             path: "test"
         });
 
