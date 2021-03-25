@@ -8,6 +8,8 @@ export class UnitTestTable implements IUnitTestTable {
     // if the matched groups should also be identical
     public strictGroup: boolean;
     public hintRevealed: Array<boolean>;
+    // when true: match the whole string from the beginning to the end. When disabled: use findall.
+    public strictMatch: boolean;
     private latestResults: Array<UnitTestResult>;
 
     private columnsEnabled: Array<string>;
@@ -21,7 +23,8 @@ export class UnitTestTable implements IUnitTestTable {
 
         // columns enabled besides the status column
         // TODO: only enabled notes for study 0 and 1
-        this.columnsEnabled = ['notes'];
+        this.columnsEnabled = ['actualOutput', 'expectedOutput', 'input', 'notes'];
+        // this.columnsEnabled = ['notes'];
 
         this.table = document.createElement('table');
         this.el.appendChild(this.table);
@@ -40,6 +43,9 @@ export class UnitTestTable implements IUnitTestTable {
 
         // not matching groups strictly by default
         this.strictGroup = false;
+
+        // using strict match by default
+        this.strictMatch = true;
     }
 
     // not used: Return value: 'Pass' if all pass, 'Error' if one error, 'Fail' if no error but at least one fail
@@ -76,13 +82,29 @@ export class UnitTestTable implements IUnitTestTable {
         window.pyodide.globals.unit_test_string = testCase.input;
         window.pyodide.globals.unit_regex_input = regex;
         if (this.flags != null && this.flags != '') {
-            pydata += 'unit_pattern = re.compile(unit_regex_input, '+this.flags+')\n';
+            if (this.strictMatch) {
+                pydata += 'unit_pattern = re.compile(' + '\'^\' + unit_regex_input + \'$\', '+this.flags+')\n';
+            } else {
+                pydata += 'unit_pattern = re.compile(unit_regex_input, '+this.flags+')\n';
+            }
         } else {
-            pydata += 'unit_pattern = re.compile(unit_regex_input)\n';
+            if (this.strictMatch) {
+                pydata += 'unit_pattern = re.compile(' + '\'^\' + unit_regex_input + \'$\')\n';
+            } else {
+                pydata += 'unit_pattern = re.compile(unit_regex_input)\n';
+            }
         }
         pydata += 'unit_source = unit_test_string\n';
         pydata += 'global unit_match_result\n';
-        pydata += 'unit_match_result = re.findall(unit_pattern,unit_source)\n';
+        if (this.strictMatch) {
+            pydata += 'unit_match_result_object = re.match(unit_pattern,unit_source)\n';
+            pydata += 'if (unit_match_result_object):\n';
+            pydata += '    unit_match_result = [unit_match_result_object.group(0)]\n';
+            pydata += 'else:\n';
+            pydata += '    unit_match_result = []\n';
+        } else {
+            pydata += 'unit_match_result = re.findall(unit_pattern,unit_source)\n';
+        }
         try {
             window.pyodide.runPython(pydata);
             result.success = true;

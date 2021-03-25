@@ -421,7 +421,7 @@ export class RegexElement extends HTMLElement {
         sheet.innerHTML += '.regex-unittest > table, .regex-unittest td {border: 1px solid black; padding: 3px; text-align: center; border-collapse: collapse;}\n'
         sheet.innerHTML += '.regex-unittest.collapse{visibility: collapse;}\n'
         // for study 0: hide the table
-        sheet.innerHTML += '.regex-unittest{visibility: collapse;}\n'
+        // sheet.innerHTML += '.regex-unittest{visibility: collapse;}\n'
 
         document.body.appendChild(sheet);
         this.root.appendChild(sheet);
