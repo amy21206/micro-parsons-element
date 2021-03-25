@@ -19,7 +19,13 @@ parsonsElement.regexInput.expandableBlocks = ['[]', '()'];
 parsonsElement.regexInput.expandableBlockTooltips = ['match a single character in the list', 'capturing group'];
 parsonsElement.parsonsExplanation = ['a', 'e', 'i', 'o', 'u', 'z', '-', 'Repeat between zero and unlimited times', 'asserts position at start of the string'];
 parsonsElement.parsonsData = ['a', 'e', 'i', 'o', 'u', 'z', '-', '*', '^'];
-parsonsElement.setTestCases([{input: 'unicorn', expect: ['unicorn'], notes:'A matching testcase'}, {input: 'element', expect:['element'], notes: 'A matching testcase'}, {input: 'banana', expect: [], notes:'A word starts with a non-vowel and ends with a vowel.'}, {input: 'apple', expect: [], notes: 'A word that starts with a vowel and ends with a vowel.'}]);
+parsonsElement.setTestCases([
+    {input: 'unicorn', expect: ['unicorn'], notes:'A matching testcase'},
+    {input: 'element', expect:['element'], notes: 'A matching testcase'},
+    {input: 'banana', expect: [], notes:'A word starts with a non-vowel and ends with a vowel.'},
+    {input: 'apple', expect: [], notes: 'A word that starts with a vowel and ends with a vowel.'},
+    {input: 'abcdefghizsdz', expect: [], notes: ''}
+    ]);
 parsonsElement.setInitialTestString('match:\nunicorn\nelement\n\ndo not match:\nbanana\napple\n');
 </script>
 </body>

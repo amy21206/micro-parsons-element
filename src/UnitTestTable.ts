@@ -10,6 +10,9 @@ export class UnitTestTable implements IUnitTestTable {
     public hintRevealed: Array<boolean>;
     // when true: match the whole string from the beginning to the end. When disabled: use findall.
     public strictMatch: boolean;
+    // used for problem 3 in the thinkaloud.
+    // TODO: refactor this into strictgroup.
+    public noGroupsAllowed: boolean;
     private latestResults: Array<UnitTestResult>;
 
     private columnsEnabled: Array<string>;
@@ -46,6 +49,9 @@ export class UnitTestTable implements IUnitTestTable {
 
         // using strict match by default
         this.strictMatch = true;
+
+        // allow groups by default
+        this.noGroupsAllowed = false;
     }
 
     // not used: Return value: 'Pass' if all pass, 'Error' if one error, 'Fail' if no error but at least one fail
@@ -81,6 +87,7 @@ export class UnitTestTable implements IUnitTestTable {
         window.pyodide.globals.running = true;
         window.pyodide.globals.unit_test_string = testCase.input;
         window.pyodide.globals.unit_regex_input = regex;
+        pydata += 'global unit_match_group_cnt\n';
         if (this.flags != null && this.flags != '') {
             if (this.strictMatch) {
                 pydata += 'unit_pattern = re.compile(' + '\'^\' + unit_regex_input + \'$\', '+this.flags+')\n';
@@ -94,6 +101,7 @@ export class UnitTestTable implements IUnitTestTable {
                 pydata += 'unit_pattern = re.compile(unit_regex_input)\n';
             }
         }
+        pydata += 'unit_match_group_cnt = unit_pattern.groups\n';
         pydata += 'unit_source = unit_test_string\n';
         pydata += 'global unit_match_result\n';
         if (this.strictMatch) {
@@ -126,12 +134,18 @@ export class UnitTestTable implements IUnitTestTable {
         // creating the status(the first) column
         const row = document.createElement('tr');
         let status: string = result.success? (JSON.stringify(result.match) === JSON.stringify(testCase.expect) ? 'Pass' : 'Fail') : 'Error';
+        console.log('groups:')
+        console.log(window.pyodide.globals.unit_match_group_cnt);
+        if (status == 'Pass' && JSON.stringify(testCase.expect) != '[]' && this.noGroupsAllowed && window.pyodide.globals.unit_match_group_cnt != 0) {
+            status = 'Fail'
+            // fail because no group is allowed
+        }
         const rowContent: string = '<td>'+status+'</td>';
         row.innerHTML = rowContent;
         this.table.append(row);
         if (!result.success) {
             (row.firstChild as HTMLTableDataCellElement).style.backgroundColor = 'red';
-        } else if (JSON.stringify(result.match) === JSON.stringify(testCase.expect)) {
+        } else if (status == 'Pass') {
             (row.firstChild as HTMLTableDataCellElement).style.backgroundColor = 'green';
         } else {
             (row.firstChild as HTMLTableDataCellElement).style.backgroundColor = 'orange';

@@ -53,7 +53,7 @@ export class RegexElement extends HTMLElement {
     private regexOptions: RegexOptions;
 
     // unit tests
-    private unitTestTable: UnitTestTable;
+    public unitTestTable: UnitTestTable;
 
     // private logger: Logger;
     private logger: RegexToolS3BucketLogger;
@@ -190,11 +190,13 @@ export class RegexElement extends HTMLElement {
                 };
                 (this.regexInput as RegexInput).droppedText = false;
                 // update status indicator
-                if (this.pyodide_compilePattern()) {
+                this.patternValidFlag = this.pyodide_compilePattern();
+                if (this.patternValidFlag) {
                     this.regexStatus.updateStatus('valid');
                 } else {
                     this.regexStatus.updateStatus('error');
                 }
+                console.log(this.patternValidFlag);
                 this._logRegexInputEvent();
                 if (this.checkWhileTyping) {
                     if (this.patternValidFlag) {

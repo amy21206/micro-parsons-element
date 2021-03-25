@@ -6,7 +6,25 @@
 <body>
 <h2>Problem 2(write)</h2>
 <div>
-Capture A “Firstname Lastname” name at the beginning of each line, e.g. Zihan Wu, Z Wu; should not match zihan wu, zihan Zihan Wu, zi-han Wu, zihan zihan wu
+Capture A "Firstname Lastname" name <b>at the beginning of each line</b>.
+<br>
+e.g. for sentence
+<br>
+<b>Jane Doe is eating breakfast.</b>
+<br>
+Your regex should capture "Jane Doe". 
+<br>
+But in sentence
+<br>
+<b>Today is John Doe's birthday.</b>
+<br>
+Your regex should NOT capture the name in the sentence as it does not start from the beginning of the string.
+<br>
+Notice that the name should consist of two words, each word has at least one letter, and starts with a capital letter. No other symbols are allowed in the name.
+<br>
+Some valid names are: <b>Issac Newton</b>, <b>I Newton</b>;
+<br>
+Some invalid names are: <b>john doe</b>, <b>Ling-Ling Zhang</b>.
 <br>
 
 </div>
@@ -15,8 +33,17 @@ Capture A “Firstname Lastname” name at the beginning of each line, e.g. Ziha
 import "./packages/regex-element/regex-element.js";
 document.querySelector('.test-div').innerHTML = `<regex-element id="abcd" problem-id='thinkaloud2'></regex-element>`;
 let regexElement = document.querySelector('#abcd');
-regexElement.setTestCases([{input: 'Zihan Wu', expect: ['Zihan Wu'], notes:'A matching testcase'}, {input: 'Z Wu', expect:['Z Wu'], notes: 'A matching testcase'}, {input: 'zihan wu', expect: [], notes:'A name with lower case letters'}, {input: 'zi-han Wu', expect: [], notes: 'A name with a dash in the middle.'}]);
-regexElement.setInitialTestString('match:\nZihan Wu\nZ Wu\n\ndo mot match:\nzihan wu\nzihan Zihan Wu\nzi-han Wu\nzihan zihan wu\n');
+regexElement.unitTestTable.strictMatch = false;
+regexElement.setTestCases([
+    {input: 'Jane Doe is eating breakfast', expect: ['Jane Doe'], notes:'A matching testcase'},
+    {input: 'Today is John Doe\'s birthday', expect:[], notes: ''},
+    {input: 'Ben Platt is a great Broadway actor.', expect: ['Ben Platt'], notes:''},
+    {input: 'Ling-Ling practices violin 40 hours a day.', expect: [], notes: ''},
+    {input: 'A B is a very simple name.', expect: ['A B'], notes: ''},
+    {input: 'But when in the middle A B should not be captured.', expect: [], notes: ''},
+    {input: 'issac Newton does not have his name capitalized.', expect: [], notes: ''}
+    ]);
+regexElement.setInitialTestString('Extract name from:\nJane Doe is eating breakfast.\nBen Platt is a great Broadway actor.\n\nDo not extract name from:\nLing-Ling practices violin 40 hours a day.\nToday is John Doe\'s birthday.\n');
 </script>
 </body>
 
