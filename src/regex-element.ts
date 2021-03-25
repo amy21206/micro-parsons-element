@@ -399,14 +399,15 @@ export class RegexElement extends HTMLElement {
         sheet.innerHTML += '.regex-error-message {color: red; font-family: monospace; font-size: 15px;}\n';
         sheet.innerHTML += '.regex-error-message.hidden {visibility: collapse;}\n';
         // parsons block
-        sheet.innerHTML += '.parsons-block {display: inline-block; font-family: monospace; font-size: large; background-color: white; padding: 1px 2px; border: 1px solid; border-color:gray; margin: 0 1px; border-radius: 2px;}\n';
+        sheet.innerHTML += '.parsons-block {display: inline-block; font-family: monospace; font-size: large; background-color: white; padding: 1px 2px; border: 1px solid; border-color:gray; margin: 0 1px; border-radius: 2px; position: relative;}\n';
         sheet.innerHTML += '.parsons-block:hover, .parsons-block:focus { border-color: black; padding: 0 6px; border: 2px solid;}\n';
         sheet.innerHTML += '.drop-area { background-color: #b1dafa; }\n';
         sheet.innerHTML += '.drop-area.Pass { background-color: #bcebd7; }\n';
         sheet.innerHTML += '.drop-area.Fail { background-color: #ebd071; }\n';
         sheet.innerHTML += '.drop-area.Error { background-color: #ff99b3; }\n';
         // TODO:(UI) move the tooltip to the top of the line
-        sheet.innerHTML += '.parsons-block .tooltip { visibility: hidden; width: 120px;  background-color: black; color: #fff; text-align: center; padding: 5px 0; border-radius: 6px;  position: absolute; z-index: 1; margin: 0 10px; }\n';
+        sheet.innerHTML += '.parsons-block .tooltip { visibility: hidden; width: 120px;  background-color: black; color: #fff; text-align: center; padding: 5px 0; border-radius: 6px;  position: absolute; z-index: 1; margin: 0 10px; bottom: 120%; margin-left: -65px;}\n';
+        sheet.innerHTML += '.parsons-block .tooltip::after {content: " ";position: absolute; top: 100%;left: 50%; margin-left: -5px; border-width: 5px; border-style: solid; border-color: black transparent transparent transparent;}\n';
         sheet.innerHTML += '.drag-area .parsons-block:hover .tooltip { visibility: visible;}\n';
         sheet.innerHTML += '.drag-area{ width: 510px;}\n';
         sheet.innerHTML += '.regex-test-string-div, .regex-input-div { margin: 8px 0; height: fit-content; }\n';
