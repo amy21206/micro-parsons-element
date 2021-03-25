@@ -124,7 +124,7 @@ export class ParsonsInput implements IRegexInput {
                 }
             }
             newBlock.onclick = () => {
-                console.log('onclick');
+                console.log('expandable block onclick');
                 if ((newBlock.parentNode as HTMLDivElement).classList.contains('drag-area')) {
                     const text = this.expandableBlocks[i];
                     let firstBlock = null;
@@ -134,6 +134,12 @@ export class ParsonsInput implements IRegexInput {
                         newBlock.innerText = text.charAt(i);
                         newBlock.style.display = 'inline-block';
                         newBlock.classList.add('parsons-block');
+                        (newBlock as HTMLDivElement).onclick = () => {
+                            console.log('expandable new block onclick')
+                            newBlock.parentNode?.removeChild(newBlock);
+                            this.el.dispatchEvent(new Event('regexChanged'));
+                            // urgent todo: add event here
+                        }
                         if (firstBlock == null) {
                             firstBlock = newBlock;
                         }
@@ -189,9 +195,16 @@ export class ParsonsInput implements IRegexInput {
                 }
             }
             newBlock.onclick = () => {
+                console.log('normal block onclick');
                 if ((newBlock.parentNode as HTMLDivElement).classList.contains('drag-area')) {
                     let newBlockCopy = newBlock.cloneNode(true);
                     this._dropArea.appendChild(newBlockCopy);
+                    (newBlockCopy as HTMLDivElement).onclick = () => {
+                        console.log('normal new block onclick')
+                        newBlockCopy.parentNode?.removeChild(newBlockCopy);
+                        this.el.dispatchEvent(new Event('regexChanged'));
+                        // urgent todo: add event here
+                    }
                     if (this.parentElement) {
                         this.parentElement.temporaryInputEvent = {
                             'event-type': 'parsons',
@@ -203,6 +216,11 @@ export class ParsonsInput implements IRegexInput {
                         };
                     }
                     this.el.dispatchEvent(new Event('regexChanged'));
+                }
+                if ((newBlock.parentNode as HTMLDivElement).classList.contains('drop-area')) {
+                    newBlock.parentNode?.removeChild(newBlock);
+                    this.el.dispatchEvent(new Event('regexChanged'));
+                    // urgent todo: add event here
                 }
             }
         }
@@ -248,13 +266,25 @@ export class ParsonsInput implements IRegexInput {
                 if (isExpandable) {
                     const parentNode = event.item.parentNode;
                     const text = event.item.innerText;
+                    const insertPosition = this._getBlockPosition(event.item);
+                    const nextSibling = event.item.nextSibling;
                     parentNode?.removeChild(event.item);
                     for (let i = 0; i < text.length; ++i) {
                         const newBlock = document.createElement('div');
-                        this._dropArea.appendChild(newBlock);
+                        if (insertPosition == 0) {
+                            this._dropArea.appendChild(newBlock);
+                        } else {
+                            parentNode?.insertBefore(newBlock, nextSibling);
+                        }
                         newBlock.innerText = text.charAt(i);
                         newBlock.style.display = 'inline-block';
                         newBlock.classList.add('parsons-block');
+                        (newBlock as HTMLDivElement).onclick = () => {
+                            console.log('expandable new block onclick')
+                            newBlock.parentNode?.removeChild(newBlock);
+                            this.el.dispatchEvent(new Event('regexChanged'));
+                            // urgent todo: add event here
+                        }
                     }
                 }
                 this.el.dispatchEvent(new Event('regexChanged'));

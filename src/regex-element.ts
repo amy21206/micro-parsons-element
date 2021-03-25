@@ -387,7 +387,7 @@ export class RegexElement extends HTMLElement {
         const sheet = document.createElement('style');
         sheet.innerHTML += '.regex-textbox {width: 100%; visibility: collapse;}\n';
         sheet.innerHTML += '.regex-input-and-test-status {display: flex; flex-wrap: nowrap;}\n';
-        sheet.innerHTML += '.regex-test-status {font-family: monospace; font-size: 15px; color:black;}\n';
+        sheet.innerHTML += '.regex-test-status {font-family: monospace; font-size: 15px; color:black; padding:20px 0 0 10px;height: fit-content;}\n';
         sheet.innerHTML += '.regex-test-status.Fail {font-family: monospace; font-size: 15px; color:#ebd071;}\n';
         sheet.innerHTML += '.regex-test-status.Pass {font-family: monospace; font-size: 15px; color:green;}\n';
         // regex status tag
@@ -408,7 +408,8 @@ export class RegexElement extends HTMLElement {
         // TODO:(UI) move the tooltip to the top of the line
         sheet.innerHTML += '.parsons-block .tooltip { visibility: hidden; width: 120px;  background-color: black; color: #fff; text-align: center; padding: 5px 0; border-radius: 6px;  position: absolute; z-index: 1; margin: 0 10px; }\n';
         sheet.innerHTML += '.drag-area .parsons-block:hover .tooltip { visibility: visible;}\n';
-        sheet.innerHTML += '.regex-test-string-div, .regex-input-div { margin: 8px 0; }\n';
+        sheet.innerHTML += '.drag-area{ width: 510px;}\n';
+        sheet.innerHTML += '.regex-test-string-div, .regex-input-div { margin: 8px 0; height: fit-content; }\n';
         sheet.innerHTML += '.regex-input-div { width: 80%; }\n';
         sheet.innerHTML += '.regex-input-div > div {display:inline-block;}\n'
         // the dropdown menu for regex options
@@ -423,13 +424,14 @@ export class RegexElement extends HTMLElement {
         sheet.innerHTML += '.regex-unittest > table, .regex-unittest td {border: 1px solid black; padding: 3px; text-align: center; border-collapse: collapse;}\n'
         sheet.innerHTML += '.regex-unittest.collapse{visibility: collapse;}\n'
         // for study 0: hide the table
-        // sheet.innerHTML += '.regex-unittest{visibility: collapse;}\n'
+        sheet.innerHTML += '.regex-unittest{visibility: collapse;}\n'
 
         document.body.appendChild(sheet);
         this.root.appendChild(sheet);
 
         const global_sheet = document.createElement('style');
         global_sheet.innerHTML += '.regex-test-string .ql-editor, .regex-input .ql-editor { padding: 5px; border: 1px solid; border-radius: 3px; font-family: monospace; font-size: 14px; box-shadow: inset 0 1px 2px rgb(0 0 0 / 10%); line-height: 18px; letter-spacing: 0.5px;}\n';
+        global_sheet.innerHTML += '.regex-input .ql-editor {height: fit-content;}\n';
         global_sheet.innerHTML += '.ql-editor { box-shadow: 0 0 2px 5px #b1dafa; margin: 5px; }\n';
         global_sheet.innerHTML += '.Pass .ql-editor { box-shadow: 0 0 2px 5px #bcebd7; margin: 5px; }\n';
         global_sheet.innerHTML += '.Fail .ql-editor { box-shadow: 0 0 2px 5px #ebd071; margin: 5px; }\n';

@@ -134,8 +134,6 @@ export class UnitTestTable implements IUnitTestTable {
         // creating the status(the first) column
         const row = document.createElement('tr');
         let status: string = result.success? (JSON.stringify(result.match) === JSON.stringify(testCase.expect) ? 'Pass' : 'Fail') : 'Error';
-        console.log('groups:')
-        console.log(window.pyodide.globals.unit_match_group_cnt);
         if (status == 'Pass' && JSON.stringify(testCase.expect) != '[]' && this.noGroupsAllowed && window.pyodide.globals.unit_match_group_cnt != 0) {
             status = 'Fail'
             // fail because no group is allowed
