@@ -17,8 +17,8 @@ import "./packages/regex-element/regex-element.js";
 document.querySelector('.test-div').innerHTML = `<regex-element input-type='parsons' id="abcd" problem-id='thinkaloud1'></regex-element>`;
 let parsonsElement = document.querySelector('#abcd');
 parsonsElement.regexInput.expandableBlocks = ['[]', '()'];
-parsonsElement.regexInput.expandableBlockTooltips = ['match a single character in the list', 'capturing group'];
-parsonsElement.parsonsExplanation = ['a', 'e', 'i', 'o', 'u', 'z', '-', 'Repeat between zero and unlimited times', 'asserts position at start of the string'];
+parsonsElement.regexInput.expandableBlockTooltips = ['Match any one of the characters inside the list', 'Grouping the content inside and return the value in the group'];
+parsonsElement.parsonsExplanation = ['Matches character \'a\' literally', 'Matches character \'e\' literally', 'Matches character \'i\' literally', 'Matches character \'o\' literally', 'Matches character \'u\' literally', 'Matches character \'z\' literally', 'Matches character \'-\' literally, or used in the brackets to match a range of characters', 'Matches 0 or more repetitions of the preceding expression', 'Matches the start of a string, or matches the start of a line in multiline mode'];
 parsonsElement.parsonsData = ['a', 'e', 'i', 'o', 'u', 'z', '-', '*', '^'];
 parsonsElement.setTestCases([
     {input: 'unicorn', expect: ['unicorn'], notes:'A matching testcase'},

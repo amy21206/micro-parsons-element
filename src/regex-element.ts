@@ -406,7 +406,7 @@ export class RegexElement extends HTMLElement {
         sheet.innerHTML += '.drop-area.Fail { background-color: #ebd071; }\n';
         sheet.innerHTML += '.drop-area.Error { background-color: #ff99b3; }\n';
         // TODO:(UI) move the tooltip to the top of the line
-        sheet.innerHTML += '.parsons-block .tooltip { visibility: hidden; width: 120px;  background-color: black; color: #fff; text-align: center; padding: 5px 0; border-radius: 6px;  position: absolute; z-index: 1; margin: 0 10px; bottom: 120%; margin-left: -65px;}\n';
+        sheet.innerHTML += '.parsons-block .tooltip { visibility: hidden; width: 200px;  background-color: black; color: #fff; text-align: center; padding: 5px 0; border-radius: 6px;  position: absolute; z-index: 1; margin: 0 10px; bottom: 120%; margin-left: -100px;}\n';
         sheet.innerHTML += '.parsons-block .tooltip::after {content: " ";position: absolute; top: 100%;left: 50%; margin-left: -5px; border-width: 5px; border-style: solid; border-color: black transparent transparent transparent;}\n';
         sheet.innerHTML += '.drag-area .parsons-block:hover .tooltip { visibility: visible;}\n';
         sheet.innerHTML += '.drag-area{ width: 510px;}\n';
