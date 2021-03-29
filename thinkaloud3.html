@@ -1,6 +1,20 @@
 <!DOCTYPE html>
 <html style="height: 100%;">
 <head>
+<script type="text/javascript" language="JavaScript">
+setTimeout(function(){
+    alert("Your time has run out on this problem. Please move on to the next problem.");
+    let href = "thinkaloud4.html";
+    const queryString = document.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const studentId = urlParams.get('student-id');
+    if (studentId) {
+        href += "?student-id=" + studentId;
+    }
+    window.location.href = href;
+}, 420000);
+// 7 minutes
+</script>
 </head>
 
 <body style="background-color: gray; height: 100%; margin: 0;">
@@ -34,6 +48,19 @@ parsonsElement.setTestCases([
     {input: 'abc.@def.com', expect: [], notes: ''},
     ]);
 parsonsElement.setInitialTestString('match:\nabc@umich.edu\n8ab.c_def9@example.regex.com\n\ndo not match:\nabc@ def.\nab..abc@def.com\nabc@def\n');
+parsonsElement.addEventListener('passed-all-testcases', function (e) {
+    setTimeout(function(){
+        alert("Congratulations! You have passed all test cases for this problem. Please move on to the next problem.");
+        let href = "thinkaloud4.html";
+        const queryString = document.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const studentId = urlParams.get('student-id');
+        if (studentId) {
+            href += "?student-id=" + studentId;
+        }
+        window.location.href = href;
+    }, 500);
+})
 </script>
 </div>
 </body>

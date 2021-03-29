@@ -1,13 +1,27 @@
 <!DOCTYPE html>
 <html style="height: 100%;">
 <head>
+<script type="text/javascript" language="JavaScript">
+setTimeout(function(){
+    alert("Your time has run out on this problem. Please move on to the next problem.");
+    let href = "thinkaloud2.html";
+    const queryString = document.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const studentId = urlParams.get('student-id');
+    if (studentId) {
+        href += "?student-id=" + studentId;
+    }
+    window.location.href = href;
+}, 420000);
+// 7 minutes
+</script>
 </head>
 
 <body style="background-color: gray; height: 100%; margin: 0;">
 <div style="max-width:700px; margin: 0 auto;background-color:white; padding: 10px 30px; height: 100%;">
 <h2>Problem 1</h2>
 <div>
-Capture words that start with a vowel letter(aeiou), but ends with a non-vowel letter, e.g. unicorn, element, should not match: banana, apple. All letters are lowercase.
+Capture words that start with a vowel letter(aeiou), but ends with a non-vowel letter, e.g. your regeular expression should match unicorn, element, but should not match: banana, apple. All letters are lowercase.
 
 
 </div>
@@ -16,18 +30,32 @@ Capture words that start with a vowel letter(aeiou), but ends with a non-vowel l
 import "./packages/regex-element/regex-element.js";
 document.querySelector('.test-div').innerHTML = `<regex-element input-type='parsons' id="abcd" problem-id='thinkaloud1'></regex-element>`;
 let parsonsElement = document.querySelector('#abcd');
-parsonsElement.regexInput.expandableBlocks = ['[]', '()'];
-parsonsElement.regexInput.expandableBlockTooltips = ['Match any one of the characters inside the list', 'Grouping the content inside and return the value in the group'];
-parsonsElement.parsonsExplanation = ['Matches character \'a\' literally', 'Matches character \'e\' literally', 'Matches character \'i\' literally', 'Matches character \'o\' literally', 'Matches character \'u\' literally', 'Matches character \'z\' literally', 'Matches character \'-\' literally, or used in the brackets to match a range of characters', 'Matches 0 or more repetitions of the preceding expression', 'Matches the start of a string, or matches the start of a line in multiline mode'];
-parsonsElement.parsonsData = ['a', 'e', 'i', 'o', 'u', 'z', '-', '*', '^'];
+parsonsElement.regexInput.expandableBlocks = ['[]', '[^]'];
+parsonsElement.regexInput.expandableBlockTooltips = ['Match any one of the characters inside the list', 'Match any one of the characters not in the list'];
+parsonsElement.parsonsExplanation = ['Matches character \'a\' literally', 'Matches character \'e\' literally', 'Matches character \'i\' literally', 'Matches character \'o\' literally', 'Matches character \'u\' literally', 'Matches character \'z\' literally', 'Matches alphanumeric characters and underscore (A-Z, a-z, 0-9, _)', 'Matches character \'-\' literally, or used in the brackets to match a range of characters', 'Matches 0 or more repetitions of the preceding expression'];
+parsonsElement.parsonsData = ['a', 'e', 'i', 'o', 'u', 'z', '\\w', '-', '*'];
 parsonsElement.setTestCases([
     {input: 'unicorn', expect: ['unicorn'], notes:'A matching testcase'},
     {input: 'element', expect:['element'], notes: 'A matching testcase'},
     {input: 'banana', expect: [], notes:'A word starts with a non-vowel and ends with a vowel.'},
     {input: 'apple', expect: [], notes: 'A word that starts with a vowel and ends with a vowel.'},
-    {input: 'abcdefghizsdz', expect: [], notes: ''}
+    {input: 'abcdefghizsdz', expect: ['abcdefghizsdz'], notes: ''},
+    {input: 'abc9defghizsdz', expect: [], notes: 'includes numbers in the middle'}
     ]);
 parsonsElement.setInitialTestString('match:\nunicorn\nelement\n\ndo not match:\nbanana\napple\n');
+parsonsElement.addEventListener('passed-all-testcases', function (e) {
+    setTimeout(function(){
+        alert("Congratulations! You have passed all test cases for this problem. Please move on to the next problem.");
+        let href = "thinkaloud2.html";
+        const queryString = document.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const studentId = urlParams.get('student-id');
+        if (studentId) {
+            href += "?student-id=" + studentId;
+        }
+        window.location.href = href;
+    }, 500);
+})
 </script>
 </div>
 </body>

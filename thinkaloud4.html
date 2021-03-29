@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html style="height: 100%;">
 <head>
+<script type="text/javascript" language="JavaScript">
+setTimeout(function(){
+    alert("Your time has run out on this problem. Thank you for completing the study.");
+}, 420000);
+// 7 minutes
+</script>
 </head>
 
 <body style="background-color: gray; height: 100%; margin: 0;">
@@ -30,6 +36,11 @@ regexElement.setTestCases([
     {input: '$2.233', expect: [], notes: ''},
     {input: '$$3.45', expect: [], notes: ''}
     ]);
+parsonsElement.addEventListener('passed-all-testcases', function (e) {
+    setTimeout(function(){
+        alert("Congratulations! You have passed all test cases for this problem. Thank you for completing the study.");
+    }, 500);
+})
 </script>
 </div>
 </body>

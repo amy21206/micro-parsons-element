@@ -137,7 +137,7 @@ export class RegexElement extends HTMLElement {
         const inputDiv = document.createElement('div');
         inputAndTestStatusDiv.appendChild(inputDiv);
         inputDiv.classList.add('regex-input-div');
-        inputDiv.append('REGULAR EXPRESSION:');
+        inputDiv.append('Your regular expression:');
         this.regexStatus = new RegexStatusTag();
         inputDiv.appendChild(this.regexStatus.el);
         inputDiv.appendChild(document.createElement('br'));
@@ -161,6 +161,10 @@ export class RegexElement extends HTMLElement {
                         this._testStatusDiv.classList.add(passCount == this.unitTestTable.testCaseCount ? 'Pass' : 'Fail');
                         this._testStatusDiv.innerText = 'Test cases passed: ' + passCount + '/' + this.unitTestTable.testCaseCount;
                         this.match();
+                        if (passCount === this.unitTestTable.testCaseCount) {
+                            console.log('dispatch');
+                            this.dispatchEvent(new CustomEvent('passed-all-testcases'));
+                        }
                     } else {
                         this.regexStatus.updateStatus('error');
                         this.regexInput.updateTestStatus('Error');
@@ -208,6 +212,10 @@ export class RegexElement extends HTMLElement {
                         this._testStatusDiv.classList.add('regex-test-status');
                         this._testStatusDiv.classList.add(passCount == this.unitTestTable.testCaseCount ? 'Pass' : 'Fail');
                         this.match();
+                        if (passCount === this.unitTestTable.testCaseCount) {
+                            console.log('dispatch');
+                            this.dispatchEvent(new CustomEvent('passed-all-testcases'));
+                        }
                     } else {
                         this.regexInput.updateTestStatus('Error');
                         this.testStringInput.quill?.removeFormat(0, this.testStringInput.quill.getLength() - 1, 'silent');
@@ -241,7 +249,7 @@ export class RegexElement extends HTMLElement {
         const testStringDiv = document.createElement('div');
         this.root.append(testStringDiv);
         testStringDiv.classList.add('regex-test-string-div');
-        testStringDiv.append('TEST STRING:');
+        testStringDiv.append('Test String:');
         testStringDiv.appendChild(document.createElement('br'));
         testStringDiv.append('Feel free to experiment with your own test cases. Click "Reset" to reset this area to initial state.');
         const resetTestStringButton = document.createElement('button');
