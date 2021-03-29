@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html style="height: 100%;">
+<head>
+</head>
+
+<body style="background-color: gray; height: 100%; margin: 0;">
+<div style="max-width:700px; margin: 0 auto;background-color:white; padding: 10px 30px; height: 100%;">
+<h2>Tool Tutorial: 1/2</h2>
+<div>
+Here is the description of a regex question.
+The only one test case for this problem is 'abc'
+</div>
+<a href='tutorial-parsons'>next tutorial page</a>
+<div class="test-div"></div>
+<script type="module">
+import "./packages/regex-element/regex-element.js";
+document.querySelector('.test-div').innerHTML = `<regex-element id="abcd" problem-id='thinkaloud2'></regex-element>`;
+let regexElement = document.querySelector('#abcd');
+regexElement.setTestCases([
+    {input: 'abc', expect: ['abc'], notes:'A matching testcase'},
+    ]);
+regexElement.setInitialTestString('match:\nabc\n\nDo not match:\ndef\n');
+</script>
+</div>
+</body>
+
+</html>

@@ -1,7 +1,7 @@
 import Sortable, { MoveEvent } from 'sortablejs';
 import { RegexEvent } from './LoggingEvents';
 
-declare class RegexElement{
+declare class RegexElement {
     logEvent(event: any): void;
     public temporaryInputEvent: any;
 }
@@ -78,11 +78,11 @@ export class ParsonsInput implements IRegexInput {
         }
     }
 
-    public setSourceBlocks = (data: Array<string>, tooltips:Array<string>|null): void => {
+    public setSourceBlocks = (data: Array<string>, tooltips: Array<string> | null): void => {
         // reset
         // this._dragSortable.destroy();
         // this._dropSortable.destroy();
-        
+
         // clearing previous settings 
         this._dragArea.innerHTML = '';
         this._dropArea.innerHTML = '';
@@ -227,7 +227,7 @@ export class ParsonsInput implements IRegexInput {
 
         this._initSortable();
     }
-    
+
     private _initSortable = (): void => {
         this._dragSortable.destroy();
         this._dropSortable.destroy();
@@ -242,6 +242,87 @@ export class ParsonsInput implements IRegexInput {
             direction: 'horizontal',
             animation: 150,
             draggable: '.parsons-block',
+            onStart: (event) => {
+                console.log('drag on start');
+            },
+            onEnd: (event) => {
+                console.log('drag on end');
+            },
+            onRemove: (event) => {
+                console.log('drag on remove');
+            },
+            onClone: (event) => {
+                console.log('drag on clone');
+                console.log(event.item.onclick);
+                console.log(event.clone.onclick);
+                const newBlock = event.clone;
+                if (event.item.classList.contains('expandable-block')) {
+                    newBlock.onclick = () => {
+                        console.log('expandable block onclick');
+                        if ((newBlock.parentNode as HTMLDivElement).classList.contains('drag-area')) {
+                            const text = (newBlock.firstChild?.textContent) || '';
+                            let firstBlock = null;
+                            for (let i = 0; i < text.length; ++i) {
+                                const newBlock = document.createElement('div');
+                                this._dropArea.appendChild(newBlock);
+                                newBlock.innerText = text.charAt(i);
+                                newBlock.style.display = 'inline-block';
+                                newBlock.classList.add('parsons-block');
+                                (newBlock as HTMLDivElement).onclick = () => {
+                                    console.log('expandable new block onclick')
+                                    newBlock.parentNode?.removeChild(newBlock);
+                                    this.el.dispatchEvent(new Event('regexChanged'));
+                                    // urgent todo: add event here
+                                }
+                                if (firstBlock == null) {
+                                    firstBlock = newBlock;
+                                }
+                            }
+                            if (this.parentElement && firstBlock) {
+                                this.parentElement.temporaryInputEvent = {
+                                    'event-type': 'parsons',
+                                    action: RegexEvent.ParsonsInputAction.ADD,
+                                    position: [-1, this._getBlockPosition(firstBlock as HTMLElement)],
+                                    answer: this._getTextArray(),
+                                    'is-expandable': true,
+                                    'add-by-click': true
+                                };
+                            }
+                            this.el.dispatchEvent(new Event('regexChanged'));
+                        }
+                    }
+                } else {
+                    newBlock.onclick = () => {
+                        console.log('normal block onclick');
+                        if ((newBlock.parentNode as HTMLDivElement).classList.contains('drag-area')) {
+                            let newBlockCopy = newBlock.cloneNode(true);
+                            this._dropArea.appendChild(newBlockCopy);
+                            (newBlockCopy as HTMLDivElement).onclick = () => {
+                                console.log('normal new block onclick')
+                                newBlockCopy.parentNode?.removeChild(newBlockCopy);
+                                this.el.dispatchEvent(new Event('regexChanged'));
+                                // urgent todo: add event here
+                            }
+                            if (this.parentElement) {
+                                this.parentElement.temporaryInputEvent = {
+                                    'event-type': 'parsons',
+                                    action: RegexEvent.ParsonsInputAction.ADD,
+                                    position: [-1, this._getBlockPosition(newBlockCopy as HTMLElement)],
+                                    answer: this._getTextArray(),
+                                    'is-expandable': false,
+                                    'add-by-click': true
+                                };
+                            }
+                            this.el.dispatchEvent(new Event('regexChanged'));
+                        }
+                        if ((newBlock.parentNode as HTMLDivElement).classList.contains('drop-area')) {
+                            newBlock.parentNode?.removeChild(newBlock);
+                            this.el.dispatchEvent(new Event('regexChanged'));
+                            // urgent todo: add event here
+                        }
+                    }
+                }
+            }
         });
 
         this._dropSortable = new Sortable(this._dropArea, {
@@ -260,7 +341,7 @@ export class ParsonsInput implements IRegexInput {
                         position: [-1, this._getBlockPosition(event.item)],
                         answer: this._getTextArray(),
                         'is-expandable': isExpandable,
-                        'add-by-click': false 
+                        'add-by-click': false
                     };
                 }
                 if (isExpandable) {
@@ -295,6 +376,7 @@ export class ParsonsInput implements IRegexInput {
             onEnd: (event) => {
                 // TODO: (bug) This is a workaround that only works in the demo.
                 // compare clientY with the position of item.
+                console.log(event.item.onclick);
                 let endposition = 0;
                 let action = RegexEvent.ParsonsInputAction.MOVE;
                 if ((event as any).originalEvent.clientY > 250) {
@@ -345,7 +427,7 @@ export class ParsonsInput implements IRegexInput {
         const parent = block.parentNode;
         if (parent) {
             for (position = 0; position < parent.childNodes.length; ++position) {
-                if(parent.childNodes[position] === block) {
+                if (parent.childNodes[position] === block) {
                     break;
                 }
             }

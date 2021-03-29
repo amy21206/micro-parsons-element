@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html style="height: 100%;">
+<head>
+</head>
+
+<body style="background-color: gray; height: 100%; margin: 0;">
+<div style="max-width:700px; margin: 0 auto;background-color:white; padding: 10px 30px; height: 100%;">
+<h2>Tool Tutorial: 2/2</h2>
+<div>
+Here is the description of a regex question.
+The only one test case for this problem is 'abc'
+
+</div>
+<div class="test-div"></div>
+<script type="module">
+import "./packages/regex-element/regex-element.js";
+document.querySelector('.test-div').innerHTML = `<regex-element input-type='parsons' id="abcd" problem-id='thinkaloud1'></regex-element>`;
+let parsonsElement = document.querySelector('#abcd');
+parsonsElement.regexInput.expandableBlocks = ['[]', '()'];
+parsonsElement.regexInput.expandableBlockTooltips = ['Match any one of the characters inside the list', 'Grouping the content inside and return the value in the group'];
+parsonsElement.parsonsExplanation = ['Matches character \'a\' literally', 'Matches character \'b\' literally', 'Matches character \'c\' literally', 'Matches character \'d\' literally', 'Matches character \'*\' literally'];
+parsonsElement.parsonsData = ['a', 'b', 'c', 'd', '\\*'];
+parsonsElement.setTestCases([
+    {input: 'abc', expect: ['abc'], notes:'A matching testcase'},
+    ]);
+parsonsElement.setInitialTestString('match:\nabc\n\ndo not match:\ndef\n');
+</script>
+</div>
+</body>
+
+</html>
