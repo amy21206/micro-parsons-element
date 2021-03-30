@@ -8,7 +8,7 @@ export class StatusOutput implements IStatusOutput {
         this.el.appendChild(this.text);
         this.text.id = 'status-output';
         this.el.classList.add('regex-textbox');
-        this.text.setAttribute("rows", "10");
+        // this.text.setAttribute("rows", "10");
 
         this.text.value = 'initializing...\n';
     }

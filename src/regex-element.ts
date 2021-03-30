@@ -249,19 +249,18 @@ export class RegexElement extends HTMLElement {
         const testStringDiv = document.createElement('div');
         this.root.append(testStringDiv);
         testStringDiv.classList.add('regex-test-string-div');
-        testStringDiv.append('Test String:');
-        testStringDiv.appendChild(document.createElement('br'));
-        testStringDiv.append('Feel free to experiment with your own test cases. Click "Reset" to reset this area to initial state.');
-        const resetTestStringButton = document.createElement('button');
-        testStringDiv.appendChild(document.createElement('br'));
-        testStringDiv.appendChild(resetTestStringButton);
-        resetTestStringButton.innerText = 'Reset'
-        resetTestStringButton.onclick = this.resetTestString;
+        testStringDiv.append('Feel free to experiment with your own test cases.');
 
         this.initialTestString = '';
         const slot = document.createElement('slot');
         slot.name = 'test-string-input'
         testStringDiv.appendChild(slot);
+
+        const resetTestStringButton = document.createElement('button');
+        testStringDiv.appendChild(document.createElement('br'));
+        testStringDiv.appendChild(resetTestStringButton);
+        resetTestStringButton.innerText = 'Reset'
+        resetTestStringButton.onclick = this.resetTestString;
 
         this.testStringInput = new TestStringInput();
         this.appendChild(this.testStringInput.el);

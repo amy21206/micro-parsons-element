@@ -19,9 +19,9 @@ setTimeout(function(){
 
 <body style="background-color: gray; height: 100%; margin: 0;">
 <div style="max-width:700px; margin: 0 auto;background-color:white; padding: 10px 30px; height: 100%;">
-<h2>Problem 1</h2>
+<h2>Problem 1 of 4</h2>
 <div>
-Capture words that start with a vowel letter(aeiou), but ends with a non-vowel letter, e.g. your regeular expression should match unicorn, element, but should not match: banana, apple. All letters are lowercase.
+Capture words that start with a vowel letter(aeiou), but ends with a non-vowel letter. There can be any number of letters in between(0 or more). e.g. your regular expression should match unicorn, element, but should not match: banana, apple. All letters are lowercase.
 
 
 </div>
@@ -39,10 +39,11 @@ parsonsElement.setTestCases([
     {input: 'element', expect:['element'], notes: 'A matching testcase'},
     {input: 'banana', expect: [], notes:'A word starts with a non-vowel and ends with a vowel.'},
     {input: 'apple', expect: [], notes: 'A word that starts with a vowel and ends with a vowel.'},
+    {input: 'az', expect: ['az'], notes: 'A word that starts with a vowel and ends with a vowel.'},
     {input: 'abcdefghizsdz', expect: ['abcdefghizsdz'], notes: ''},
     {input: 'abc9defghizsdz', expect: [], notes: 'includes numbers in the middle'}
     ]);
-parsonsElement.setInitialTestString('match:\nunicorn\nelement\n\ndo not match:\nbanana\napple\n');
+parsonsElement.setInitialTestString('match:\nunicorn\nelement\n\ndo not match:\nbanana\napple\n\n');
 parsonsElement.addEventListener('passed-all-testcases', function (e) {
     setTimeout(function(){
         alert("Congratulations! You have passed all test cases for this problem. Please move on to the next problem.");

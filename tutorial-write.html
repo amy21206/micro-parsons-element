@@ -4,13 +4,38 @@
 </head>
 
 <body style="background-color: gray; height: 100%; margin: 0;">
-<div style="max-width:700px; margin: 0 auto;background-color:white; padding: 10px 30px; height: 100%;">
-<h2>Tool Tutorial: 1/2</h2>
+<div style="max-width:700px; margin: 0 auto;background-color:white; padding: 10px 30px;">
+<h2>Tool 1 Tutorial(Write):</h2>
 <div>
-Here is the description of a regex question.
-The only one test case for this problem is 'abc'
+Before we start to work the problems, let's get familiar with the regular expression tool we are going to use. First, let's start with a regular version of the tool.
+<dl>
+    <dt><b>1. Regex input area</b></dt>
+    <dd>Click in the regex input area to write your own regular expression. The status tag shows if the regex is valid as you type in the area. If your regex is not valid, it will have the error message shown below the input.<br><img src="resources/regex-input-write.gif" width="400" style="border: 3px solid darkgray;"></dd>
+    <dt><b>2. Test string input area</b></dt>
+    <dd>
+    The area below contains test strings that will highlight the matches as you type your regex. It uses re.MULTILINE to match your regex with each line. You can type in the regex area to see how the regex you write matches with the strings in this area, or add your own test cases in this area. <br><img src="resources/test-string-input.gif" width="300" style="border: 3px solid darkgray;">
+    <br>
+    If there are grouping in your regex, it will use different colors to highlight the groups captured in your regex.<br><img src="resources/test-string-group.gif" width="300" style="border: 3px solid darkgray;">
+    <br>
+    Don't worry about losing the original test strings provided in this area - by clicking the Reset button, it will reset the test cases to initial state.<br><img src="resources/test-string-reset.gif" width="300" style="border: 3px solid darkgray;">
+    </dd>
+    <dt><b>3. Unit test cases</b></dt>
+    <dd>
+    For each problem, there are several testcases that you will need to pass using your regex. Not all of them are provided in the test string area. While typing in the regex input, the tool will check the regex with the testcases automatically. It will show you how many testcases you have passed of all the testcases.<br><img src="resources/unittest.gif" width="400" style="border: 3px solid darkgray;">
+    <br>
+    When you have passed all test cases for a problem, you will be prompted to move on to the next problem.<br><img src="resources/prompt-passed.png" width="400" style="border: 3px solid darkgray;">
+    <br>
+    There is a time limit(7 minutes) for each problem. After you have spent 7 minutes for one problem, you will also be prompted to move on to the next problem.<br><img src="resources/prompt-timeout.png" width="400" style="border: 3px solid darkgray;">
+    </dd>
+
+
+</dl>
+Let's try solving a sample problem first. In this sample problem, please write a regular expression to match "abc".
+<br>
+Note that because this is a tutorial problem, it will not take you to the next problem right after you pass all the testcases.
+<br>
+When you have done exploring the tool, click "Next tutorial page" at the end of this page to move on to the next page of tutorial.
 </div>
-<a href='tutorial-parsons'>next tutorial page</a>
 <div class="test-div"></div>
 <script type="module">
 import "./packages/regex-element/regex-element.js";
@@ -21,6 +46,9 @@ regexElement.setTestCases([
     ]);
 regexElement.setInitialTestString('match:\nabc\n\nDo not match:\ndef\n');
 </script>
+<div>
+<a href='tutorial-parsons.html'>Next tutorial page</a>
+</div>
 </div>
 </body>
 
