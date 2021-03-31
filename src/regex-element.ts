@@ -69,6 +69,9 @@ export class RegexElement extends HTMLElement {
     private pyodideInitialized: boolean;
 
     private _testStatusDiv: HTMLDivElement;
+    
+    // highlights the result using findall. used for study 1 and 2.
+    public matchFindall: boolean;
 
     constructor() {
         super();
@@ -365,6 +368,7 @@ export class RegexElement extends HTMLElement {
         console.log(this.problemId);
 
         this.temporaryInputEvent = null;
+        this.matchFindall = true;
     }
 
     set parsonsData(data: Array<string>) {

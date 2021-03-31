@@ -25,6 +25,7 @@ Quill.register(GroupBlot);
 
 declare class RegexElement{
     logEvent(event: any): void;
+    matchFindall: boolean;
 }
 
 export class TestStringInput implements ITestStringInput {
@@ -128,10 +129,14 @@ export class TestStringInput implements ITestStringInput {
         }
 
         // highlight the matches in a group sequence such that inner groups' color will cover outer groups'.
-        for (let i = 0; i < groupCount; ++ i) {
+        let index = 0;
+        if (this.parentElement?.matchFindall && groupCount > 1) {
+            index = 1;
+        }
+        for (index; index < groupCount; ++ index) {
             for (let j = 0; j < matches.length; ++ j) {
-                this.quill?.formatText(matches[j][i].start, matches[j][i].end - matches[j][i].start, {
-                    'background': colors[i]
+                this.quill?.formatText(matches[j][index].start, matches[j][index].end - matches[j][index].start, {
+                    'background': colors[index]
                 }, 'silent');
             }
         }
