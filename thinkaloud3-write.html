@@ -11,11 +11,15 @@ setTimeout(function(){
 
 <body style="background-color: gray; height: 100%; margin: 0;">
 <div style="max-width:700px; margin: 0 auto;background-color:white; padding: 10px 30px; height: 100%;">
-<h2>Problem 4 of 4</h2>
+<h2>Problem 3 of 4</h2>
 <div>
-Match any price in the form $3.45 or $23.32 or $400.
+Match any price in the form $3.45 or $23.32 or $400. Your regex should capture price meeting the following requirements:
+<ul>
+    <li>Start with a "$" sign;</li>
+    <li>The price should be an integer, or have exactly two digits after the decimal point.</li>
+</ul>
 <br>
-<b>Make sure to capture the whole string in one group.(use non-capturing group)</b>
+<b>Make sure to return the full matched string instead of letting regex to return the content inside the group if you are using parentheses.</b>
 
 <br>
 
@@ -36,9 +40,17 @@ regexElement.setTestCases([
     {input: '$2.233', expect: [], notes: ''},
     {input: '$$3.45', expect: [], notes: ''}
     ]);
-parsonsElement.addEventListener('passed-all-testcases', function (e) {
+regexElement.addEventListener('passed-all-testcases', function (e) {
     setTimeout(function(){
-        alert("Congratulations! You have passed all test cases for this problem. Thank you for completing the study.");
+        alert("Congratulations! You have passed all test cases for this problem. Please move on to the next problem.");
+        let href = "thinkaloud4-parsons.html";
+        const queryString = document.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const studentId = urlParams.get('student-id');
+        if (studentId) {
+            href += "?student-id=" + studentId;
+        }
+        window.location.href = href;
     }, 500);
 })
 </script>

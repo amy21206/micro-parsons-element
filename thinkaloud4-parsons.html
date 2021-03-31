@@ -19,14 +19,20 @@ setTimeout(function(){
 
 <body style="background-color: gray; height: 100%; margin: 0;">
 <div style="max-width:700px; margin: 0 auto;background-color:white; padding: 10px 30px; height: 100%;">
-<h2>Problem 3 of 4</h2>
+<h2>Problem 4 of 4</h2>
 <div>
-Capture email address with letters, numbers, underscore and dots.
+Capture email address with letters, numbers, underscore and dots. A valid email address defined in this problem must meet the following requirements:
 <br>
-Some valid email addresses are: abc@umich.edu, 8ab.c_def9@example.regex.com;
+<ul>
+    <li>Has an "@" symbol in between;</li>
+    <li>Before the "@" symbol, there can be one or more strings made of letters, numbers and underscores. A dot is used in between the strings. No two dots are allowed to appear consecutively.</li>
+    <li>After the "@" symbol, there can two or more strings made of letters, numbers and underscores. A dot is used in between the strings. No two dots are allowed to appear consecutively.</li>
+    <li>No other characters besides letters, numbers, underscores, dots, and the "@" symbol should appear in the email address.</li>
+</ul>
 <br>
-Some invalid email addresses are: abc@ def., ab..abc@def.com, abc@def
-
+For example, your regular expression should match email addresses like: abc@umich.edu, 8ab.c_def9@example.regex.com;
+<br>
+But your regex should not match: abc@ def., ab..abc@def.com, abc@def
 
 </div>
 <div class="test-div"></div>
@@ -50,15 +56,7 @@ parsonsElement.setTestCases([
 parsonsElement.setInitialTestString('match:\nabc@umich.edu\n8ab.c_def9@example.regex.com\n\ndo not match:\nabc@ def.\nab..abc@def.com\nabc@def\n');
 parsonsElement.addEventListener('passed-all-testcases', function (e) {
     setTimeout(function(){
-        alert("Congratulations! You have passed all test cases for this problem. Please move on to the next problem.");
-        let href = "thinkaloud4.html";
-        const queryString = document.location.search;
-        const urlParams = new URLSearchParams(queryString);
-        const studentId = urlParams.get('student-id');
-        if (studentId) {
-            href += "?student-id=" + studentId;
-        }
-        window.location.href = href;
+        alert("Congratulations! You have passed all test cases for this problem. Thank you for completing the study.");
     }, 500);
 })
 </script>

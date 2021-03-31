@@ -397,7 +397,7 @@ export class ParsonsInput implements IRegexInput {
                 //         answer: this._getTextArray(),
                 //     };
                 // }
-                // this.el.dispatchEvent(new Event('regexChanged'));
+                this.el.dispatchEvent(new Event('regexChanged'));
             },
         });
     }

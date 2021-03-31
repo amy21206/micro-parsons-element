@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html style="height: 100%;">
+<head>
+<script type="text/javascript" language="JavaScript">
+setTimeout(function(){
+    alert("Your time has run out on this problem. Please move on to the next problem.");
+    let href = "thinkaloud2.html";
+    const queryString = document.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const studentId = urlParams.get('student-id');
+    if (studentId) {
+        href += "?student-id=" + studentId;
+    }
+    window.location.href = href;
+}, 420000);
+// 7 minutes
+</script>
+</head>
+
+<body style="background-color: gray; height: 100%; margin: 0;">
+<div style="max-width:700px; margin: 0 auto;background-color:white; padding: 10px 30px; height: 100%;">
+<h2>Problem 1 of 4</h2>
+<div>
+Capture words that start with a vowel letter(aeiou), but ends with a non-vowel letter. There can be 0 or more letters in between. Also, it is not allowed to have other characters besides letter in between. e.g. your regular expression should match unicorn, element, but should not match: banana, apple. All letters are lowercase.
+
+</div>
+<div class="test-div"></div>
+<script type="module">
+import "./packages/regex-element/regex-element.js";
+document.querySelector('.test-div').innerHTML = `<regex-element id="abcd" problem-id='thinkaloud1'></regex-element>`;
+let regexElement = document.querySelector('#abcd');
+regexElement.setTestCases([
+    {input: 'unicorn', expect: ['unicorn'], notes:'A matching testcase'},
+    {input: 'element', expect:['element'], notes: 'A matching testcase'},
+    {input: 'banana', expect: [], notes:'A word starts with a non-vowel and ends with a vowel.'},
+    {input: 'apple', expect: [], notes: 'A word that starts with a vowel and ends with a vowel.'},
+    {input: 'az', expect: ['az'], notes: 'A word that starts with a vowel and ends with a vowel.'},
+    {input: 'abcdefghizsdz', expect: ['abcdefghizsdz'], notes: ''},
+    {input: 'abc9defghizsdz', expect: [], notes: 'includes numbers in the middle'}
+    ]);
+regexElement.setInitialTestString('match:\nunicorn\nelement\n\ndo not match:\nbanana\napple\n\n');
+regexElement.addEventListener('passed-all-testcases', function (e) {
+    setTimeout(function(){
+        alert("Congratulations! You have passed all test cases for this problem. Please move on to the next problem.");
+        let href = "thinkaloud2-parsons.html";
+        const queryString = document.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const studentId = urlParams.get('student-id');
+        if (studentId) {
+            href += "?student-id=" + studentId;
+        }
+        window.location.href = href;
+    }, 500);
+})
+</script>
+</div>
+</body>
+
+</html>
