@@ -22,7 +22,11 @@ export namespace RegexEvent {
         position: [number, number];
         answer: Array<string>;
         valid: boolean;
+        // only exist for add events
         'add-by-click': boolean | null;
+        // number of block added
+        'add-block-cnt': number | null;
+        // only exist for add events
         'is-expandable': boolean | null;
         'error-message': string | null;
     }

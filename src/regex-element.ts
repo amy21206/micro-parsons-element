@@ -169,8 +169,13 @@ export class RegexElement extends HTMLElement {
                             this.dispatchEvent(new CustomEvent('passed-all-testcases'));
                         }
                     } else {
-                        this.regexStatus.updateStatus('error');
-                        this.regexInput.updateTestStatus('Error');
+                        if (this.regexErrorMessage.classList.contains('hidden')) {
+                            // it means the regex is actually empty
+                            this.regexStatus.updateStatus('');
+                        } else {
+                            this.regexStatus.updateStatus('error');
+                            this.regexInput.updateTestStatus('Error');
+                        }
                         this.testStringInput.quill?.removeFormat(0, this.testStringInput.quill.getLength() - 1, 'silent');
                         this._testStatusDiv.innerText = 'Test cases passed: 0/' + this.unitTestTable.testCaseCount;
                         this.unitTestTable.setError();
@@ -220,7 +225,13 @@ export class RegexElement extends HTMLElement {
                             this.dispatchEvent(new CustomEvent('passed-all-testcases'));
                         }
                     } else {
-                        this.regexInput.updateTestStatus('Error');
+                        if (this.regexErrorMessage.classList.contains('hidden')) {
+                            // it means the regex is actually empty
+                            this.regexStatus.updateStatus('');
+                        } else {
+                            this.regexStatus.updateStatus('error');
+                            this.regexInput.updateTestStatus('Error');
+                        }
                         this.testStringInput.quill?.removeFormat(0, this.testStringInput.quill.getLength() - 1, 'silent');
                         this._testStatusDiv.innerText = 'Test cases passed: 0/' + this.unitTestTable.testCaseCount;
                         this.unitTestTable.setError();
@@ -510,11 +521,10 @@ export class RegexElement extends HTMLElement {
     */
     public pyodide_compilePattern = (): boolean => {
         // console.log('compile')
-        // if (this.regexInput.getText() == '') {
-        //     console.log('empty')
-        //     this.regexErrorMessage.innerText = 'empty pattern';
-        //     return false;
-        // }
+        if (this.regexInput.getText() == '') {
+            this.regexErrorMessage.classList.add('hidden');
+            return false;
+        }
         this.statusOutput.text.value = ''
         let pydata = 'import re\n';
         window.pyodide.globals.regex_input = this.regexInput.getText();
