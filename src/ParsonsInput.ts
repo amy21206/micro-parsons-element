@@ -95,7 +95,7 @@ export class ParsonsInput implements IRegexInput {
             newBlock.style.display = 'inline-block';
             newBlock.classList.add('parsons-block');
             newBlock.classList.add('expandable-block');
-            if (this.expandableBlockTooltips) {
+            if (this.expandableBlockTooltips && this.expandableBlockTooltips.length > i) {
                 const tooltip = document.createElement('span');
                 newBlock.appendChild(tooltip);
                 tooltip.innerText = this.expandableBlockTooltips[i];
@@ -166,7 +166,7 @@ export class ParsonsInput implements IRegexInput {
             newBlock.innerText = data[i];
             newBlock.style.display = 'inline-block';
             newBlock.classList.add('parsons-block');
-            if (tooltips) {
+            if (tooltips && tooltips.length > i) {
                 const tooltip = document.createElement('span');
                 newBlock.appendChild(tooltip);
                 tooltip.innerText = tooltips[i];

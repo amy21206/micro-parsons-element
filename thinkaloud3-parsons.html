@@ -3,7 +3,15 @@
 <head>
 <script type="text/javascript" language="JavaScript">
 setTimeout(function(){
-    alert("Your time has run out on this problem. Thank you for completing the study.");
+    alert("Your time has run out on this problem. Please move on to the next problem.");
+    let href = "thinkaloud4-write.html";
+    const queryString = document.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const studentId = urlParams.get('student-id');
+    if (studentId) {
+        href += "?student-id=" + studentId;
+    }
+    window.location.href = href;
 }, 420000);
 // 7 minutes
 </script>
@@ -34,7 +42,7 @@ parsonsElement.unitTestTable.noGroupsAllowed = true;
 parsonsElement.regexInput.expandableBlocks = ['()', '(?:)', '{}'];
 parsonsElement.regexInput.expandableBlockTooltips = ['Groups the expression inside the parentheses and returns only the expression inside the parentheses', 'Groups the expression inside the parentheses, but returns the full matched string as \'?:\' negates the effect of grouping', 'Matches the previous expression m times when m is put into the curly braces'];
 parsonsElement.parsonsExplanation = ['Matches character \'$\' literally', 'Matches character \'.\' literally', 'Matches all digits (0-9)', 'Matches character \'2\' literally or used as a number in curly braces', 'Match 1 or more repetitions of the preceding expression', 'Match either 0 or 1 repetitions of the preceding expression'];
-parsonsElement.parsonsData = ['\\$', '\\.', '\\d', '2', '+', '?'];
+parsonsElement.parsonsData = ['\\$', '\\.', '\\d', '2', '+', '?', '\\.\\d{2}'];
 parsonsElement.setTestCases([
     {input: '$3.45', expect: ['$3.45'], notes:'A matching testcase'},
     {input: '$400', expect:['$400'], notes: ''},

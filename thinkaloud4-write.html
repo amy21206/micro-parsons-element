@@ -3,15 +3,7 @@
 <head>
 <script type="text/javascript" language="JavaScript">
 setTimeout(function(){
-    alert("Your time has run out on this problem. Please move on to the next problem.");
-    let href = "thinkaloud4.html";
-    const queryString = document.location.search;
-    const urlParams = new URLSearchParams(queryString);
-    const studentId = urlParams.get('student-id');
-    if (studentId) {
-        href += "?student-id=" + studentId;
-    }
-    window.location.href = href;
+    alert("Your time has run out on this problem. Thank you for completing the study.");
 }, 420000);
 // 7 minutes
 </script>

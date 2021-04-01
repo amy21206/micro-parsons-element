@@ -3,15 +3,7 @@
 <head>
 <script type="text/javascript" language="JavaScript">
 setTimeout(function(){
-    alert("Your time has run out on this problem. Please move on to the next problem.");
-    let href = "thinkaloud4.html";
-    const queryString = document.location.search;
-    const urlParams = new URLSearchParams(queryString);
-    const studentId = urlParams.get('student-id');
-    if (studentId) {
-        href += "?student-id=" + studentId;
-    }
-    window.location.href = href;
+    alert("Your time has run out on this problem. Thank you for completing the study.");
 }, 420000);
 // 7 minutes
 </script>
@@ -43,7 +35,7 @@ let parsonsElement = document.querySelector('#abcd');
 parsonsElement.regexInput.expandableBlocks = ['()'];
 parsonsElement.regexInput.expandableBlockTooltips = ['Grouping the content inside and return the value in the group'];
 parsonsElement.parsonsExplanation = ['Matches alphanumeric characters and underscore (A-Z, a-z, 0-9, _)', 'Matches character \'@\' literally', 'Matches character \'.\' literally', 'Match 1 or more repetitions of the preceding expression','Match 0 or more repetitions of the preceding expression', 'Match either 0 or 1 repetitions of the preceding expression'];
-parsonsElement.parsonsData = ['\\w', '@', '\\.', '+', '*', '?'];
+parsonsElement.parsonsData = ['\\w', '@', '\\.', '+', '*', '?', '\\w+\\.', '\\w*\\.'];
 parsonsElement.setTestCases([
     {input: 'abc@umich.edu', expect: ['abc@umich.edu'], notes:'A matching testcase'},
     {input: '8ab.c_def9@example.regex.com', expect:['8ab.c_def9@example.regex.com'], notes: 'A matching testcase'},

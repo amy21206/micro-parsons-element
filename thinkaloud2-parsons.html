@@ -4,7 +4,7 @@
 <script type="text/javascript" language="JavaScript">
 setTimeout(function(){
     alert("Your time has run out on this problem. Please move on to the next problem.");
-    let href = "thinkaloud3.html";
+    let href = "thinkaloud3-write.html";
     const queryString = document.location.search;
     const urlParams = new URLSearchParams(queryString);
     const studentId = urlParams.get('student-id');
@@ -52,7 +52,7 @@ parsonsElement.unitTestTable.strictMatch = false;
 parsonsElement.regexInput.expandableBlocks = ['[]'];
 parsonsElement.regexInput.expandableBlockTooltips = ['Match any one of the characters inside the list'];
 parsonsElement.parsonsExplanation = ['Matches character \'A\' literally', 'Matches character \'Z\' literally', 'Matches character \'a\' literally', 'Matches character \'z\' literally', 'Matches character \' \'(space) literally', 'Matches character \'-\' literally, or used in the brackets to match a range of characters', 'Matches 0 or more repetitions of the preceding expression', 'Match the start of a string, or the start of a line when used in multiline mode', 'Match the end of a string, or the end of a line when used in multiline mode'];
-parsonsElement.parsonsData = ['A', 'Z', 'a', 'z', ' ', '-', '*', '^', '$'];
+parsonsElement.parsonsData = ['A', 'Z', 'a', 'z', ' ', '-', '*', '^', '$', '[a-z]', '[A-Z]'];
 parsonsElement.setTestCases([
     {input: 'Jane Doe is eating breakfast', expect: ['Jane Doe'], notes:'A matching testcase'},
     {input: 'Today is John Doe\'s birthday', expect:[], notes: ''},

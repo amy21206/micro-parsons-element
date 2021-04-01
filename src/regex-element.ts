@@ -203,7 +203,7 @@ export class RegexElement extends HTMLElement {
                 } else {
                     this.regexStatus.updateStatus('error');
                 }
-                console.log(this.patternValidFlag);
+                // console.log(this.patternValidFlag);
                 this._logRegexInputEvent();
                 if (this.checkWhileTyping) {
                     if (this.patternValidFlag) {
@@ -216,7 +216,7 @@ export class RegexElement extends HTMLElement {
                         this._testStatusDiv.classList.add(passCount == this.unitTestTable.testCaseCount ? 'Pass' : 'Fail');
                         this.match();
                         if (passCount === this.unitTestTable.testCaseCount) {
-                            console.log('dispatch');
+                            // console.log('dispatch');
                             this.dispatchEvent(new CustomEvent('passed-all-testcases'));
                         }
                     } else {
@@ -530,7 +530,7 @@ export class RegexElement extends HTMLElement {
             // updates error message
             const regexError = String(err).split('\n');
             const errorMessage = regexError[regexError.length - 2];
-            console.log(errorMessage);
+            // console.log(errorMessage);
             this.regexErrorMessage.innerText = errorMessage;
             if (this.regexErrorMessage.classList.contains('hidden')) {
                 this.regexErrorMessage.classList.remove('hidden');
@@ -574,7 +574,7 @@ export class RegexElement extends HTMLElement {
     }
 
     public setTestCases(testCases: Array<TestCase>) {
-        console.log('set test cases');
+        // console.log('set test cases');
         this.unitTestTable.setTestCases(testCases);
     }
 
@@ -593,11 +593,11 @@ export class RegexElement extends HTMLElement {
             'problem-id': this.problemId,
             'client-timestamp': this._getTimestamp()
         };
-        // console.log({...basicEvent, ...eventContent});
-        this.logger.info({
-            ...basicEvent,
-            ...eventContent
-        });
+        console.log({...basicEvent, ...eventContent});
+        // this.logger.info({
+        //     ...basicEvent,
+        //     ...eventContent
+        // });
     }
 
     private _getTimestamp = (): string => {

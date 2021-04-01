@@ -4,7 +4,7 @@
 <script type="text/javascript" language="JavaScript">
 setTimeout(function(){
     alert("Your time has run out on this problem. Please move on to the next problem.");
-    let href = "thinkaloud2.html";
+    let href = "thinkaloud2-write.html";
     const queryString = document.location.search;
     const urlParams = new URLSearchParams(queryString);
     const studentId = urlParams.get('student-id');
@@ -32,7 +32,7 @@ let parsonsElement = document.querySelector('#abcd');
 parsonsElement.regexInput.expandableBlocks = ['[]', '[^]'];
 parsonsElement.regexInput.expandableBlockTooltips = ['Match any one of the characters inside the list', 'Match any one of the characters not in the list'];
 parsonsElement.parsonsExplanation = ['Matches character \'a\' literally', 'Matches character \'e\' literally', 'Matches character \'i\' literally', 'Matches character \'o\' literally', 'Matches character \'u\' literally', 'Matches character \'z\' literally', 'Matches alphanumeric characters and underscore (A-Z, a-z, 0-9, _)', 'Matches character \'-\' literally, or used in the brackets to match a range of characters', 'Matches 0 or more repetitions of the preceding expression'];
-parsonsElement.parsonsData = ['a', 'e', 'i', 'o', 'u', 'z', '\\w', '-', '*'];
+parsonsElement.parsonsData = ['a', 'e', 'i', 'o', 'u', 'z', '\\w', '-', '*', '[a-z]', '[aeiou]', '[^aeiou]'];
 parsonsElement.setTestCases([
     {input: 'unicorn', expect: ['unicorn'], notes:'A matching testcase'},
     {input: 'element', expect:['element'], notes: 'A matching testcase'},

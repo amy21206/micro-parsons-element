@@ -5,35 +5,36 @@
 
 <body style="background-color: gray; height: 100%; margin: 0;">
 <div style="max-width:700px; margin: 0 auto;background-color:white; padding: 10px 30px;">
-<h2>Tool 1 Tutorial(Write):</h2>
+<h2>Tool 1 Tutorial:</h2>
 <div>
-Before we start to work the problems, let's get familiar with the regular expression tool we are going to use. First, let's start with a basic version of the tool.
 <dl>
+    <br>
     <dt><b>1. Regex input area</b></dt>
-    <dd>Click in the regex input area to write your own regular expression. The status tag shows if the regex is valid as you type in the area. If your regex is not valid, it will have the error message shown below the input.<br><img src="resources/regex-input-write.gif" width="400" style="border: 3px solid darkgray;"></dd>
+    <dd>The status tag shows if the regex is valid as you type. If your regex is not valid, it will show the error message.<br><img src="resources/regex-input-write.gif" width="400" style="border: 3px solid darkgray;"></dd>
+    <br>
     <dt><b>2. Test string input area</b></dt>
     <dd>
-    The area below contains test strings that will highlight the matches as you type your regex. It uses re.MULTILINE to match your regex with each line. You can type in the regex area to see how the regex you write matches with the strings in this area, or add your own test cases in this area. <br><img src="resources/test-string-input.gif" width="300" style="border: 3px solid darkgray;">
+    The area below contains test strings that will highlight the return value for method <b>re.findall</b> as you type. It uses re.MULTILINE to match your regex with each line. If there are grouping in your regex, it will use different colors to highlight the groups captured in your regex.<br><img src="resources/test-string-group.gif" width="400" style="border: 3px solid darkgray;">
     <br>
-    If there are grouping in your regex, it will use different colors to highlight the groups captured in your regex.<br><img src="resources/test-string-group.gif" width="300" style="border: 3px solid darkgray;">
-    <br>
-    Don't worry about losing the original test strings provided in this area - by clicking the Reset button, it will reset the test cases to initial state.<br><img src="resources/test-string-reset.gif" width="300" style="border: 3px solid darkgray;">
+    You can also add your own test cases. Don't worry about losing the original test strings provided in this area - Click the reset button to reset the test cases back to the initial state.
     </dd>
+    <br>
     <dt><b>3. Unit test cases</b></dt>
     <dd>
-    For each problem, there are several testcases that you will need to pass using your regex. Not all of them are provided in the test string area. While typing in the regex input, the tool will check the regex with the testcases automatically. It will show you how many testcases you have passed of all the testcases.<br><img src="resources/unittest.gif" width="600" style="border: 3px solid darkgray;">
+    For each problem, there are several testcases that you will need to pass using your regex. <b>Some testcases are hidden and are not provided in the test string area.</b> While typing in the regex input, the tool will check the regex with the testcases automatically.<br><img src="resources/unittest.gif" width="600" style="border: 3px solid darkgray;">
     <br>
-    When you have passed all test cases for a problem, you will be prompted to move on to the next problem.<br><img src="resources/prompt-passed.png" width="400" style="border: 3px solid darkgray;">
     <br>
-    There is a time limit(7 minutes) for each problem. After you have spent 7 minutes for one problem, you will also be prompted to move on to the next problem.<br><img src="resources/prompt-timeout.png" width="400" style="border: 3px solid darkgray;">
+    When you have passed all test cases for a problem, you will be prompted to move on to the next problem. There is a time limit(7 minutes) for each problem. 
     </dd>
 
 
 </dl>
+<br>
+<br>
 Let's try solving a sample problem first. In this sample problem, please write a regular expression to match "abc", and not match "def".
 <br>
-Note that because this is a tutorial problem, it will not take you to the next problem right after you pass all the testcases.
 <br>
+Note that because this is a tutorial problem, it will not take you to the next problem right after you pass all the testcases.
 When you have done exploring the tool, click "Next tutorial page" at the end of this page to move on to the next page of tutorial.
 </div>
 <div class="test-div"></div>
