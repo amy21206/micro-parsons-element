@@ -67,10 +67,18 @@ export class ParsonsInput implements IRegexInput {
         let ret = '';
         if (this._dropArea.hasChildNodes()) {
             let el = this._dropArea.firstChild as HTMLDivElement;
-            ret += el.innerText;
+            // if (el.innerHTML == '&nbsp;') {
+            //     console.log('here')
+            //     ret += ' ';
+            // } else {
+            //     console.log(el.innerText)
+            //     ret += el.innerText;
+            // }
+            // dealing with &nbsp;
+            ret += el.innerText.replace(/\xA0/g, ' ');
             while (el.nextSibling) {
                 el = el.nextSibling as HTMLDivElement;
-                ret += el.innerText;
+                ret += el.innerText.replace(/\xA0/g, ' ');
             }
             return ret;
         } else {
@@ -173,7 +181,13 @@ export class ParsonsInput implements IRegexInput {
         for (let i = 0; i < data.length; ++i) {
             const newBlock = document.createElement('div');
             this._dragArea.appendChild(newBlock);
-            newBlock.innerText = data[i];
+            if (data[i] === ' ') {
+                // console.log('here');
+                newBlock.innerHTML = '&nbsp;';
+            } else {
+                // console.log(data[i]);
+                newBlock.innerText = data[i];
+            }
             newBlock.style.display = 'inline-block';
             newBlock.classList.add('parsons-block');
             if (tooltips && tooltips.length > i) {

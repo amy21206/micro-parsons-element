@@ -30,7 +30,7 @@ But your regex should not match: abc@ def., ab..abc@def.com, abc@def
 <div class="test-div"></div>
 <script type="module">
 import "./packages/regex-element/regex-element.js";
-document.querySelector('.test-div').innerHTML = `<regex-element id="abcd" problem-id='thinkaloud3'></regex-element>`;
+document.querySelector('.test-div').innerHTML = `<regex-element id="abcd" problem-id='thinkaloud4'></regex-element>`;
 let regexElement = document.querySelector('#abcd');
 regexElement.setTestCases([
     {input: 'abc@umich.edu', expect: ['abc@umich.edu'], notes:'A matching testcase'},

@@ -35,16 +35,19 @@ Match any price in the form $3.45 or $23.32 or $400. Your regex should capture p
 <div class="test-div"></div>
 <script type="module">
 import "./packages/regex-element/regex-element.js";
-document.querySelector('.test-div').innerHTML = `<regex-element id="abcd" problem-id='thinkaloud4'></regex-element>`;
+document.querySelector('.test-div').innerHTML = `<regex-element id="abcd" problem-id='thinkaloud3'></regex-element>`;
 let regexElement = document.querySelector('#abcd');
 regexElement.setInitialTestString('match:\n$3.45\n$23.32\n$400\n\ndo mot match:\n$.23\n$400.1\n');
 regexElement.unitTestTable.noGroupsAllowed = true;
 regexElement.setTestCases([
     {input: '$3.45', expect: ['$3.45'], notes:'A matching testcase'},
+    {input: '$45', expect: ['$45'], notes:'A matching testcase'},
+    {input: '$3', expect: ['$3'], notes:'A matching testcase'},
     {input: '$400', expect:['$400'], notes: ''},
     {input: '$23.32', expect: ['$23.32'], notes:''},
     {input: '$.23', expect: [], notes: ''},
     {input: '$400.1', expect: [], notes: ''},
+    {input: '$40.', expect: [], notes: ''},
     {input: '$2.233', expect: [], notes: ''},
     {input: '$$3.45', expect: [], notes: ''}
     ]);

@@ -34,7 +34,6 @@ export class RegexInput implements IRegexInput {
             modules: {
                 toolbar: false
             },
-            theme: 'bubble',
         })
         this.quill.keyboard.addBinding({
                 key:'C',
@@ -137,5 +136,9 @@ export class RegexInput implements IRegexInput {
             this.el.classList.remove('Error');
         }
         this.el.classList.add(result);
+    }
+
+    public removeFormat = (): void => {
+        this.quill?.removeFormat(0, this.quill.getLength() - 1, 'silent');
     }
 }

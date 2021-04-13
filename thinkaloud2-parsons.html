@@ -62,8 +62,8 @@ parsonsElement.setTestCases([
     {input: 'But when in the middle A B should not be captured.', expect: [], notes: ''},
     {input: 'issac Newton does not have his name capitalized.', expect: [], notes: ''}
     ]);
-regexElement.setInitialTestString('Extract name from:\nJane Doe is eating breakfast.\nL Zhang is a great Broadway actor.\n\nDo not extract name from:\nLing-Ling practices violin 40 hours a day.\nToday is John Doe\'s birthday.\n');
-regexElement.addEventListener('passed-all-testcases', function (e) {
+parsonsElement.setInitialTestString('Extract name from:\nJane Doe is eating breakfast.\nL Zhang is a great Broadway actor.\n\nDo not extract name from:\nLing-Ling practices violin 40 hours a day.\nToday is John Doe\'s birthday.\n');
+parsonsElement.addEventListener('passed-all-testcases', function (e) {
     setTimeout(function(){
         alert("Congratulations! You have passed all test cases for this problem. Please move on to the next problem.");
         let href = "thinkaloud3-write.html";

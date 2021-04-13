@@ -1,3 +1,10 @@
+import { RegexEvent } from "./LoggingEvents";
+
+declare class RegexElement{
+    logEvent(event: any): void;
+    matchFindall: boolean;
+}
+
 export class UnitTestTable implements IUnitTestTable {
     // The input element
 	public el: HTMLDivElement;
@@ -16,6 +23,7 @@ export class UnitTestTable implements IUnitTestTable {
     private latestResults: Array<UnitTestResult>;
 
     private columnsEnabled: Array<string>;
+    public parentElement: RegexElement | null;
     constructor() {
         // init the element in HTML 
         this.el = document.createElement('div');
@@ -52,6 +60,7 @@ export class UnitTestTable implements IUnitTestTable {
 
         // allow groups by default
         this.noGroupsAllowed = false;
+        this.parentElement = null;
     }
 
     // not used: Return value: 'Pass' if all pass, 'Error' if one error, 'Fail' if no error but at least one fail
@@ -67,12 +76,22 @@ export class UnitTestTable implements IUnitTestTable {
         // clean up previous unit test result 
         this.table.innerHTML = this.table.rows[0].innerHTML;
         this.latestResults = [];
+        const statusList = [];
         for (let index = 0; index < this.testCases.length; ++ index) {
             const caseStatus = this.match(index, regex, this.testCases[index]);
             status = caseStatus == 'Error' ? 'Error' : (caseStatus == 'Fail' ? 'Fail' : status);
             if (caseStatus == 'Pass') {
                 passCount += 1;
             }
+            statusList.push(caseStatus);
+        }
+        // logging
+        const unittestRunEvent: RegexEvent.UnittestRun = {
+            'event-type': 'unittest-run',
+            'status': statusList 
+        }
+        if (this.parentElement) {
+            this.parentElement.logEvent(unittestRunEvent);
         }
         return passCount;
     }
@@ -117,6 +136,8 @@ export class UnitTestTable implements IUnitTestTable {
             window.pyodide.runPython(pydata);
             result.success = true;
             result.match = window.pyodide.globals.unit_match_result as Array<string>;
+            // console.log(result)
+            // console.log(testCase);
             return this._createRow(index, testCase, result);
         } catch(err) {
             result.success = false;
@@ -195,6 +216,14 @@ export class UnitTestTable implements IUnitTestTable {
         // TODO: make this an option. Set all revealed for study 0 and 1.
         this.hintRevealed = Array(testCases.length).fill(true);
         this.testCaseCount = testCases.length;
+        // logging
+        const unittestSetEvent: RegexEvent.UnittestSet = {
+            'event-type': 'unittest-set',
+            'test-cases': testCases
+        }
+        if (this.parentElement) {
+            this.parentElement.logEvent(unittestSetEvent);
+        }
     }
 
     private _getTableHead = (): string => {

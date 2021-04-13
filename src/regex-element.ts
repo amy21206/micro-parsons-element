@@ -80,7 +80,7 @@ export class RegexElement extends HTMLElement {
         this.logger = new RegexToolS3BucketLogger({
             api: "https://cjglpwd044.execute-api.us-east-1.amazonaws.com/regex-tool-api-aws-edtech-labs-si-umich-edu",
             bucket: "regex-tool-s3-aws-edtech-labs-si-umich-edu",
-            path: "pilot"
+            path: "within"
         });
 
         this.root = this.attachShadow({ mode: 'open' });
@@ -193,6 +193,7 @@ export class RegexElement extends HTMLElement {
             this.regexInput.el.slot = 'regex-input';
             (this.regexInput as RegexInput).initQuill();
             (this.regexInput as RegexInput).quill?.on('text-change', (delta) => {
+                (this.regexInput as RegexInput).removeFormat();
                 // logging free input event
                 this.temporaryInputEvent = {
                     'event-type': 'free-input',
@@ -307,6 +308,7 @@ export class RegexElement extends HTMLElement {
 
         // init element: unit test table
         this.unitTestTable = new UnitTestTable();
+        this.unitTestTable.parentElement = this;
         this.root.appendChild(this.unitTestTable.el);
 
         // init element: python output
@@ -603,11 +605,11 @@ export class RegexElement extends HTMLElement {
             'problem-id': this.problemId,
             'client-timestamp': this._getTimestamp()
         };
-        console.log({...basicEvent, ...eventContent});
-        // this.logger.info({
-        //     ...basicEvent,
-        //     ...eventContent
-        // });
+        // console.log({...basicEvent, ...eventContent});
+        this.logger.info({
+            ...basicEvent,
+            ...eventContent
+        });
     }
 
     private _getTimestamp = (): string => {
@@ -635,6 +637,21 @@ export class RegexElement extends HTMLElement {
         return studentId;
     }
 
+    public logCognitiveLoad = (cl: number): void => {
+        const cognitiveLoad:RegexEvent.CognitiveLoad = {
+            'event-type': 'cognitive-load',
+            'data': cl
+        };
+        this.logEvent(cognitiveLoad);
+    }
+
+    public logProblemFinished = (completed: boolean): void => {
+        const problemFinished:RegexEvent.ProblemFinished = {
+            'event-type': 'problem-finished',
+            'completed': completed
+        };
+        this.logEvent(problemFinished);
+    }
 }
 
 customElements.define('regex-element', RegexElement);

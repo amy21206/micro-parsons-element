@@ -30,10 +30,10 @@ But your regex should not match: abc@ def., ab..abc@def.com, abc@def
 <div class="test-div"></div>
 <script type="module">
 import "./packages/regex-element/regex-element.js";
-document.querySelector('.test-div').innerHTML = `<regex-element input-type='parsons' id="abcd" problem-id='thinkaloud3'></regex-element>`;
+document.querySelector('.test-div').innerHTML = `<regex-element input-type='parsons' id="abcd" problem-id='thinkaloud4'></regex-element>`;
 let parsonsElement = document.querySelector('#abcd');
-parsonsElement.regexInput.expandableBlocks = ['()'];
-parsonsElement.regexInput.expandableBlockTooltips = ['Grouping the content inside and return the value in the group'];
+parsonsElement.regexInput.expandableBlocks = ['(?:)'];
+parsonsElement.regexInput.expandableBlockTooltips = ['Treats the expression inside the parentheses as a whole regex group, but returns the full matched string as \'?:\' negates the effect of grouping'];
 parsonsElement.parsonsExplanation = ['Matches alphanumeric characters and underscore (A-Z, a-z, 0-9, _)', 'Matches character \'@\' literally', 'Matches character \'.\' literally', 'Match 1 or more repetitions of the preceding expression','Match 0 or more repetitions of the preceding expression', 'Match either 0 or 1 repetitions of the preceding expression'];
 parsonsElement.parsonsData = ['\\w', '@', '\\.', '+', '*', '?', '\\w+\\.', '\\w*\\.'];
 parsonsElement.setTestCases([

@@ -107,4 +107,26 @@ export namespace RegexEvent {
         'event-type': 'page-visibility-status';
         enabled: boolean;
     }
+
+    export type UnittestSet ={
+        'event-type': 'unittest-set';
+        'test-cases': any;
+    }
+
+    export type UnittestRun ={
+        'event-type': 'unittest-run';
+        // list of status for the unit tests
+        'status': Array<string>;
+    }
+
+    export type CognitiveLoad = {
+        'event-type': 'cognitive-load';
+        'data': number;
+    }
+
+    export type ProblemFinished = {
+        'event-type': 'problem-finished';
+        // true if passed all test cases, false if time run out
+        'completed': boolean;
+    }
 }

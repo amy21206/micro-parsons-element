@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html style="height: 100%;">
+<head>
+</head>
+
+<body style="background-color: gray; height: 100%; margin: 0;">
+<div style="max-width:700px; margin: 0 auto;background-color:white; padding: 10px 30px;">
+<h2>Regex Questions</h2>
+Next, you will complete 4 regular expression problems.
+<br>
+You have 7 minutes for each problem. When you pass all testcases or have spent 7 minutes on one problem, you will be prompted to answer how much mental effort you have invested in the previous problem, and then move on to the next question.
+<br>
+<br>
+Please make sure you <b>complete the tasks in an uninterrupted session</b> and <b>do not refresh the page</b>, or your progress will be lost and it will not be marked as completed.
+<br>
+<br>
+We have a <a href="http://regex-hosting-s3-aws-edtech-labs-si-umich-edu.s3-website-us-east-1.amazonaws.com/regex_cheatsheet-v2.pdf" target="_blank">cheatsheet</a> provided for you to solve the problem. Feel free to refer to it at any time.
+<br>
+<br>
+The timer will start as soon as you open the page for the question. When you are ready, click the button "start" below to start the questions.
+<br>
+<br>
+<button onclick="proceed()">start</button>
+<script>
+function proceed() {
+    const queryString = document.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const studentId = urlParams.get('student-id');
+    let href = '';
+    if (studentId % 2 == 0) {
+        href = 'within1-write.html';
+    } else {
+        href = 'within1-parsons.html';
+    }
+    href += "?student-id=" + studentId;
+    window.location.href = href;
+    return false;
+}
+</script>
+</body>
+
+</html>
