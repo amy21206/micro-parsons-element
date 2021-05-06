@@ -55,6 +55,7 @@ export namespace RegexEvent {
 
     export type TestStringInputEvent = {
         'event-type': 'test-string-input';
+        'slot': string | null; // positive or negative
         dropped: boolean;
         delta: any;
         'test-string': string;
@@ -62,12 +63,14 @@ export namespace RegexEvent {
 
     export type TestStringKeyboardEvent = {
         'event-type': 'test-string-keyboard';
+        'slot': string | null; // positive or negative
         range: any;
         keys: Array<string>; 
     }
 
     export type TestStringResetEvent = {
         'event-type': 'test-string-reset';
+        'slot': string | null; // positive or negative
         'test-string': string;
     }
 
@@ -78,6 +81,7 @@ export namespace RegexEvent {
 
     export type MatchTestStringEvent = {
         'event-type': 'match';
+        'slot': string | null; // positive or negative
         trigger: MatchTriggerType;
         regex: string;
         'test-string': string;

@@ -12,7 +12,7 @@ setTimeout(function(){
         href += "?student-id=" + studentId;
     }
     window.location.href = href;
-}, 420000);
+}, 4200000);
 // 7 minutes
 </script>
 </head>
@@ -40,7 +40,8 @@ regexElement.setTestCases([
     {input: 'abcdefghizsdz', expect: ['abcdefghizsdz'], notes: ''},
     {input: 'abc9defghizsdz', expect: [], notes: 'includes numbers in the middle'}
     ]);
-regexElement.setInitialTestString('match:\nunicorn\nelement\n\ndo not match:\nbanana\napple\n\n');
+regexElement.setPositiveInitialTestString('unicorn\nelement\n');
+regexElement.setNegativeInitialTestString('banana\napple\n');
 regexElement.addEventListener('passed-all-testcases', function (e) {
     setTimeout(function(){
         alert("Congratulations! You have passed all test cases for this problem. Please move on to the next problem.");

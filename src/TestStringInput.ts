@@ -34,10 +34,12 @@ export class TestStringInput implements ITestStringInput {
     public quill: Quill | null;
     public droppedText: boolean;
     public parentElement: RegexElement | null;
+    public slotName: string;
 
-    constructor() {
+    constructor(slotName: string) {
         this.el = document.createElement('div');
-        this.el.id = 'test-string-input'
+        this.slotName = slotName;
+        this.el.id = 'test-string-input' + slotName;
         this.el.classList.add('regex-test-string');
         this.quill = null;
         // console.log(Quill);
@@ -47,7 +49,7 @@ export class TestStringInput implements ITestStringInput {
     
     public initQuill = (): void => {
         // initializing quill
-        this.quill = new Quill('#test-string-input', {
+        this.quill = new Quill('#test-string-input'+ this.slotName, {
             modules: {
                 toolbar: false
             },
@@ -60,6 +62,7 @@ export class TestStringInput implements ITestStringInput {
             (range, context) => {
                 const testStringKeyboardEvent: RegexEvent.TestStringKeyboardEvent = {
                     'event-type': 'test-string-keyboard',
+                    'slot': this.slotName,
                     range: range,
                     keys: ['ctrl', 'c'] 
                 }
@@ -76,6 +79,7 @@ export class TestStringInput implements ITestStringInput {
             (range, context) => {
                 const testStringKeyboardEvent: RegexEvent.TestStringKeyboardEvent = {
                     'event-type': 'test-string-keyboard',
+                    'slot': this.slotName,
                     range: range,
                     keys: ['ctrl', 'v'] 
                 }

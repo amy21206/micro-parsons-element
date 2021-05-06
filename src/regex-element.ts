@@ -29,9 +29,17 @@ export class RegexElement extends HTMLElement {
     private regexStatus: RegexStatusTag;
     private regexErrorMessage: HTMLDivElement;
 
-    // The input box for test string (with highlight)
-    public testStringInput: TestStringInput;
-    private initialTestString: string;
+    // The input box for positive test strings (with highlight)
+    public positiveTestStringInput: TestStringInput;
+    private positiveInitialTestString: string;
+    // Saving previous checked text, used with checkWhileTyping
+    private positivePrevText: string;
+
+    // The input box for negative test strings (with highlight)
+    public negativeTestStringInput: TestStringInput;
+    private negativeInitialTestString: string;
+    // Saving previous checked text, used with checkWhileTyping
+    private negativePrevText: string;
 
     // Python output
     public statusOutput: StatusOutput;
@@ -42,10 +50,8 @@ export class RegexElement extends HTMLElement {
     // *temporary: The checkbox to enable always check (will be integrated in options later)
     private checkWhileTyping: boolean;
 
-    // Saving previous checked text, used with checkWhileTyping
-    private prevText: string;
-
-    private matchResult: Array<Array<MatchGroup>>;
+    private positiveMatchResult: Array<Array<MatchGroup>>;
+    private negativeMatchResult: Array<Array<MatchGroup>>;
 
     // random color representations for groups
     public groupColor: Array<string>;
@@ -176,7 +182,8 @@ export class RegexElement extends HTMLElement {
                             this.regexStatus.updateStatus('error');
                             this.regexInput.updateTestStatus('Error');
                         }
-                        this.testStringInput.quill?.removeFormat(0, this.testStringInput.quill.getLength() - 1, 'silent');
+                        this.positiveTestStringInput.quill?.removeFormat(0, this.positiveTestStringInput.quill.getLength() - 1, 'silent');
+                        this.negativeTestStringInput.quill?.removeFormat(0, this.negativeTestStringInput.quill.getLength() - 1, 'silent');
                         this._testStatusDiv.innerText = 'Test cases passed: 0/' + this.unitTestTable.testCaseCount;
                         this.unitTestTable.setError();
                     }
@@ -233,7 +240,8 @@ export class RegexElement extends HTMLElement {
                             this.regexStatus.updateStatus('error');
                             this.regexInput.updateTestStatus('Error');
                         }
-                        this.testStringInput.quill?.removeFormat(0, this.testStringInput.quill.getLength() - 1, 'silent');
+                        this.positiveTestStringInput.quill?.removeFormat(0, this.positiveTestStringInput.quill.getLength() - 1, 'silent');
+                        this.negativeTestStringInput.quill?.removeFormat(0, this.negativeTestStringInput.quill.getLength() - 1, 'silent');
                         this._testStatusDiv.innerText = 'Test cases passed: 0/' + this.unitTestTable.testCaseCount;
                         this.unitTestTable.setError();
                     }
@@ -262,46 +270,97 @@ export class RegexElement extends HTMLElement {
         this.appendChild(quillLinkRef);
 
         const testStringDiv = document.createElement('div');
+        testStringDiv.classList.add('regex-test-string-container');
+        this.root.append('Feel free to experiment with your own test cases.');
         this.root.append(testStringDiv);
-        testStringDiv.classList.add('regex-test-string-div');
-        testStringDiv.append('Feel free to experiment with your own test cases.');
+        const positiveTestStringDiv = document.createElement('div');
+        testStringDiv.append(positiveTestStringDiv);
+        positiveTestStringDiv.classList.add('regex-test-string-div');
+        positiveTestStringDiv.append('Match:');
 
-        this.initialTestString = '';
-        const slot = document.createElement('slot');
-        slot.name = 'test-string-input'
-        testStringDiv.appendChild(slot);
+        this.positiveInitialTestString = '';
+        const positiveSlot = document.createElement('slot');
+        positiveSlot.name = 'positive-test-string-input'
+        positiveTestStringDiv.appendChild(positiveSlot);
 
-        const resetTestStringButton = document.createElement('button');
-        testStringDiv.appendChild(document.createElement('br'));
-        testStringDiv.appendChild(resetTestStringButton);
-        resetTestStringButton.innerText = 'Reset'
-        resetTestStringButton.onclick = this.resetTestString;
+        const resetPositiveTestStringButton = document.createElement('button');
+        positiveTestStringDiv.appendChild(resetPositiveTestStringButton);
+        resetPositiveTestStringButton.innerText = 'Reset'
+        resetPositiveTestStringButton.onclick = this.resetPositiveTestString;
 
-        this.testStringInput = new TestStringInput();
-        this.appendChild(this.testStringInput.el);
-        this.testStringInput.el.slot = 'test-string-input';
-        this.testStringInput.initQuill();
-        this.prevText = this.testStringInput.getText();
-        this.testStringInput.parentElement = this;
-        this.testStringInput.quill?.on('text-change', (delta, _, source) => {
+        this.positiveTestStringInput = new TestStringInput('positive');
+        this.positiveTestStringInput.slotName = 'positive';
+        this.appendChild(this.positiveTestStringInput.el);
+        this.positiveTestStringInput.el.slot = 'positive-test-string-input';
+        this.positiveTestStringInput.initQuill();
+        this.positivePrevText = this.positiveTestStringInput.getText();
+        this.positiveTestStringInput.parentElement = this;
+        this.positiveTestStringInput.quill?.on('text-change', (delta, _, source) => {
             if (source == 'user') {
                 const testStringInputEvent: RegexEvent.TestStringInputEvent = {
                     'event-type': 'test-string-input',
-                    dropped: this.testStringInput.droppedText,
+                    'slot': 'positive',
+                    dropped: this.positiveTestStringInput.droppedText,
                     delta: delta,
-                    'test-string': this.testStringInput.getText()
+                    'test-string': this.positiveTestStringInput.getText()
                 }
                 this.logEvent(testStringInputEvent);
             }
-            this.testStringInput.droppedText = false;
-            if (this.testStringInput.getText() != this.prevText) {
-                this.prevText = this.testStringInput.getText();
+            this.positiveTestStringInput.droppedText = false;
+            if (this.positiveTestStringInput.getText() != this.positivePrevText) {
+                this.positivePrevText = this.positiveTestStringInput.getText();
                 // updating test_string in pyodide
                 // window.pyodide.globals.test_string = this.testStringInput.getText().slice(0, -1);
                 if (this.pyodideInitialized && this.checkWhileTyping && this.patternValidFlag) {
                     this.match();
                 } else {
-                    this.testStringInput.quill?.removeFormat(0, this.testStringInput.quill.getLength() - 1, 'silent');
+                    this.positiveTestStringInput.quill?.removeFormat(0, this.positiveTestStringInput.quill.getLength() - 1, 'silent');
+                }
+            }
+        })
+
+        const negativeTestStringDiv = document.createElement('div');
+        testStringDiv.append(negativeTestStringDiv);
+        negativeTestStringDiv.classList.add('regex-test-string-div');
+        negativeTestStringDiv.append('Do not match:');
+
+        this.negativeInitialTestString = '';
+        const negativeSlot = document.createElement('slot');
+        negativeSlot.name = 'negative-test-string-input'
+        negativeTestStringDiv.appendChild(negativeSlot);
+
+        const resetNegativeTestStringButton = document.createElement('button');
+        negativeTestStringDiv.appendChild(resetNegativeTestStringButton);
+        resetNegativeTestStringButton.innerText = 'Reset'
+        resetNegativeTestStringButton.onclick = this.resetNegativeTestString;
+
+        this.negativeTestStringInput = new TestStringInput('negative');
+        this.negativeTestStringInput.slotName = 'negative';
+        this.appendChild(this.negativeTestStringInput.el);
+        this.negativeTestStringInput.el.slot = 'negative-test-string-input';
+        this.negativeTestStringInput.initQuill();
+        this.negativePrevText = this.negativeTestStringInput.getText();
+        this.negativeTestStringInput.parentElement = this;
+        this.negativeTestStringInput.quill?.on('text-change', (delta, _, source) => {
+            if (source == 'user') {
+                const testStringInputEvent: RegexEvent.TestStringInputEvent = {
+                    'event-type': 'test-string-input',
+                    'slot': 'negative',
+                    dropped: this.negativeTestStringInput.droppedText,
+                    delta: delta,
+                    'test-string': this.negativeTestStringInput.getText()
+                }
+                this.logEvent(testStringInputEvent);
+            }
+            this.negativeTestStringInput.droppedText = false;
+            if (this.negativeTestStringInput.getText() != this.negativePrevText) {
+                this.negativePrevText = this.negativeTestStringInput.getText();
+                // updating test_string in pyodide
+                // window.pyodide.globals.test_string = this.testStringInput.getText().slice(0, -1);
+                if (this.pyodideInitialized && this.checkWhileTyping && this.patternValidFlag) {
+                    this.match();
+                } else {
+                    this.negativeTestStringInput.quill?.removeFormat(0, this.negativeTestStringInput.quill.getLength() - 1, 'silent');
                 }
             }
         })
@@ -316,7 +375,8 @@ export class RegexElement extends HTMLElement {
         this.root.appendChild(this.statusOutput.el);
 
         // initialize the match result array
-        this.matchResult = new Array<Array<MatchGroup>>();
+        this.positiveMatchResult = new Array<Array<MatchGroup>>();
+        this.negativeMatchResult = new Array<Array<MatchGroup>>();
 
         // initialize the color array
         // TODO: (UI) only light colors that do not obfuscates the word
@@ -401,7 +461,7 @@ export class RegexElement extends HTMLElement {
     private initPyodide = (): void => {
         languagePluginLoader.then(() => {
             this.statusOutput.text.value += "Init finished.\n";
-            window.pyodide.globals.test_string = this.prevText;
+            window.pyodide.globals.test_string = this.positivePrevText;
             this.pyodideInitialized = true;
         });
     }
@@ -434,7 +494,9 @@ export class RegexElement extends HTMLElement {
         sheet.innerHTML += '.parsons-block .tooltip::after {content: " ";position: absolute; top: 100%;left: 50%; margin-left: -5px; border-width: 5px; border-style: solid; border-color: black transparent transparent transparent;}\n';
         sheet.innerHTML += '.drag-area .parsons-block:hover .tooltip { visibility: visible;}\n';
         sheet.innerHTML += '.drag-area{ width: 510px;}\n';
+        sheet.innerHTML += '.regex-test-string-container {display:flex;}\n';
         sheet.innerHTML += '.regex-test-string-div, .regex-input-div { margin: 8px 0; height: fit-content; }\n';
+        sheet.innerHTML += '.regex-test-string-div { flex: 1; }\n';
         sheet.innerHTML += '.regex-input-div { width: 80%; }\n';
         sheet.innerHTML += '.regex-input-div > div {display:inline-block;}\n'
         // the dropdown menu for regex options
@@ -472,20 +534,37 @@ export class RegexElement extends HTMLElement {
     public match = (): void => {
         this.statusOutput.text.value = ''
         let pydata = 'import re\n';
-        window.pyodide.globals.test_string = this.prevText;
+        window.pyodide.globals.positive_test_string = this.positivePrevText;
+        window.pyodide.globals.negative_test_string = this.negativePrevText;
         window.pyodide.globals.regex_input = this.regexInput.getText();
         if (this.regexOptions.getFlags() != null) {
             pydata += 'pattern = re.compile(regex_input, ' + this.regexOptions.getFlags() + ')\n';
         } else {
             pydata += 'pattern = re.compile(regex_input)\n';
         }
-        pydata += 'source = test_string\n';
-        pydata += 'global match_result\n';
-        pydata += 'match_result = []\n';
+        pydata += 'source = positive_test_string\n';
+        pydata += 'global positive_match_result\n';
+        pydata += 'positive_match_result = []\n';
         // TODO: (performance)try to reduce assigning data here
         pydata += 'for match_obj in re.finditer(pattern, source):\n';
         pydata += '    match_data = []\n';
-        pydata += '    match_result.append(match_data)\n';
+        pydata += '    positive_match_result.append(match_data)\n';
+        pydata += '    for group_id in range(pattern.groups + 1):\n';
+        pydata += '        group_data = {}\n';
+        pydata += '        match_data.append(group_data)\n';
+        pydata += '        group_data[\'group_id\'] = group_id\n';
+        pydata += '        group_data[\'start\'] = match_obj.start(group_id)\n';
+        pydata += '        group_data[\'end\'] = match_obj.end(group_id)\n';
+        pydata += '        group_data[\'data\'] = match_obj.group(group_id)\n';
+        pydata += '    for name, index in pattern.groupindex.items():\n';
+        pydata += '        match_data[index][\'name\'] = name\n';
+        pydata += 'source = negative_test_string\n';
+        pydata += 'global negative_match_result\n';
+        pydata += 'negative_match_result = []\n';
+        // TODO: (performance)try to reduce assigning data here
+        pydata += 'for match_obj in re.finditer(pattern, source):\n';
+        pydata += '    match_data = []\n';
+        pydata += '    negative_match_result.append(match_data)\n';
         pydata += '    for group_id in range(pattern.groups + 1):\n';
         pydata += '        group_data = {}\n';
         pydata += '        match_data.append(group_data)\n';
@@ -498,22 +577,35 @@ export class RegexElement extends HTMLElement {
         window.pyodide.runPythonAsync(pydata)
             .then(_ => {
                 // TODO: (robustness)test edge cases with no match
-                this.matchResult = window.pyodide.globals.match_result as Array<Array<MatchGroup>>;
+                this.positiveMatchResult = window.pyodide.globals.positive_match_result as Array<Array<MatchGroup>>;
+                this.negativeMatchResult = window.pyodide.globals.negative_match_result as Array<Array<MatchGroup>>;
                 this.addMatchResultToOutput();
                 // TODO: (feature)fix highlighting with group information
-                this.testStringInput.updateGroupedMatchResult(this.matchResult, this.groupColor);
+                this.positiveTestStringInput.updateGroupedMatchResult(this.positiveMatchResult, this.groupColor);
+                this.negativeTestStringInput.updateGroupedMatchResult(this.negativeMatchResult, this.groupColor);
                 // this.testStringInput.updateGroupedMatchResult_exp(this.matchResult);
                 // log match result
                 // TODO: it is always auto in this study, but could change in other studies
-                const matchTestStringEvent: RegexEvent.MatchTestStringEvent = {
+                const positiveMatchTestStringEvent: RegexEvent.MatchTestStringEvent = {
                     'event-type': 'match',
+                    'slot': 'positive',
                     trigger: RegexEvent.MatchTriggerType.AUTO,
                     regex: this.regexInput.getText(),
-                    'test-string': this.prevText,
+                    'test-string': this.positivePrevText,
                     flags: this.regexOptions.getFlagList(),
-                    "match-result": this.matchResult
+                    "match-result": this.positiveMatchResult
                 }
-                this.logEvent(matchTestStringEvent);
+                this.logEvent(positiveMatchTestStringEvent);
+                const negativeMatchTestStringEvent: RegexEvent.MatchTestStringEvent = {
+                    'event-type': 'match',
+                    'slot': 'negative',
+                    trigger: RegexEvent.MatchTriggerType.AUTO,
+                    regex: this.regexInput.getText(),
+                    'test-string': this.negativePrevText,
+                    flags: this.regexOptions.getFlagList(),
+                    "match-result": this.negativeMatchResult
+                }
+                this.logEvent(negativeMatchTestStringEvent);
             })
             .catch((err) => { this.addTextToOutput(err) });
     }
@@ -565,24 +657,30 @@ export class RegexElement extends HTMLElement {
 
     private addMatchResultToOutput = (): void => {
         let output = '';
-        for (let i = 0; i < this.matchResult.length; ++i) {
-            output += 'Match ' + i.toString() + ':\n';
-            for (let j = 0; j < this.matchResult[i].length; ++j) {
-                output += 'Group ' + j.toString() + ': ';
-                output += this.matchResult[i][j].data + ' span(' + this.matchResult[i][j].start + ', ' + this.matchResult[i][j].end + ') ';
-                if (this.matchResult[i][j].name) {
-                    output += this.matchResult[i][j].name;
-                }
-                output += '\n';
-            }
-            output += '\n';
-        }
-        this.statusOutput.text.value += '>>>\n' + output;
+        // currently disabling output
+        // for (let i = 0; i < this.matchResult.length; ++i) {
+        //     output += 'Match ' + i.toString() + ':\n';
+        //     for (let j = 0; j < this.matchResult[i].length; ++j) {
+        //         output += 'Group ' + j.toString() + ': ';
+        //         output += this.matchResult[i][j].data + ' span(' + this.matchResult[i][j].start + ', ' + this.matchResult[i][j].end + ') ';
+        //         if (this.matchResult[i][j].name) {
+        //             output += this.matchResult[i][j].name;
+        //         }
+        //         output += '\n';
+        //     }
+        //     output += '\n';
+        // }
+        // this.statusOutput.text.value += '>>>\n' + output;
     }
 
-    public setInitialTestString(text: string) {
-        this.testStringInput.setText(text);
-        this.initialTestString = text;
+    public setPositiveInitialTestString(text: string) {
+        this.positiveTestStringInput.setText(text);
+        this.positiveInitialTestString = text;
+    }
+
+    public setNegativeInitialTestString(text: string) {
+        this.negativeTestStringInput.setText(text);
+        this.negativeInitialTestString = text;
     }
 
     public setTestCases(testCases: Array<TestCase>) {
@@ -590,13 +688,24 @@ export class RegexElement extends HTMLElement {
         this.unitTestTable.setTestCases(testCases);
     }
 
-    private resetTestString = (): void => {
+    private resetPositiveTestString = (): void => {
         const testStringResetEvent: RegexEvent.TestStringResetEvent = {
             'event-type': 'test-string-reset',
-            'test-string': this.initialTestString
+            'slot': 'positive',
+            'test-string': this.positiveInitialTestString
         };
         this.logEvent(testStringResetEvent);
-        this.testStringInput.setText(this.initialTestString);
+        this.positiveTestStringInput.setText(this.positiveInitialTestString);
+    }
+
+    private resetNegativeTestString = (): void => {
+        const testStringResetEvent: RegexEvent.TestStringResetEvent = {
+            'event-type': 'test-string-reset',
+            'slot': 'negative',
+            'test-string': this.negativeInitialTestString
+        };
+        this.logEvent(testStringResetEvent);
+        this.negativeTestStringInput.setText(this.negativeInitialTestString);
     }
 
     public logEvent = (eventContent: any): void => {
@@ -605,11 +714,11 @@ export class RegexElement extends HTMLElement {
             'problem-id': this.problemId,
             'client-timestamp': this._getTimestamp()
         };
-        // console.log({...basicEvent, ...eventContent});
-        this.logger.info({
-            ...basicEvent,
-            ...eventContent
-        });
+        console.log({...basicEvent, ...eventContent});
+        // this.logger.info({
+        //     ...basicEvent,
+        //     ...eventContent
+        // });
     }
 
     private _getTimestamp = (): string => {
