@@ -28,6 +28,7 @@ export class RegexElement extends HTMLElement {
 
     private regexStatus: RegexStatusTag;
     private regexErrorMessage: HTMLDivElement;
+    private regexErrorPosition: number;
 
     // The input box for positive test strings (with highlight)
     public positiveTestStringInput: TestStringInput;
@@ -156,6 +157,7 @@ export class RegexElement extends HTMLElement {
             this.regexInput = new ParsonsInput();
             inputDiv.appendChild(this.regexInput.el);
             this.regexInput.el.addEventListener('regexChanged', () => {
+                this.regexInput.removeFormat();
                 if (this.checkWhileTyping) {
                     this.patternValidFlag = this.pyodide_compilePattern();
                     // log regex input event
@@ -181,6 +183,9 @@ export class RegexElement extends HTMLElement {
                         } else {
                             this.regexStatus.updateStatus('error');
                             this.regexInput.updateTestStatus('Error');
+                            this.regexInput.highlightError(this.regexErrorPosition);
+                            console.log('highlight error: ');
+                            console.log(this.regexErrorPosition);
                         }
                         this.positiveTestStringInput.quill?.removeFormat(0, this.positiveTestStringInput.quill.getLength() - 1, 'silent');
                         this.negativeTestStringInput.quill?.removeFormat(0, this.negativeTestStringInput.quill.getLength() - 1, 'silent');
@@ -215,6 +220,7 @@ export class RegexElement extends HTMLElement {
                     this.regexStatus.updateStatus('valid');
                 } else {
                     this.regexStatus.updateStatus('error');
+                    this.regexInput.highlightError(this.regexErrorPosition);
                 }
                 // console.log(this.patternValidFlag);
                 this._logRegexInputEvent();
@@ -239,6 +245,7 @@ export class RegexElement extends HTMLElement {
                         } else {
                             this.regexStatus.updateStatus('error');
                             this.regexInput.updateTestStatus('Error');
+                            this.regexInput.highlightError(this.regexErrorPosition);
                         }
                         this.positiveTestStringInput.quill?.removeFormat(0, this.positiveTestStringInput.quill.getLength() - 1, 'silent');
                         this.negativeTestStringInput.quill?.removeFormat(0, this.negativeTestStringInput.quill.getLength() - 1, 'silent');
@@ -253,6 +260,7 @@ export class RegexElement extends HTMLElement {
         this.regexErrorMessage = document.createElement('div');
         this.regexErrorMessage.classList.add('regex-error-message');
         inputDiv.appendChild(this.regexErrorMessage);
+        this.regexErrorPosition = -1;
 
         // init elements: regex options dropdown
         this.regexOptions = new RegexOptions();
@@ -629,12 +637,14 @@ export class RegexElement extends HTMLElement {
             successFlag = true;
             this.regexErrorMessage.classList.add('hidden');
             this.regexErrorMessage.innerText = 'No Error';
+            this.regexErrorPosition = -1;
         } catch (err) {
             successFlag = false;
             // updates error message
             const regexError = String(err).split('\n');
             const errorMessage = regexError[regexError.length - 2];
-            // console.log(errorMessage);
+            const errorMessageSplit = errorMessage.split(' ');
+            this.regexErrorPosition = parseInt(errorMessageSplit[errorMessageSplit.length - 1]);
             this.regexErrorMessage.innerText = errorMessage;
             if (this.regexErrorMessage.classList.contains('hidden')) {
                 this.regexErrorMessage.classList.remove('hidden');
@@ -714,7 +724,7 @@ export class RegexElement extends HTMLElement {
             'problem-id': this.problemId,
             'client-timestamp': this._getTimestamp()
         };
-        console.log({...basicEvent, ...eventContent});
+        // console.log({...basicEvent, ...eventContent});
         // this.logger.info({
         //     ...basicEvent,
         //     ...eventContent

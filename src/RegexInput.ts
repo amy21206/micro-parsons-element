@@ -141,4 +141,10 @@ export class RegexInput implements IRegexInput {
     public removeFormat = (): void => {
         this.quill?.removeFormat(0, this.quill.getLength() - 1, 'silent');
     }
+
+    public highlightError = (position: number): void => {
+        this.quill?.formatText(position, 1, {
+            'background': '#ff99b3'
+        }, 'silent');
+    }
 }

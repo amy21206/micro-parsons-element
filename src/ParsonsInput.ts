@@ -521,4 +521,38 @@ export class ParsonsInput implements IRegexInput {
         }
         return answer;
     }
+
+    public highlightError = (position: number): void => {
+        console.log(position);
+        let count = 0;
+        if (this._dropArea.hasChildNodes()) {
+            let el = this._dropArea.firstChild as HTMLDivElement;
+            count += el.innerText.length;
+            if (count >= position) {
+                // the current block contains the symbol with error
+                el.style.backgroundColor = '#ff99b3';
+            } else {
+                while (el.nextSibling) {
+                    el = el.nextSibling as HTMLDivElement;
+                    count += el.innerText.length;
+                    if (count >= position) {
+                        // the current block contains the symbol with error
+                        el.style.backgroundColor = '#ff99b3';
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    public removeFormat = (): void => {
+        if (this._dropArea.hasChildNodes()) {
+            let el = this._dropArea.firstChild as HTMLDivElement;
+            el.style.removeProperty('background-color');
+            while (el.nextSibling) {
+                el = el.nextSibling as HTMLDivElement;
+                el.style.removeProperty('background-color');
+            }
+        }
+    }
 }

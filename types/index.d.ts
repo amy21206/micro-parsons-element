@@ -3,6 +3,8 @@ interface IRegexInput {
     parentElement: RegexElement | null;
 	getText(): string;
 	updateTestStatus(string): void;
+	highlightError(number): void;
+	removeFormat(): void;
 }
 
 interface IRegexStatusTag {
