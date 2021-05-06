@@ -450,27 +450,29 @@ export class ParsonsInput implements IRegexInput {
             onEnd: (event) => {
                 // TODO: (bug) This is a workaround that only works in the demo.
                 // compare clientY with the position of item.
-                // console.log(event.item.onclick);
-                // let endposition = 0;
-                // let action = RegexEvent.ParsonsInputAction.MOVE;
-                // if ((event as any).originalEvent.clientY > 250) {
-                //     const item = event.item as HTMLElement;
-                //     if (item.parentNode) {
-                //         item.parentNode.removeChild(item);
-                //     }
-                //     endposition = -1;
-                //     action = RegexEvent.ParsonsInputAction.REMOVE;
-                // } else {
-                //     endposition = this._getBlockPosition(event.item);
-                // }
-                // if (this.parentElement) {
-                //     this.parentElement.temporaryInputEvent = {
-                //         'event-type': 'parsons',
-                //         action: action,
-                //         position: [this._prevPosition, endposition],
-                //         answer: this._getTextArray(),
-                //     };
-                // }
+                console.log(event.item.onclick);
+                let endposition = 0;
+                let action = RegexEvent.ParsonsInputAction.MOVE;
+                const upperbound = this._dropArea.getBoundingClientRect().top;
+                const lowerbound = this._dropArea.getBoundingClientRect().bottom;
+                if ((event as any).originalEvent.clientY > lowerbound || (event as any).originalEvent.clientY < upperbound ) {
+                    const item = event.item as HTMLElement;
+                    if (item.parentNode) {
+                        item.parentNode.removeChild(item);
+                    }
+                    endposition = -1;
+                    action = RegexEvent.ParsonsInputAction.REMOVE;
+                } else {
+                    endposition = this._getBlockPosition(event.item);
+                }
+                if (this.parentElement) {
+                    this.parentElement.temporaryInputEvent = {
+                        'event-type': 'parsons',
+                        action: action,
+                        position: [this._prevPosition, endposition],
+                        answer: this._getTextArray(),
+                    };
+                }
                 this.el.dispatchEvent(new Event('regexChanged'));
             },
         });
