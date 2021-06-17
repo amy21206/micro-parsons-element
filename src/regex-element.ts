@@ -359,6 +359,7 @@ export class RegexElement extends HTMLElement {
             this.statusOutput.text.value += "Init finished.\n";
             window.pyodide.globals.test_string = this.positivePrevText;
             this.pyodideInitialized = true;
+            this.dispatchEvent(new Event('init-finished'));
         });
     }
 
