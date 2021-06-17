@@ -3368,27 +3368,30 @@ class ParsonsInput {
                 onEnd: (event) => {
                     // TODO: (bug) This is a workaround that only works in the demo.
                     // compare clientY with the position of item.
-                    // console.log(event.item.onclick);
-                    // let endposition = 0;
-                    // let action = RegexEvent.ParsonsInputAction.MOVE;
-                    // if ((event as any).originalEvent.clientY > 250) {
-                    //     const item = event.item as HTMLElement;
-                    //     if (item.parentNode) {
-                    //         item.parentNode.removeChild(item);
-                    //     }
-                    //     endposition = -1;
-                    //     action = RegexEvent.ParsonsInputAction.REMOVE;
-                    // } else {
-                    //     endposition = this._getBlockPosition(event.item);
-                    // }
-                    // if (this.parentElement) {
-                    //     this.parentElement.temporaryInputEvent = {
-                    //         'event-type': 'parsons',
-                    //         action: action,
-                    //         position: [this._prevPosition, endposition],
-                    //         answer: this._getTextArray(),
-                    //     };
-                    // }
+                    console.log(event.item.onclick);
+                    let endposition = 0;
+                    let action = RegexEvent.ParsonsInputAction.MOVE;
+                    const upperbound = this._dropArea.getBoundingClientRect().top;
+                    const lowerbound = this._dropArea.getBoundingClientRect().bottom;
+                    if (event.originalEvent.clientY > lowerbound || event.originalEvent.clientY < upperbound) {
+                        const item = event.item;
+                        if (item.parentNode) {
+                            item.parentNode.removeChild(item);
+                        }
+                        endposition = -1;
+                        action = RegexEvent.ParsonsInputAction.REMOVE;
+                    }
+                    else {
+                        endposition = this._getBlockPosition(event.item);
+                    }
+                    if (this.parentElement) {
+                        this.parentElement.temporaryInputEvent = {
+                            'event-type': 'parsons',
+                            action: action,
+                            position: [this._prevPosition, endposition],
+                            answer: this._getTextArray(),
+                        };
+                    }
                     this.el.dispatchEvent(new Event('regexChanged'));
                 },
             });
@@ -3434,6 +3437,39 @@ class ParsonsInput {
                 }
             }
             return answer;
+        };
+        this.highlightError = (position) => {
+            console.log(position);
+            let count = 0;
+            if (this._dropArea.hasChildNodes()) {
+                let el = this._dropArea.firstChild;
+                count += el.innerText.length;
+                if (count >= position) {
+                    // the current block contains the symbol with error
+                    el.style.backgroundColor = '#ff99b3';
+                }
+                else {
+                    while (el.nextSibling) {
+                        el = el.nextSibling;
+                        count += el.innerText.length;
+                        if (count >= position) {
+                            // the current block contains the symbol with error
+                            el.style.backgroundColor = '#ff99b3';
+                            break;
+                        }
+                    }
+                }
+            }
+        };
+        this.removeFormat = () => {
+            if (this._dropArea.hasChildNodes()) {
+                let el = this._dropArea.firstChild;
+                el.style.removeProperty('background-color');
+                while (el.nextSibling) {
+                    el = el.nextSibling;
+                    el.style.removeProperty('background-color');
+                }
+            }
         };
         this.el = document.createElement('div');
         this.el.id = 'parsons-input';
@@ -15944,6 +15980,11 @@ class RegexInput {
         this.removeFormat = () => {
             this.quill?.removeFormat(0, this.quill.getLength() - 1, 'silent');
         };
+        this.highlightError = (position) => {
+            this.quill?.formatText(position, 1, {
+                'background': '#ff99b3'
+            }, 'silent');
+        };
         this.el = document.createElement('div');
         this.el.id = 'regex-input';
         this.el.classList.add('regex-input');
@@ -15974,10 +16015,10 @@ GroupBlot.className = 'group1';
 GroupBlot.tagName = 'span';
 Quill.register(GroupBlot);
 class TestStringInput {
-    constructor() {
+    constructor(slotName) {
         this.initQuill = () => {
             // initializing quill
-            this.quill = new Quill('#test-string-input', {
+            this.quill = new Quill('#test-string-input' + this.slotName, {
                 modules: {
                     toolbar: false
                 },
@@ -15989,6 +16030,7 @@ class TestStringInput {
             }, (range, context) => {
                 const testStringKeyboardEvent = {
                     'event-type': 'test-string-keyboard',
+                    'slot': this.slotName,
                     range: range,
                     keys: ['ctrl', 'c']
                 };
@@ -16003,6 +16045,7 @@ class TestStringInput {
             }, (range, context) => {
                 const testStringKeyboardEvent = {
                     'event-type': 'test-string-keyboard',
+                    'slot': this.slotName,
                     range: range,
                     keys: ['ctrl', 'v']
                 };
@@ -16051,9 +16094,9 @@ class TestStringInput {
             }
             // highlight the matches in a group sequence such that inner groups' color will cover outer groups'.
             let index = 0;
-            if (this.parentElement?.matchFindall && groupCount > 1) {
-                index = 1;
-            }
+            // if (this.parentElement?.matchFindall && groupCount > 1) {
+            //     index = 1;
+            // }
             for (index; index < groupCount; ++index) {
                 for (let j = 0; j < matches.length; ++j) {
                     this.quill?.formatText(matches[j][index].start, matches[j][index].end - matches[j][index].start, {
@@ -16078,7 +16121,8 @@ class TestStringInput {
             }
         };
         this.el = document.createElement('div');
-        this.el.id = 'test-string-input';
+        this.slotName = slotName;
+        this.el.id = 'test-string-input' + slotName;
         this.el.classList.add('regex-test-string');
         this.quill = null;
         // console.log(Quill);
@@ -16808,7 +16852,7 @@ class RegexElement extends HTMLElement {
         this.initPyodide = () => {
             languagePluginLoader.then(() => {
                 this.statusOutput.text.value += "Init finished.\n";
-                window.pyodide.globals.test_string = this.prevText;
+                window.pyodide.globals.test_string = this.positivePrevText;
                 this.pyodideInitialized = true;
             });
         };
@@ -16840,7 +16884,9 @@ class RegexElement extends HTMLElement {
             sheet.innerHTML += '.parsons-block .tooltip::after {content: " ";position: absolute; top: 100%;left: 50%; margin-left: -5px; border-width: 5px; border-style: solid; border-color: black transparent transparent transparent;}\n';
             sheet.innerHTML += '.drag-area .parsons-block:hover .tooltip { visibility: visible;}\n';
             sheet.innerHTML += '.drag-area{ width: 510px;}\n';
+            sheet.innerHTML += '.regex-test-string-container {display:flex;}\n';
             sheet.innerHTML += '.regex-test-string-div, .regex-input-div { margin: 8px 0; height: fit-content; }\n';
+            sheet.innerHTML += '.regex-test-string-div { flex: 1; }\n';
             sheet.innerHTML += '.regex-input-div { width: 80%; }\n';
             sheet.innerHTML += '.regex-input-div > div {display:inline-block;}\n';
             // the dropdown menu for regex options
@@ -16875,7 +16921,8 @@ class RegexElement extends HTMLElement {
         this.match = () => {
             this.statusOutput.text.value = '';
             let pydata = 'import re\n';
-            window.pyodide.globals.test_string = this.prevText;
+            window.pyodide.globals.positive_test_string = this.positivePrevText;
+            window.pyodide.globals.negative_test_string = this.negativePrevText;
             window.pyodide.globals.regex_input = this.regexInput.getText();
             if (this.regexOptions.getFlags() != null) {
                 pydata += 'pattern = re.compile(regex_input, ' + this.regexOptions.getFlags() + ')\n';
@@ -16883,13 +16930,29 @@ class RegexElement extends HTMLElement {
             else {
                 pydata += 'pattern = re.compile(regex_input)\n';
             }
-            pydata += 'source = test_string\n';
-            pydata += 'global match_result\n';
-            pydata += 'match_result = []\n';
+            pydata += 'source = positive_test_string\n';
+            pydata += 'global positive_match_result\n';
+            pydata += 'positive_match_result = []\n';
             // TODO: (performance)try to reduce assigning data here
             pydata += 'for match_obj in re.finditer(pattern, source):\n';
             pydata += '    match_data = []\n';
-            pydata += '    match_result.append(match_data)\n';
+            pydata += '    positive_match_result.append(match_data)\n';
+            pydata += '    for group_id in range(pattern.groups + 1):\n';
+            pydata += '        group_data = {}\n';
+            pydata += '        match_data.append(group_data)\n';
+            pydata += '        group_data[\'group_id\'] = group_id\n';
+            pydata += '        group_data[\'start\'] = match_obj.start(group_id)\n';
+            pydata += '        group_data[\'end\'] = match_obj.end(group_id)\n';
+            pydata += '        group_data[\'data\'] = match_obj.group(group_id)\n';
+            pydata += '    for name, index in pattern.groupindex.items():\n';
+            pydata += '        match_data[index][\'name\'] = name\n';
+            pydata += 'source = negative_test_string\n';
+            pydata += 'global negative_match_result\n';
+            pydata += 'negative_match_result = []\n';
+            // TODO: (performance)try to reduce assigning data here
+            pydata += 'for match_obj in re.finditer(pattern, source):\n';
+            pydata += '    match_data = []\n';
+            pydata += '    negative_match_result.append(match_data)\n';
             pydata += '    for group_id in range(pattern.groups + 1):\n';
             pydata += '        group_data = {}\n';
             pydata += '        match_data.append(group_data)\n';
@@ -16902,22 +16965,35 @@ class RegexElement extends HTMLElement {
             window.pyodide.runPythonAsync(pydata)
                 .then(_ => {
                 // TODO: (robustness)test edge cases with no match
-                this.matchResult = window.pyodide.globals.match_result;
+                this.positiveMatchResult = window.pyodide.globals.positive_match_result;
+                this.negativeMatchResult = window.pyodide.globals.negative_match_result;
                 this.addMatchResultToOutput();
                 // TODO: (feature)fix highlighting with group information
-                this.testStringInput.updateGroupedMatchResult(this.matchResult, this.groupColor);
+                this.positiveTestStringInput.updateGroupedMatchResult(this.positiveMatchResult, this.groupColor);
+                this.negativeTestStringInput.updateGroupedMatchResult(this.negativeMatchResult, this.groupColor);
                 // this.testStringInput.updateGroupedMatchResult_exp(this.matchResult);
                 // log match result
                 // TODO: it is always auto in this study, but could change in other studies
-                const matchTestStringEvent = {
+                const positiveMatchTestStringEvent = {
                     'event-type': 'match',
+                    'slot': 'positive',
                     trigger: RegexEvent.MatchTriggerType.AUTO,
                     regex: this.regexInput.getText(),
-                    'test-string': this.prevText,
+                    'test-string': this.positivePrevText,
                     flags: this.regexOptions.getFlagList(),
-                    "match-result": this.matchResult
+                    "match-result": this.positiveMatchResult
                 };
-                this.logEvent(matchTestStringEvent);
+                this.logEvent(positiveMatchTestStringEvent);
+                const negativeMatchTestStringEvent = {
+                    'event-type': 'match',
+                    'slot': 'negative',
+                    trigger: RegexEvent.MatchTriggerType.AUTO,
+                    regex: this.regexInput.getText(),
+                    'test-string': this.negativePrevText,
+                    flags: this.regexOptions.getFlagList(),
+                    "match-result": this.negativeMatchResult
+                };
+                this.logEvent(negativeMatchTestStringEvent);
             })
                 .catch((err) => { this.addTextToOutput(err); });
         };
@@ -16940,13 +17016,15 @@ class RegexElement extends HTMLElement {
                 successFlag = true;
                 this.regexErrorMessage.classList.add('hidden');
                 this.regexErrorMessage.innerText = 'No Error';
+                this.regexErrorPosition = -1;
             }
             catch (err) {
                 successFlag = false;
                 // updates error message
                 const regexError = String(err).split('\n');
                 const errorMessage = regexError[regexError.length - 2];
-                // console.log(errorMessage);
+                const errorMessageSplit = errorMessage.split(' ');
+                this.regexErrorPosition = parseInt(errorMessageSplit[errorMessageSplit.length - 1]);
                 this.regexErrorMessage.innerText = errorMessage;
                 if (this.regexErrorMessage.classList.contains('hidden')) {
                     this.regexErrorMessage.classList.remove('hidden');
@@ -16965,28 +17043,38 @@ class RegexElement extends HTMLElement {
             this.statusOutput.text.value += '>>>' + this.regexInput.getText() + '\n' + output + '\n';
         };
         this.addMatchResultToOutput = () => {
-            let output = '';
-            for (let i = 0; i < this.matchResult.length; ++i) {
-                output += 'Match ' + i.toString() + ':\n';
-                for (let j = 0; j < this.matchResult[i].length; ++j) {
-                    output += 'Group ' + j.toString() + ': ';
-                    output += this.matchResult[i][j].data + ' span(' + this.matchResult[i][j].start + ', ' + this.matchResult[i][j].end + ') ';
-                    if (this.matchResult[i][j].name) {
-                        output += this.matchResult[i][j].name;
-                    }
-                    output += '\n';
-                }
-                output += '\n';
-            }
-            this.statusOutput.text.value += '>>>\n' + output;
+            // currently disabling output
+            // for (let i = 0; i < this.matchResult.length; ++i) {
+            //     output += 'Match ' + i.toString() + ':\n';
+            //     for (let j = 0; j < this.matchResult[i].length; ++j) {
+            //         output += 'Group ' + j.toString() + ': ';
+            //         output += this.matchResult[i][j].data + ' span(' + this.matchResult[i][j].start + ', ' + this.matchResult[i][j].end + ') ';
+            //         if (this.matchResult[i][j].name) {
+            //             output += this.matchResult[i][j].name;
+            //         }
+            //         output += '\n';
+            //     }
+            //     output += '\n';
+            // }
+            // this.statusOutput.text.value += '>>>\n' + output;
         };
-        this.resetTestString = () => {
+        this.resetPositiveTestString = () => {
             const testStringResetEvent = {
                 'event-type': 'test-string-reset',
-                'test-string': this.initialTestString
+                'slot': 'positive',
+                'test-string': this.positiveInitialTestString
             };
             this.logEvent(testStringResetEvent);
-            this.testStringInput.setText(this.initialTestString);
+            this.positiveTestStringInput.setText(this.positiveInitialTestString);
+        };
+        this.resetNegativeTestString = () => {
+            const testStringResetEvent = {
+                'event-type': 'test-string-reset',
+                'slot': 'negative',
+                'test-string': this.negativeInitialTestString
+            };
+            this.logEvent(testStringResetEvent);
+            this.negativeTestStringInput.setText(this.negativeInitialTestString);
         };
         this.logEvent = (eventContent) => {
             const basicEvent = {
@@ -17040,7 +17128,7 @@ class RegexElement extends HTMLElement {
         this.logger = new regex_tool_s3_bucket_logger.RegexToolS3BucketLogger({
             api: "https://cjglpwd044.execute-api.us-east-1.amazonaws.com/regex-tool-api-aws-edtech-labs-si-umich-edu",
             bucket: "regex-tool-s3-aws-edtech-labs-si-umich-edu",
-            path: "within"
+            path: "coursera_test"
         });
         this.root = this.attachShadow({ mode: 'open' });
         // init pyodide
@@ -17101,6 +17189,7 @@ class RegexElement extends HTMLElement {
             this.regexInput = new ParsonsInput();
             inputDiv.appendChild(this.regexInput.el);
             this.regexInput.el.addEventListener('regexChanged', () => {
+                this.regexInput.removeFormat();
                 if (this.checkWhileTyping) {
                     this.patternValidFlag = this.pyodide_compilePattern();
                     // log regex input event
@@ -17128,8 +17217,12 @@ class RegexElement extends HTMLElement {
                         else {
                             this.regexStatus.updateStatus('error');
                             this.regexInput.updateTestStatus('Error');
+                            this.regexInput.highlightError(this.regexErrorPosition);
+                            console.log('highlight error: ');
+                            console.log(this.regexErrorPosition);
                         }
-                        this.testStringInput.quill?.removeFormat(0, this.testStringInput.quill.getLength() - 1, 'silent');
+                        this.positiveTestStringInput.quill?.removeFormat(0, this.positiveTestStringInput.quill.getLength() - 1, 'silent');
+                        this.negativeTestStringInput.quill?.removeFormat(0, this.negativeTestStringInput.quill.getLength() - 1, 'silent');
                         this._testStatusDiv.innerText = 'Test cases passed: 0/' + this.unitTestTable.testCaseCount;
                         this.unitTestTable.setError();
                     }
@@ -17163,6 +17256,7 @@ class RegexElement extends HTMLElement {
                 }
                 else {
                     this.regexStatus.updateStatus('error');
+                    this.regexInput.highlightError(this.regexErrorPosition);
                 }
                 // console.log(this.patternValidFlag);
                 this._logRegexInputEvent();
@@ -17189,8 +17283,10 @@ class RegexElement extends HTMLElement {
                         else {
                             this.regexStatus.updateStatus('error');
                             this.regexInput.updateTestStatus('Error');
+                            this.regexInput.highlightError(this.regexErrorPosition);
                         }
-                        this.testStringInput.quill?.removeFormat(0, this.testStringInput.quill.getLength() - 1, 'silent');
+                        this.positiveTestStringInput.quill?.removeFormat(0, this.positiveTestStringInput.quill.getLength() - 1, 'silent');
+                        this.negativeTestStringInput.quill?.removeFormat(0, this.negativeTestStringInput.quill.getLength() - 1, 'silent');
                         this._testStatusDiv.innerText = 'Test cases passed: 0/' + this.unitTestTable.testCaseCount;
                         this.unitTestTable.setError();
                     }
@@ -17202,6 +17298,7 @@ class RegexElement extends HTMLElement {
         this.regexErrorMessage = document.createElement('div');
         this.regexErrorMessage.classList.add('regex-error-message');
         inputDiv.appendChild(this.regexErrorMessage);
+        this.regexErrorPosition = -1;
         // init elements: regex options dropdown
         this.regexOptions = new RegexOptions();
         // inputDiv.appendChild(this.regexOptions.el);
@@ -17215,44 +17312,92 @@ class RegexElement extends HTMLElement {
         quillLinkRef.rel = 'stylesheet';
         this.appendChild(quillLinkRef);
         const testStringDiv = document.createElement('div');
+        testStringDiv.classList.add('regex-test-string-container');
+        this.root.append('Feel free to experiment with your own test cases.');
         this.root.append(testStringDiv);
-        testStringDiv.classList.add('regex-test-string-div');
-        testStringDiv.append('Feel free to experiment with your own test cases.');
-        this.initialTestString = '';
-        const slot = document.createElement('slot');
-        slot.name = 'test-string-input';
-        testStringDiv.appendChild(slot);
-        const resetTestStringButton = document.createElement('button');
-        testStringDiv.appendChild(document.createElement('br'));
-        testStringDiv.appendChild(resetTestStringButton);
-        resetTestStringButton.innerText = 'Reset';
-        resetTestStringButton.onclick = this.resetTestString;
-        this.testStringInput = new TestStringInput();
-        this.appendChild(this.testStringInput.el);
-        this.testStringInput.el.slot = 'test-string-input';
-        this.testStringInput.initQuill();
-        this.prevText = this.testStringInput.getText();
-        this.testStringInput.parentElement = this;
-        this.testStringInput.quill?.on('text-change', (delta, _, source) => {
+        const positiveTestStringDiv = document.createElement('div');
+        testStringDiv.append(positiveTestStringDiv);
+        positiveTestStringDiv.classList.add('regex-test-string-div');
+        positiveTestStringDiv.append('Match:');
+        this.positiveInitialTestString = '';
+        const positiveSlot = document.createElement('slot');
+        positiveSlot.name = 'positive-test-string-input';
+        positiveTestStringDiv.appendChild(positiveSlot);
+        const resetPositiveTestStringButton = document.createElement('button');
+        positiveTestStringDiv.appendChild(resetPositiveTestStringButton);
+        resetPositiveTestStringButton.innerText = 'Reset';
+        resetPositiveTestStringButton.onclick = this.resetPositiveTestString;
+        this.positiveTestStringInput = new TestStringInput('positive');
+        this.positiveTestStringInput.slotName = 'positive';
+        this.appendChild(this.positiveTestStringInput.el);
+        this.positiveTestStringInput.el.slot = 'positive-test-string-input';
+        this.positiveTestStringInput.initQuill();
+        this.positivePrevText = this.positiveTestStringInput.getText();
+        this.positiveTestStringInput.parentElement = this;
+        this.positiveTestStringInput.quill?.on('text-change', (delta, _, source) => {
             if (source == 'user') {
                 const testStringInputEvent = {
                     'event-type': 'test-string-input',
-                    dropped: this.testStringInput.droppedText,
+                    'slot': 'positive',
+                    dropped: this.positiveTestStringInput.droppedText,
                     delta: delta,
-                    'test-string': this.testStringInput.getText()
+                    'test-string': this.positiveTestStringInput.getText()
                 };
                 this.logEvent(testStringInputEvent);
             }
-            this.testStringInput.droppedText = false;
-            if (this.testStringInput.getText() != this.prevText) {
-                this.prevText = this.testStringInput.getText();
+            this.positiveTestStringInput.droppedText = false;
+            if (this.positiveTestStringInput.getText() != this.positivePrevText) {
+                this.positivePrevText = this.positiveTestStringInput.getText();
                 // updating test_string in pyodide
                 // window.pyodide.globals.test_string = this.testStringInput.getText().slice(0, -1);
                 if (this.pyodideInitialized && this.checkWhileTyping && this.patternValidFlag) {
                     this.match();
                 }
                 else {
-                    this.testStringInput.quill?.removeFormat(0, this.testStringInput.quill.getLength() - 1, 'silent');
+                    this.positiveTestStringInput.quill?.removeFormat(0, this.positiveTestStringInput.quill.getLength() - 1, 'silent');
+                }
+            }
+        });
+        const negativeTestStringDiv = document.createElement('div');
+        testStringDiv.append(negativeTestStringDiv);
+        negativeTestStringDiv.classList.add('regex-test-string-div');
+        negativeTestStringDiv.append('Do not match:');
+        this.negativeInitialTestString = '';
+        const negativeSlot = document.createElement('slot');
+        negativeSlot.name = 'negative-test-string-input';
+        negativeTestStringDiv.appendChild(negativeSlot);
+        const resetNegativeTestStringButton = document.createElement('button');
+        negativeTestStringDiv.appendChild(resetNegativeTestStringButton);
+        resetNegativeTestStringButton.innerText = 'Reset';
+        resetNegativeTestStringButton.onclick = this.resetNegativeTestString;
+        this.negativeTestStringInput = new TestStringInput('negative');
+        this.negativeTestStringInput.slotName = 'negative';
+        this.appendChild(this.negativeTestStringInput.el);
+        this.negativeTestStringInput.el.slot = 'negative-test-string-input';
+        this.negativeTestStringInput.initQuill();
+        this.negativePrevText = this.negativeTestStringInput.getText();
+        this.negativeTestStringInput.parentElement = this;
+        this.negativeTestStringInput.quill?.on('text-change', (delta, _, source) => {
+            if (source == 'user') {
+                const testStringInputEvent = {
+                    'event-type': 'test-string-input',
+                    'slot': 'negative',
+                    dropped: this.negativeTestStringInput.droppedText,
+                    delta: delta,
+                    'test-string': this.negativeTestStringInput.getText()
+                };
+                this.logEvent(testStringInputEvent);
+            }
+            this.negativeTestStringInput.droppedText = false;
+            if (this.negativeTestStringInput.getText() != this.negativePrevText) {
+                this.negativePrevText = this.negativeTestStringInput.getText();
+                // updating test_string in pyodide
+                // window.pyodide.globals.test_string = this.testStringInput.getText().slice(0, -1);
+                if (this.pyodideInitialized && this.checkWhileTyping && this.patternValidFlag) {
+                    this.match();
+                }
+                else {
+                    this.negativeTestStringInput.quill?.removeFormat(0, this.negativeTestStringInput.quill.getLength() - 1, 'silent');
                 }
             }
         });
@@ -17264,7 +17409,8 @@ class RegexElement extends HTMLElement {
         this.statusOutput = new StatusOutput();
         this.root.appendChild(this.statusOutput.el);
         // initialize the match result array
-        this.matchResult = new Array();
+        this.positiveMatchResult = new Array();
+        this.negativeMatchResult = new Array();
         // initialize the color array
         // TODO: (UI) only light colors that do not obfuscates the word
         this.groupColor = new Array();
@@ -17337,9 +17483,13 @@ class RegexElement extends HTMLElement {
     get parsonsData() {
         return this._parsonsData;
     }
-    setInitialTestString(text) {
-        this.testStringInput.setText(text);
-        this.initialTestString = text;
+    setPositiveInitialTestString(text) {
+        this.positiveTestStringInput.setText(text);
+        this.positiveInitialTestString = text;
+    }
+    setNegativeInitialTestString(text) {
+        this.negativeTestStringInput.setText(text);
+        this.negativeInitialTestString = text;
     }
     setTestCases(testCases) {
         // console.log('set test cases');

@@ -134,9 +134,9 @@ export class TestStringInput implements ITestStringInput {
 
         // highlight the matches in a group sequence such that inner groups' color will cover outer groups'.
         let index = 0;
-        if (this.parentElement?.matchFindall && groupCount > 1) {
-            index = 1;
-        }
+        // if (this.parentElement?.matchFindall && groupCount > 1) {
+        //     index = 1;
+        // }
         for (index; index < groupCount; ++ index) {
             for (let j = 0; j < matches.length; ++ j) {
                 this.quill?.formatText(matches[j][index].start, matches[j][index].end - matches[j][index].start, {

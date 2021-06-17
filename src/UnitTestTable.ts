@@ -109,13 +109,13 @@ export class UnitTestTable implements IUnitTestTable {
         pydata += 'global unit_match_group_cnt\n';
         if (this.flags != null && this.flags != '') {
             if (this.strictMatch) {
-                pydata += 'unit_pattern = re.compile(' + '\'^\' + unit_regex_input + \'$\', '+this.flags+')\n';
+                pydata += 'unit_pattern = re.compile(' + '\'^(\' + unit_regex_input + \')$\', '+this.flags+')\n';
             } else {
                 pydata += 'unit_pattern = re.compile(unit_regex_input, '+this.flags+')\n';
             }
         } else {
             if (this.strictMatch) {
-                pydata += 'unit_pattern = re.compile(' + '\'^\' + unit_regex_input + \'$\')\n';
+                pydata += 'unit_pattern = re.compile(' + '\'^(\' + unit_regex_input + \')$\')\n';
             } else {
                 pydata += 'unit_pattern = re.compile(unit_regex_input)\n';
             }
@@ -217,13 +217,13 @@ export class UnitTestTable implements IUnitTestTable {
         this.hintRevealed = Array(testCases.length).fill(true);
         this.testCaseCount = testCases.length;
         // logging
-        const unittestSetEvent: RegexEvent.UnittestSet = {
-            'event-type': 'unittest-set',
-            'test-cases': testCases
-        }
-        if (this.parentElement) {
-            this.parentElement.logEvent(unittestSetEvent);
-        }
+        // const unittestSetEvent: RegexEvent.UnittestSet = {
+        //     'event-type': 'unittest-set',
+        //     'test-cases': testCases
+        // }
+        // if (this.parentElement) {
+        //     this.parentElement.logEvent(unittestSetEvent);
+        // }
     }
 
     private _getTableHead = (): string => {

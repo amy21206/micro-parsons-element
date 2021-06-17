@@ -2,6 +2,8 @@ export namespace RegexEvent {
     export type BasicEvent = {
         'student-id': string;
         'problem-id': string;
+        'course-id': string;
+        'input-type': string;
         'client-timestamp': string;
     }
 
@@ -132,5 +134,18 @@ export namespace RegexEvent {
         'event-type': 'problem-finished';
         // true if passed all test cases, false if time run out
         'completed': boolean;
+    }
+
+    export type PageConfig = {
+        'event-type': 'page-config';
+        'config': any;
+    }
+
+    export type TestAnswer = {
+        'event-type': 'test-answer';
+        'question-id': string;
+        // pretest or posttest
+        'context': string;
+        'answer': any;
     }
 }

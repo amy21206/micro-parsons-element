@@ -14,6 +14,8 @@ declare global {
     interface Window {
         languagePluginUrl: string
         pyodide: Pyodide
+        regexStudentId: string
+        regexCourseId: string
     }
 }
 
@@ -87,14 +89,14 @@ export class RegexElement extends HTMLElement {
         this.logger = new RegexToolS3BucketLogger({
             api: "https://cjglpwd044.execute-api.us-east-1.amazonaws.com/regex-tool-api-aws-edtech-labs-si-umich-edu",
             bucket: "regex-tool-s3-aws-edtech-labs-si-umich-edu",
-            path: "within"
+            path: "coursera_test"
         });
 
         this.root = this.attachShadow({ mode: 'open' });
 
         // init pyodide
-        // window.languagePluginUrl = 'https://cdn.jsdelivr.net/pyodide/v0.16.1/full/';
-        window.languagePluginUrl = 'http://127.0.0.1:8081/pyodide/';
+        window.languagePluginUrl = 'https://cdn.jsdelivr.net/pyodide/v0.16.1/full/';
+        // window.languagePluginUrl = 'http://127.0.0.1:8081/pyodide/';
         this.pyodideInitialized = false;
         this.initPyodide();
 
@@ -138,133 +140,19 @@ export class RegexElement extends HTMLElement {
         inputAndTestStatusDiv.classList.add('regex-input-and-test-status');
 
         // init regex input based on the input type
-        // TODO: (bug) fix always check for parsons
-        this.patternValidFlag = true;
-        let inputType = this.getAttribute('input-type');
-        this.inputType = inputType == 'parsons' ? 'parsons' : 'text';
-        this._parsonsData = new Array<string>();
-        this.parsonsExplanation = null;
         const inputDiv = document.createElement('div');
         inputAndTestStatusDiv.appendChild(inputDiv);
         inputDiv.classList.add('regex-input-div');
-        inputDiv.append('Your regular expression:');
-        this.regexStatus = new RegexStatusTag();
-        inputDiv.appendChild(this.regexStatus.el);
-        inputDiv.appendChild(document.createElement('br'));
-        // todo:(UI) fix the css for the input
-        if (this.inputType == 'parsons') {
-            // init elements: parsons regex input
-            this.regexInput = new ParsonsInput();
-            inputDiv.appendChild(this.regexInput.el);
-            this.regexInput.el.addEventListener('regexChanged', () => {
-                this.regexInput.removeFormat();
-                if (this.checkWhileTyping) {
-                    this.patternValidFlag = this.pyodide_compilePattern();
-                    // log regex input event
-                    this._logRegexInputEvent();
-                    if (this.patternValidFlag) {
-                        this.regexStatus.updateStatus('valid');
-                        // check and update the background color of the parsons input based on the unit test results
-                        const passCount = this.unitTestTable.check(this.regexInput.getText());
-                        this.regexInput.updateTestStatus(passCount == this.unitTestTable.testCaseCount ? 'Pass' : 'Fail');
-                        this._testStatusDiv.className = '';
-                        this._testStatusDiv.classList.add('regex-test-status');
-                        this._testStatusDiv.classList.add(passCount == this.unitTestTable.testCaseCount ? 'Pass' : 'Fail');
-                        this._testStatusDiv.innerText = 'Test cases passed: ' + passCount + '/' + this.unitTestTable.testCaseCount;
-                        this.match();
-                        if (passCount === this.unitTestTable.testCaseCount) {
-                            console.log('dispatch');
-                            this.dispatchEvent(new CustomEvent('passed-all-testcases'));
-                        }
-                    } else {
-                        if (this.regexErrorMessage.classList.contains('hidden')) {
-                            // it means the regex is actually empty
-                            this.regexStatus.updateStatus('');
-                        } else {
-                            this.regexStatus.updateStatus('error');
-                            this.regexInput.updateTestStatus('Error');
-                            this.regexInput.highlightError(this.regexErrorPosition);
-                            console.log('highlight error: ');
-                            console.log(this.regexErrorPosition);
-                        }
-                        this.positiveTestStringInput.quill?.removeFormat(0, this.positiveTestStringInput.quill.getLength() - 1, 'silent');
-                        this.negativeTestStringInput.quill?.removeFormat(0, this.negativeTestStringInput.quill.getLength() - 1, 'silent');
-                        this._testStatusDiv.innerText = 'Test cases passed: 0/' + this.unitTestTable.testCaseCount;
-                        this.unitTestTable.setError();
-                    }
-                }
-            }, false)
-        } else {
-            // (this.inputType == 'text')
-            const regex_slot = document.createElement('slot');
-            regex_slot.name = 'regex-input'
-            inputDiv.appendChild(regex_slot);
-            // TODO: (refactor) rename RegexInput
-            this.regexInput = new RegexInput();
-            this.appendChild(this.regexInput.el);
-            this.regexInput.el.slot = 'regex-input';
-            (this.regexInput as RegexInput).initQuill();
-            (this.regexInput as RegexInput).quill?.on('text-change', (delta) => {
-                (this.regexInput as RegexInput).removeFormat();
-                // logging free input event
-                this.temporaryInputEvent = {
-                    'event-type': 'free-input',
-                    dropped: (this.regexInput as RegexInput).droppedText,
-                    delta: delta,
-                    answer: this.regexInput.getText()
-                };
-                (this.regexInput as RegexInput).droppedText = false;
-                // update status indicator
-                this.patternValidFlag = this.pyodide_compilePattern();
-                if (this.patternValidFlag) {
-                    this.regexStatus.updateStatus('valid');
-                } else {
-                    this.regexStatus.updateStatus('error');
-                    this.regexInput.highlightError(this.regexErrorPosition);
-                }
-                // console.log(this.patternValidFlag);
-                this._logRegexInputEvent();
-                if (this.checkWhileTyping) {
-                    if (this.patternValidFlag) {
-                        // only match when the pattern is valid
-                        const passCount = this.unitTestTable.check(this.regexInput.getText());
-                        this.regexInput.updateTestStatus(passCount == this.unitTestTable.testCaseCount ? 'Pass' : 'Fail');
-                        this._testStatusDiv.innerText = 'Test cases passed: ' + passCount + '/' + this.unitTestTable.testCaseCount;
-                        this._testStatusDiv.className = '';
-                        this._testStatusDiv.classList.add('regex-test-status');
-                        this._testStatusDiv.classList.add(passCount == this.unitTestTable.testCaseCount ? 'Pass' : 'Fail');
-                        this.match();
-                        if (passCount === this.unitTestTable.testCaseCount) {
-                            // console.log('dispatch');
-                            this.dispatchEvent(new CustomEvent('passed-all-testcases'));
-                        }
-                    } else {
-                        if (this.regexErrorMessage.classList.contains('hidden')) {
-                            // it means the regex is actually empty
-                            this.regexStatus.updateStatus('');
-                        } else {
-                            this.regexStatus.updateStatus('error');
-                            this.regexInput.updateTestStatus('Error');
-                            this.regexInput.highlightError(this.regexErrorPosition);
-                        }
-                        this.positiveTestStringInput.quill?.removeFormat(0, this.positiveTestStringInput.quill.getLength() - 1, 'silent');
-                        this.negativeTestStringInput.quill?.removeFormat(0, this.negativeTestStringInput.quill.getLength() - 1, 'silent');
-                        this._testStatusDiv.innerText = 'Test cases passed: 0/' + this.unitTestTable.testCaseCount;
-                        this.unitTestTable.setError();
-                    }
-                    // check and update the background color of the parsons input based on the unit test results
-                }
-            })
-        }
-        this.regexInput.parentElement = this;
-        this.regexErrorMessage = document.createElement('div');
-        this.regexErrorMessage.classList.add('regex-error-message');
-        inputDiv.appendChild(this.regexErrorMessage);
-        this.regexErrorPosition = -1;
-
-        // init elements: regex options dropdown
         this.regexOptions = new RegexOptions();
-        // inputDiv.appendChild(this.regexOptions.el);
+        this.patternValidFlag = true;
+        this._parsonsData = new Array<string>();
+        this.parsonsExplanation = null;
+        this.regexStatus = new RegexStatusTag();
+        this.regexInput = new ParsonsInput();
+        this.inputType = 'parsons';
+        this.regexErrorMessage = document.createElement('div');
+        this.regexErrorPosition = -1;
+        this.initRegexInput(inputDiv);
 
         this._testStatusDiv = document.createElement('div');
         inputAndTestStatusDiv.appendChild(this._testStatusDiv);
@@ -444,7 +332,7 @@ export class RegexElement extends HTMLElement {
 
         // stub for student and problem id
         this.studentId = this._getStudentIdFromURL();
-        this.problemId = this.getAttribute('problem-id') || 'stub-problem-id';
+        this.problemId = this.getAttribute('problem-id') || '';
         console.log(this.studentId);
         console.log(this.problemId);
 
@@ -517,9 +405,9 @@ export class RegexElement extends HTMLElement {
         sheet.innerHTML += '.show {display:block;}\n';
         // unittest
         sheet.innerHTML += '.regex-unittest > table, .regex-unittest td {border: 1px solid black; padding: 3px; text-align: center; border-collapse: collapse;}\n'
-        sheet.innerHTML += '.regex-unittest.collapse{visibility: collapse;}\n'
+        sheet.innerHTML += '.regex-unittest.collapse{display:none;}\n'
         // for study 0: hide the table
-        sheet.innerHTML += '.regex-unittest{visibility: collapse;}\n'
+        sheet.innerHTML += '.regex-unittest{display:none;}\n'
 
         document.body.appendChild(sheet);
         this.root.appendChild(sheet);
@@ -544,7 +432,11 @@ export class RegexElement extends HTMLElement {
         let pydata = 'import re\n';
         window.pyodide.globals.positive_test_string = this.positivePrevText;
         window.pyodide.globals.negative_test_string = this.negativePrevText;
-        window.pyodide.globals.regex_input = this.regexInput.getText();
+        if (this.regexInput.getText() != '') {
+            window.pyodide.globals.regex_input = this.regexInput.getText();
+        } else {
+            return;
+        }
         if (this.regexOptions.getFlags() != null) {
             pydata += 'pattern = re.compile(regex_input, ' + this.regexOptions.getFlags() + ')\n';
         } else {
@@ -720,15 +612,17 @@ export class RegexElement extends HTMLElement {
 
     public logEvent = (eventContent: any): void => {
         const basicEvent: RegexEvent.BasicEvent = {
-            'student-id': this.studentId,
+            'student-id': window.regexStudentId || 'stub-id',
+            'course-id': window.regexCourseId || 'stub-course-id',
             'problem-id': this.problemId,
+            'input-type': this.inputType,
             'client-timestamp': this._getTimestamp()
         };
         // console.log({...basicEvent, ...eventContent});
-        // this.logger.info({
-        //     ...basicEvent,
-        //     ...eventContent
-        // });
+        this.logger.info({
+            ...basicEvent,
+            ...eventContent
+        });
     }
 
     private _getTimestamp = (): string => {
@@ -770,6 +664,162 @@ export class RegexElement extends HTMLElement {
             'completed': completed
         };
         this.logEvent(problemFinished);
+    }
+
+    static get observedAttributes() { return ['input-type', 'problem-id']; }
+
+    attributeChangedCallback(name: string, oldValue: any, newValue:any) {
+        switch (name) {
+            case 'input-type': {
+                this.initRegexInput(this.root.querySelector('.regex-input-div') as HTMLDivElement);
+                break;
+            }
+            case 'problem-id': {
+                this.problemId = newValue;
+                break;
+            }
+        }
+    }
+
+    private initRegexInput(inputDiv: HTMLDivElement) {
+        inputDiv.innerHTML = '';
+        this.patternValidFlag = true;
+        let inputType = this.getAttribute('input-type');
+        this.inputType = inputType == 'parsons' ? 'parsons' : 'text';
+        this._parsonsData = new Array<string>();
+        this.parsonsExplanation = null;
+        inputDiv.append('Your regular expression:');
+        this.regexStatus = new RegexStatusTag();
+        inputDiv.appendChild(this.regexStatus.el);
+        inputDiv.appendChild(document.createElement('br'));
+        // todo:(UI) fix the css for the input
+        if (this.inputType == 'parsons') {
+            // init elements: parsons regex input
+            this.regexInput = new ParsonsInput();
+            inputDiv.appendChild(this.regexInput.el);
+            this.regexInput.el.addEventListener('regexChanged', () => {
+                this.regexInput.removeFormat();
+                if (this.checkWhileTyping) {
+                    this.patternValidFlag = this.pyodide_compilePattern();
+                    // log regex input event
+                    this._logRegexInputEvent();
+                    if (this.patternValidFlag) {
+                        this.regexStatus.updateStatus('valid');
+                        // check and update the background color of the parsons input based on the unit test results
+                        const passCount = this.unitTestTable.check(this.regexInput.getText());
+                        this.regexInput.updateTestStatus(passCount == this.unitTestTable.testCaseCount ? 'Pass' : 'Fail');
+                        this._testStatusDiv.className = '';
+                        this._testStatusDiv.classList.add('regex-test-status');
+                        this._testStatusDiv.classList.add(passCount == this.unitTestTable.testCaseCount ? 'Pass' : 'Fail');
+                        this._testStatusDiv.innerText = 'Test cases passed: ' + passCount + '/' + this.unitTestTable.testCaseCount;
+                        this.match();
+                        if (passCount === this.unitTestTable.testCaseCount) {
+                            console.log('dispatch');
+                            this.dispatchEvent(new CustomEvent('passed-all-testcases'));
+                        }
+                    } else {
+                        if (this.regexErrorMessage.classList.contains('hidden')) {
+                            // it means the regex is actually empty
+                            this.regexStatus.updateStatus('');
+                        } else {
+                            this.regexStatus.updateStatus('error');
+                            this.regexInput.updateTestStatus('Error');
+                            this.regexInput.highlightError(this.regexErrorPosition);
+                            console.log('highlight error: ');
+                            console.log(this.regexErrorPosition);
+                        }
+                        this.positiveTestStringInput.quill?.removeFormat(0, this.positiveTestStringInput.quill.getLength() - 1, 'silent');
+                        this.negativeTestStringInput.quill?.removeFormat(0, this.negativeTestStringInput.quill.getLength() - 1, 'silent');
+                        this._testStatusDiv.innerText = 'Test cases passed: 0/' + this.unitTestTable.testCaseCount;
+                        this.unitTestTable.setError();
+                    }
+                }
+            }, false)
+        } else {
+            // (this.inputType == 'text')
+            const regex_slot = document.createElement('slot');
+            regex_slot.name = 'regex-input'
+            inputDiv.appendChild(regex_slot);
+            // TODO: (refactor) rename RegexInput
+            this.regexInput = new RegexInput();
+            this.appendChild(this.regexInput.el);
+            this.regexInput.el.slot = 'regex-input';
+            (this.regexInput as RegexInput).initQuill();
+            (this.regexInput as RegexInput).quill?.on('text-change', (delta) => {
+                (this.regexInput as RegexInput).removeFormat();
+                // logging free input event
+                this.temporaryInputEvent = {
+                    'event-type': 'free-input',
+                    dropped: (this.regexInput as RegexInput).droppedText,
+                    delta: delta,
+                    answer: this.regexInput.getText()
+                };
+                (this.regexInput as RegexInput).droppedText = false;
+                // update status indicator
+                this.patternValidFlag = this.pyodide_compilePattern();
+                if (this.patternValidFlag) {
+                    this.regexStatus.updateStatus('valid');
+                } else {
+                    this.regexStatus.updateStatus('error');
+                    this.regexInput.highlightError(this.regexErrorPosition);
+                }
+                // console.log(this.patternValidFlag);
+                this._logRegexInputEvent();
+                if (this.checkWhileTyping) {
+                    if (this.patternValidFlag) {
+                        // only match when the pattern is valid
+                        const passCount = this.unitTestTable.check(this.regexInput.getText());
+                        this.regexInput.updateTestStatus(passCount == this.unitTestTable.testCaseCount ? 'Pass' : 'Fail');
+                        this._testStatusDiv.innerText = 'Test cases passed: ' + passCount + '/' + this.unitTestTable.testCaseCount;
+                        this._testStatusDiv.className = '';
+                        this._testStatusDiv.classList.add('regex-test-status');
+                        this._testStatusDiv.classList.add(passCount == this.unitTestTable.testCaseCount ? 'Pass' : 'Fail');
+                        this.match();
+                        if (passCount === this.unitTestTable.testCaseCount) {
+                            // console.log('dispatch');
+                            this.dispatchEvent(new CustomEvent('passed-all-testcases'));
+                        }
+                    } else {
+                        if (this.regexErrorMessage.classList.contains('hidden')) {
+                            // it means the regex is actually empty
+                            this.regexStatus.updateStatus('');
+                        } else {
+                            this.regexStatus.updateStatus('error');
+                            this.regexInput.updateTestStatus('Error');
+                            this.regexInput.highlightError(this.regexErrorPosition);
+                        }
+                        this.positiveTestStringInput.quill?.removeFormat(0, this.positiveTestStringInput.quill.getLength() - 1, 'silent');
+                        this.negativeTestStringInput.quill?.removeFormat(0, this.negativeTestStringInput.quill.getLength() - 1, 'silent');
+                        this._testStatusDiv.innerText = 'Test cases passed: 0/' + this.unitTestTable.testCaseCount;
+                        this.unitTestTable.setError();
+                    }
+                    // check and update the background color of the parsons input based on the unit test results
+                }
+            })
+        }
+        this.regexInput.parentElement = this;
+        this.regexErrorMessage = document.createElement('div');
+        this.regexErrorMessage.classList.add('regex-error-message');
+        inputDiv.appendChild(this.regexErrorMessage);
+        this.regexErrorPosition = -1;
+
+        // init elements: regex options dropdown
+        this.regexOptions = new RegexOptions();
+        // inputDiv.appendChild(this.regexOptions.el);
+
+    }
+
+    public resetTool() {
+        if (this.inputType != 'parsons') {
+            const regexInput = this.regexInput as RegexInput;
+            regexInput.quill?.setText('', 'silent');
+        }
+        this.regexErrorMessage.classList.add('hidden');
+        this.regexStatus.updateStatus('');
+        this.positiveTestStringInput.quill?.removeFormat(0, this.positiveTestStringInput.quill.getLength() - 1, 'silent');
+        this.negativeTestStringInput.quill?.removeFormat(0, this.negativeTestStringInput.quill.getLength() - 1, 'silent');
+        this._testStatusDiv.innerText = '';
+        this.unitTestTable.setError();
     }
 }
 
