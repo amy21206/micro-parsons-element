@@ -35,6 +35,7 @@ export class TestStringInput implements ITestStringInput {
     public droppedText: boolean;
     public parentElement: RegexElement | null;
     public slotName: string;
+    public highlightMode: string;
 
     constructor(slotName: string) {
         this.el = document.createElement('div');
@@ -45,6 +46,7 @@ export class TestStringInput implements ITestStringInput {
         // console.log(Quill);
         this.droppedText = false;
         this.parentElement = null;
+        this.highlightMode = 're.finditer';
     }
     
     public initQuill = (): void => {
@@ -134,9 +136,11 @@ export class TestStringInput implements ITestStringInput {
 
         // highlight the matches in a group sequence such that inner groups' color will cover outer groups'.
         let index = 0;
-        // if (this.parentElement?.matchFindall && groupCount > 1) {
-        //     index = 1;
-        // }
+        if (this.highlightMode == 're.findall') {
+            if (this.parentElement?.matchFindall && groupCount > 1) {
+                index = 1;
+            }
+        }
         for (index; index < groupCount; ++ index) {
             for (let j = 0; j < matches.length; ++ j) {
                 this.quill?.formatText(matches[j][index].start, matches[j][index].end - matches[j][index].start, {

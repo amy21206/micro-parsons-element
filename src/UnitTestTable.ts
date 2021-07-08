@@ -126,7 +126,11 @@ export class UnitTestTable implements IUnitTestTable {
         if (this.strictMatch) {
             pydata += 'unit_match_result_object = re.match(unit_pattern,unit_source)\n';
             pydata += 'if (unit_match_result_object):\n';
-            pydata += '    unit_match_result = [unit_match_result_object.group(0)]\n';
+            if (this.noGroupsAllowed && window.pyodide.globals.unit_match_group_cnt >= 2) {
+                pydata += '    unit_match_result = [unit_match_result_object.group(2)]\n';
+            } else {
+                pydata += '    unit_match_result = [unit_match_result_object.group(0)]\n';
+            }
             pydata += 'else:\n';
             pydata += '    unit_match_result = []\n';
         } else {
@@ -155,10 +159,10 @@ export class UnitTestTable implements IUnitTestTable {
         // creating the status(the first) column
         const row = document.createElement('tr');
         let status: string = result.success? (JSON.stringify(result.match) === JSON.stringify(testCase.expect) ? 'Pass' : 'Fail') : 'Error';
-        if (status == 'Pass' && JSON.stringify(testCase.expect) != '[]' && this.noGroupsAllowed && window.pyodide.globals.unit_match_group_cnt != 0) {
-            status = 'Fail'
-            // fail because no group is allowed
-        }
+        // if (status == 'Pass' && JSON.stringify(testCase.expect) != '[]' && this.noGroupsAllowed && window.pyodide.globals.unit_match_group_cnt != 1) {
+        //     status = 'Fail'
+        //     // fail because no group is allowed
+        // }
         const rowContent: string = '<td>'+status+'</td>';
         row.innerHTML = rowContent;
         this.table.append(row);
