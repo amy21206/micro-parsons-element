@@ -6,7 +6,8 @@ import { StatusOutput } from './StatusOutput';
 import { TestButton } from './TestButton';
 import { RegexOptions } from './RegexOptions';
 import { UnitTestTable } from './UnitTestTable';
-import { RegexToolS3BucketLogger } from 'schema_logger/dist/loggers/regex_tool_s3_bucket_logger';
+// import { RegexToolS3BucketLogger } from 'schema_logger/dist/loggers/regex_tool_s3_bucket_logger';
+import { AWSAPIGatewayWrapper } from "@educational-technology-collective/etc_http_aws_api_gateway_wrapper"
 import { RegexStatusTag } from './RegexStatusTag';
 import { RegexEvent } from './LoggingEvents';
 
@@ -65,7 +66,7 @@ export class RegexElement extends HTMLElement {
     public unitTestTable: UnitTestTable;
 
     // private logger: Logger;
-    private logger: RegexToolS3BucketLogger;
+    private logger: AWSAPIGatewayWrapper;
 
     private patternValidFlag: boolean;
 
@@ -78,7 +79,7 @@ export class RegexElement extends HTMLElement {
     private pyodideInitialized: boolean;
 
     private _testStatusDiv: HTMLDivElement;
-    
+
     // highlights the result using findall. used for study 1 and 2.
     public matchFindall: boolean;
 
@@ -86,10 +87,17 @@ export class RegexElement extends HTMLElement {
         super();
 
         // this.logger = new ConsoleLogger();
-        this.logger = new RegexToolS3BucketLogger({
-            api: "https://cjglpwd044.execute-api.us-east-1.amazonaws.com/regex-tool-api-aws-edtech-labs-si-umich-edu",
+        // this.logger = new RegexToolS3BucketLogger({
+        //     api: "https://cjglpwd044.execute-api.us-east-1.amazonaws.com/regex-tool-api-aws-edtech-labs-si-umich-edu",
+        //     bucket: "regex-tool-s3-aws-edtech-labs-si-umich-edu",
+        //     path: "coursera_test"
+        // });
+        this.logger = new AWSAPIGatewayWrapper({
+            url: "https://cjglpwd044.execute-api.us-east-1.amazonaws.com/regex-tool-api-aws-edtech-labs-si-umich-edu",
             bucket: "regex-tool-s3-aws-edtech-labs-si-umich-edu",
-            path: "coursera_test"
+            path: "coursera_test",
+            retry: 1000,
+            errorHandler: console.error
         });
 
         this.root = this.attachShadow({ mode: 'open' });
@@ -620,9 +628,12 @@ export class RegexElement extends HTMLElement {
             'client-timestamp': this._getTimestamp()
         };
         // console.log({...basicEvent, ...eventContent});
-        this.logger.info({
-            ...basicEvent,
-            ...eventContent
+        this.logger.request({
+            data: {
+                ...basicEvent,
+                ...eventContent
+            },
+            Level: 'info'
         });
     }
 
@@ -652,7 +663,7 @@ export class RegexElement extends HTMLElement {
     }
 
     public logCognitiveLoad = (cl: number): void => {
-        const cognitiveLoad:RegexEvent.CognitiveLoad = {
+        const cognitiveLoad: RegexEvent.CognitiveLoad = {
             'event-type': 'cognitive-load',
             'data': cl
         };
@@ -660,7 +671,7 @@ export class RegexElement extends HTMLElement {
     }
 
     public logProblemFinished = (completed: boolean): void => {
-        const problemFinished:RegexEvent.ProblemFinished = {
+        const problemFinished: RegexEvent.ProblemFinished = {
             'event-type': 'problem-finished',
             'completed': completed
         };
@@ -669,7 +680,7 @@ export class RegexElement extends HTMLElement {
 
     static get observedAttributes() { return ['input-type', 'problem-id']; }
 
-    attributeChangedCallback(name: string, oldValue: any, newValue:any) {
+    attributeChangedCallback(name: string, oldValue: any, newValue: any) {
         switch (name) {
             case 'input-type': {
                 this.initRegexInput(this.root.querySelector('.regex-input-div') as HTMLDivElement);
@@ -715,7 +726,7 @@ export class RegexElement extends HTMLElement {
                         this._testStatusDiv.innerText = 'Test cases passed: ' + passCount + '/' + this.unitTestTable.testCaseCount;
                         this.match();
                         if (passCount === this.unitTestTable.testCaseCount) {
-                            console.log('dispatch');
+                            // console.log('dispatch');
                             this.dispatchEvent(new CustomEvent('passed-all-testcases'));
                         }
                     } else {
@@ -726,8 +737,8 @@ export class RegexElement extends HTMLElement {
                             this.regexStatus.updateStatus('error');
                             this.regexInput.updateTestStatus('Error');
                             this.regexInput.highlightError(this.regexErrorPosition);
-                            console.log('highlight error: ');
-                            console.log(this.regexErrorPosition);
+                            // console.log('highlight error: ');
+                            // console.log(this.regexErrorPosition);
                         }
                         this.positiveTestStringInput.quill?.removeFormat(0, this.positiveTestStringInput.quill.getLength() - 1, 'silent');
                         this.negativeTestStringInput.quill?.removeFormat(0, this.negativeTestStringInput.quill.getLength() - 1, 'silent');

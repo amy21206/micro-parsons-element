@@ -132,7 +132,7 @@ export class ParsonsInput implements IRegexInput {
                 }
             }
             newBlock.onclick = () => {
-                console.log('expandable block onclick');
+                // console.log('expandable block onclick');
                 if ((newBlock.parentNode as HTMLDivElement).classList.contains('drag-area')) {
                     const text = this.expandableBlocks[i];
                     let firstBlock = null;
@@ -219,7 +219,7 @@ export class ParsonsInput implements IRegexInput {
                 }
             }
             newBlock.onclick = () => {
-                console.log('normal block onclick');
+                // console.log('normal block onclick');
                 if ((newBlock.parentNode as HTMLDivElement).classList.contains('drag-area')) {
                     let newBlockCopy = newBlock.cloneNode(true);
                     this._dropArea.appendChild(newBlockCopy);
@@ -289,7 +289,7 @@ export class ParsonsInput implements IRegexInput {
                 const newBlock = event.clone;
                 if (event.item.classList.contains('expandable-block')) {
                     newBlock.onclick = () => {
-                        console.log('expandable block onclick');
+                        // console.log('expandable block onclick');
                         if ((newBlock.parentNode as HTMLDivElement).classList.contains('drag-area')) {
                             const text = (newBlock.firstChild?.textContent) || '';
                             let firstBlock = null;
@@ -334,7 +334,7 @@ export class ParsonsInput implements IRegexInput {
                     }
                 } else {
                     newBlock.onclick = () => {
-                        console.log('normal block onclick');
+                        // console.log('normal block onclick');
                         if ((newBlock.parentNode as HTMLDivElement).classList.contains('drag-area')) {
                             let newBlockCopy = newBlock.cloneNode(true);
                             this._dropArea.appendChild(newBlockCopy);
@@ -367,7 +367,7 @@ export class ParsonsInput implements IRegexInput {
                             this.el.dispatchEvent(new Event('regexChanged'));
                         }
                         if ((newBlock.parentNode as HTMLDivElement).classList.contains('drop-area')) {
-                            console.log('359')
+                            // console.log('359')
                             // (not sure) clicking on a normal block added by dragging to remove the new block
                             const endPosition = this._getBlockPosition(newBlock as HTMLElement);
                             newBlock.parentNode?.removeChild(newBlock);
@@ -394,7 +394,7 @@ export class ParsonsInput implements IRegexInput {
             onAdd: (event) => {
                 // getting the position 
                 const isExpandable = event.item.classList.contains('expandable-block');
-                console.log(isExpandable);
+                // console.log(isExpandable);
                 if (this.parentElement) {
                     this.parentElement.temporaryInputEvent = {
                         'event-type': 'parsons',
@@ -423,7 +423,7 @@ export class ParsonsInput implements IRegexInput {
                         newBlock.style.display = 'inline-block';
                         newBlock.classList.add('parsons-block');
                         (newBlock as HTMLDivElement).onclick = () => {
-                            console.log('expandable new block onclick')
+                            // console.log('expandable new block onclick')
                             // clicking on a block added by clicking an expandable block to remove the new block
                             const endPosition = this._getBlockPosition(newBlock as HTMLElement);
                             newBlock.parentNode?.removeChild(newBlock);
@@ -450,7 +450,7 @@ export class ParsonsInput implements IRegexInput {
             onEnd: (event) => {
                 // TODO: (bug) This is a workaround that only works in the demo.
                 // compare clientY with the position of item.
-                console.log(event.item.onclick);
+                // console.log(event.item.onclick);
                 let endposition = 0;
                 let action = RegexEvent.ParsonsInputAction.MOVE;
                 const upperbound = this._dropArea.getBoundingClientRect().top;
@@ -525,7 +525,7 @@ export class ParsonsInput implements IRegexInput {
     }
 
     public highlightError = (position: number): void => {
-        console.log(position);
+        // console.log(position);
         let count = 0;
         if (this._dropArea.hasChildNodes()) {
             let el = this._dropArea.firstChild as HTMLDivElement;
