@@ -151,7 +151,7 @@ export class ParsonsInput implements IRegexInput {
                                 this.parentElement.temporaryInputEvent = {
                                     'event-type': 'parsons',
                                     action: RegexEvent.ParsonsInputAction.REMOVE,
-                                    position: [-1, endPosition],
+                                    position: [endPosition, -1],
                                     answer: this._getTextArray()
                                 };
                             }
@@ -232,7 +232,7 @@ export class ParsonsInput implements IRegexInput {
                             this.parentElement.temporaryInputEvent = {
                                 'event-type': 'parsons',
                                 action: RegexEvent.ParsonsInputAction.REMOVE,
-                                position: [-1, endPosition],
+                                position: [endPosition, -1],
                                 answer: this._getTextArray()
                             };
                         }
@@ -259,7 +259,7 @@ export class ParsonsInput implements IRegexInput {
                         this.parentElement.temporaryInputEvent = {
                             'event-type': 'parsons',
                             action: RegexEvent.ParsonsInputAction.REMOVE,
-                            position: [-1, endPosition],
+                            position: [endPosition, -1],
                             answer: this._getTextArray(),
                         };
                     }
@@ -308,7 +308,7 @@ export class ParsonsInput implements IRegexInput {
                                         this.parentElement.temporaryInputEvent = {
                                             'event-type': 'parsons',
                                             action: RegexEvent.ParsonsInputAction.REMOVE,
-                                            position: [-1, endPosition],
+                                            position: [endPosition, -1],
                                             answer: this._getTextArray(),
                                         };
                                     }
@@ -347,7 +347,7 @@ export class ParsonsInput implements IRegexInput {
                                     this.parentElement.temporaryInputEvent = {
                                         'event-type': 'parsons',
                                         action: RegexEvent.ParsonsInputAction.REMOVE,
-                                        position: [-1, endPosition],
+                                        position: [endPosition, -1],
                                         answer: this._getTextArray(),
                                     };
                                 }
@@ -375,7 +375,7 @@ export class ParsonsInput implements IRegexInput {
                                 this.parentElement.temporaryInputEvent = {
                                     'event-type': 'parsons',
                                     action: RegexEvent.ParsonsInputAction.REMOVE,
-                                    position: [-1, endPosition],
+                                    position: [endPosition, -1],
                                     answer: this._getTextArray(),
                                 };
                             }
@@ -431,7 +431,7 @@ export class ParsonsInput implements IRegexInput {
                                 this.parentElement.temporaryInputEvent = {
                                     'event-type': 'parsons',
                                     action: RegexEvent.ParsonsInputAction.REMOVE,
-                                    position: [-1, endPosition],
+                                    position: [endPosition, -1],
                                     answer: this._getTextArray(),
                                 };
                             }

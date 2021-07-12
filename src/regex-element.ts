@@ -95,7 +95,7 @@ export class RegexElement extends HTMLElement {
         this.logger = new AWSAPIGatewayWrapper({
             url: "https://cjglpwd044.execute-api.us-east-1.amazonaws.com/regex-tool-api-aws-edtech-labs-si-umich-edu",
             bucket: "regex-tool-s3-aws-edtech-labs-si-umich-edu",
-            path: "coursera_test",
+            path: "between_coursera",
             retry: 1000,
             errorHandler: console.error
         });
@@ -374,7 +374,7 @@ export class RegexElement extends HTMLElement {
     // TODO[refactor]: put stylesheet in a separate css/scss file
     private addStyle = (): void => {
         const sheet = document.createElement('style');
-        sheet.innerHTML += '.regex-textbox {width: 100%; visibility: collapse;}\n';
+        sheet.innerHTML += '.regex-textbox {width: 100%; display:none;}\n';
         sheet.innerHTML += '.regex-input-and-test-status {display: flex; flex-wrap: nowrap;}\n';
         sheet.innerHTML += '.regex-test-status {font-family: monospace; font-size: 15px; color:black; padding:20px 0 0 10px;height: fit-content;}\n';
         sheet.innerHTML += '.regex-test-status.Fail {font-family: monospace; font-size: 15px; color:#ebd071;}\n';
