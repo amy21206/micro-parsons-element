@@ -95,7 +95,7 @@ export class RegexElement extends HTMLElement {
         this.logger = new AWSAPIGatewayWrapper({
             url: "https://cjglpwd044.execute-api.us-east-1.amazonaws.com/regex-tool-api-aws-edtech-labs-si-umich-edu",
             bucket: "regex-tool-s3-aws-edtech-labs-si-umich-edu",
-            path: "between_coursera",
+            path: "SIADS505",
             retry: 1000,
             errorHandler: console.error
         });

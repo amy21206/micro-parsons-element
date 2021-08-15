@@ -148,4 +148,12 @@ export namespace RegexEvent {
         'context': string;
         'answer': any;
     }
+
+    // Consent to share their answer with the rest of class
+    // for SIADS 505, 21 fall
+    export type ShareConsent = {
+        'event-type': 'share-consent';
+        'consent': 'Y-credit' | 'Y-anonymous' | 'N';
+        'email': string;
+    }
 }
