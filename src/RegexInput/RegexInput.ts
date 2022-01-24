@@ -1,6 +1,6 @@
 import Quill from 'quill';
 import {randomColor} from 'randomcolor';
-import { RegexEvent } from './LoggingEvents';
+import { RegexEvent } from '../LoggingEvents';
 
 declare class RegexElement{
     logEvent(event: any): void;

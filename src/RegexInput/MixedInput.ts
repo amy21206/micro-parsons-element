@@ -1,12 +1,12 @@
 import Sortable, { MoveEvent } from 'sortablejs';
-import { RegexEvent } from './LoggingEvents';
+import { RegexEvent } from '../LoggingEvents';
 
 declare class RegexElement {
     logEvent(event: any): void;
     public temporaryInputEvent: any;
 }
 
-export class ParsonsInput implements IRegexInput {
+export class MixedInput implements IRegexInput {
     // The input element
     public el: HTMLDivElement;
     // TODO(refactor): make expandable blocks more easy to use

@@ -72,6 +72,6 @@
   },
   "include": [
     "./types/*.d.ts",
-    "./src/*.ts"
-  ]
+    "./src/*.ts",
+    "./src/RegexInput/*.ts"]
 }

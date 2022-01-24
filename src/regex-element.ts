@@ -1,6 +1,6 @@
-import { ParsonsInput } from './ParsonsInput';
+import { ParsonsInput } from './RegexInput/ParsonsInput';
 import { languagePluginLoader } from './external/pyodide';
-import { RegexInput } from './RegexInput';
+import { RegexInput } from './RegexInput/RegexInput';
 import { TestStringInput } from './TestStringInput';
 import { StatusOutput } from './StatusOutput';
 import { TestButton } from './TestButton';
