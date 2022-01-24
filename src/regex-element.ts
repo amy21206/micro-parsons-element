@@ -6,8 +6,6 @@ import { StatusOutput } from './StatusOutput';
 import { TestButton } from './TestButton';
 import { RegexOptions } from './RegexOptions';
 import { UnitTestTable } from './UnitTestTable';
-// import { RegexToolS3BucketLogger } from 'schema_logger/dist/loggers/regex_tool_s3_bucket_logger';
-import { AWSAPIGatewayWrapper } from "@educational-technology-collective/etc_http_aws_api_gateway_wrapper"
 import { RegexStatusTag } from './RegexStatusTag';
 import { RegexEvent } from './LoggingEvents';
 
@@ -65,9 +63,6 @@ export class RegexElement extends HTMLElement {
     // unit tests
     public unitTestTable: UnitTestTable;
 
-    // private logger: Logger;
-    private logger: AWSAPIGatewayWrapper;
-
     private patternValidFlag: boolean;
 
     // data for logging
@@ -85,20 +80,6 @@ export class RegexElement extends HTMLElement {
 
     constructor() {
         super();
-
-        // this.logger = new ConsoleLogger();
-        // this.logger = new RegexToolS3BucketLogger({
-        //     api: "https://cjglpwd044.execute-api.us-east-1.amazonaws.com/regex-tool-api-aws-edtech-labs-si-umich-edu",
-        //     bucket: "regex-tool-s3-aws-edtech-labs-si-umich-edu",
-        //     path: "coursera_test"
-        // });
-        this.logger = new AWSAPIGatewayWrapper({
-            url: "https://cjglpwd044.execute-api.us-east-1.amazonaws.com/regex-tool-api-aws-edtech-labs-si-umich-edu",
-            bucket: "regex-tool-s3-aws-edtech-labs-si-umich-edu",
-            path: "SIADS505",
-            retry: 1000,
-            errorHandler: console.error
-        });
 
         this.root = this.attachShadow({ mode: 'open' });
 
@@ -627,14 +608,7 @@ export class RegexElement extends HTMLElement {
             'input-type': this.inputType,
             'client-timestamp': this._getTimestamp()
         };
-        // console.log({...basicEvent, ...eventContent});
-        this.logger.request({
-            data: {
-                ...basicEvent,
-                ...eventContent
-            },
-            Level: 'info'
-        });
+        console.log({...basicEvent, ...eventContent});
     }
 
     private _getTimestamp = (): string => {
