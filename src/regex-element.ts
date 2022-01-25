@@ -1,4 +1,5 @@
 import { ParsonsInput } from './RegexInput/ParsonsInput';
+import { MixedInput } from './RegexInput/MixedInput';
 import { languagePluginLoader } from './external/pyodide';
 import { RegexInput } from './RegexInput/RegexInput';
 import { TestStringInput } from './TestStringInput';
@@ -671,15 +672,22 @@ export class RegexElement extends HTMLElement {
         inputDiv.innerHTML = '';
         this.patternValidFlag = true;
         let inputType = this.getAttribute('input-type');
-        this.inputType = inputType == 'parsons' ? 'parsons' : 'text';
+        this.inputType = inputType == 'mixed' ? 'mixed' : ('parsons' ? 'parsons' : 'text');
         this._parsonsData = new Array<string>();
         this.parsonsExplanation = null;
         inputDiv.append('Your regular expression:');
         this.regexStatus = new RegexStatusTag();
         inputDiv.appendChild(this.regexStatus.el);
         inputDiv.appendChild(document.createElement('br'));
+        // comment(Jan. 25: not sure what to fix)
         // todo:(UI) fix the css for the input
-        if (this.inputType == 'parsons') {
+        if (this.inputType == 'mixed') {
+            // init elements: mixed regex input
+            // todo: I don't think I added how it should behave for switching
+            this.regexInput = new MixedInput();
+            inputDiv.appendChild(this.regexInput.el);
+
+        } else if (this.inputType == 'parsons') {
             // init elements: parsons regex input
             this.regexInput = new ParsonsInput();
             inputDiv.appendChild(this.regexInput.el);

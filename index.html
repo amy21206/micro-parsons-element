@@ -1,19 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Security-Policy" content="
+<!-- <meta http-equiv="Content-Security-Policy" content="
     default-src 'self';
     connect-src cjglpwd044.execute-api.us-east-1.amazonaws.com cdn.jsdelivr.net;
     script-src 'self' 'unsafe-inline' 'unsafe-eval' *.coursera.org cdn.jsdelivr.net;
     style-src 'self' 'unsafe-inline' *.coursera.org cdn.quilljs.com;
-">
+"> -->
 </head>
 
 <body>
 <div class="test-div"></div>
 <script type="module">
 import "./packages/regex-element/regex-element.js";
-document.querySelector('.test-div').innerHTML = `<regex-element input-type='parsons' id="abcd"></regex-element>`;
+// document.querySelector('.test-div').innerHTML = `<regex-element input-type='parsons' id="abcd"></regex-element>`;
+document.querySelector('.test-div').innerHTML = `<regex-element input-type='mixed' id="abcd"></regex-element>`;
+// document.querySelector('.test-div').innerHTML = `<regex-element id="abcd"></regex-element>`;
 let parsonsElement = document.querySelector('#abcd');
 parsonsElement.parsonsData = ['(', ')', '[', ']', 'a', 'e', 'i', 'o', 'u', 'z', '-', '*', '^'];
 parsonsElement.setTestString('match:\nunicorn\nelement\n\ndo not match:\nbanana\napple\n');

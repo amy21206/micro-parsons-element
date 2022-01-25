@@ -36,7 +36,7 @@ export class ParsonsInput implements IRegexInput {
         this.el.appendChild(this._dropArea);
         this._dropArea.classList.add('drop-area');
         this._dropArea.style.height = '20px';
-        // this._dropArea.style.backgroundColor = '#bcebd7';
+        // Documents the previous position before dragging for logging purpose (for moving blocks in drop area)
         this._prevPosition = -1;
 
         this.expandableBlocks = [];

@@ -12,6 +12,7 @@ export class RegexInput implements IRegexInput {
     public quill: Quill | null;
     private groups: Array<PatternGroup>;
     public parentElement: RegexElement | null;
+    // Indicates if the added text is drag and dropped from somewhere else. For logging purpose.
     public droppedText: boolean;
     constructor() {
         this.el = document.createElement('div');
@@ -89,7 +90,7 @@ export class RegexInput implements IRegexInput {
         if (colors.length < groupCount) {
             this.generateColor(colors, groupCount - colors.length);
         }
-        // highlight the groups
+        // highlight the groups (not working)
         for (let i = 0; i < this.groups.length; ++i) {
             this.quill?.formatText(this.groups[i].start, this.groups[i].end - this.groups[i].start, {
                 'background': colors[i]
