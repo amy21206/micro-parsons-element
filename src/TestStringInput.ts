@@ -4,25 +4,6 @@ import { RegexEvent } from './LoggingEvents';
 import Parchment from 'parchment';
 // import {Quill} from '../types/Quill';
 
-// experiments: wrapping classes
-let Inline = Quill.import('blots/inline');
-
-class GroupBlot extends Inline {
-    static create(value: any){
-        let node = super.create();
-        node.setAttribute('class', 'group0');
-        return node;
-    }
-    static formats(domNode: any) {
-        return true;
-    }
-}
-GroupBlot.blotName = 'grouping';
-GroupBlot.className = 'group1';
-GroupBlot.tagName = 'span';
-Quill.register(GroupBlot);
-// end of experiments
-
 declare class RegexElement{
     logEvent(event: any): void;
     matchFindall: boolean;

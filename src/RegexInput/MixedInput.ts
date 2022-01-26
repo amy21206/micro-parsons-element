@@ -8,6 +8,13 @@ declare class RegexElement {
     appendChild(childElement: HTMLElement): void;
 }
 
+let Inline = Quill.import('blots/inline');
+class BoldBlot extends Inline { }
+BoldBlot.blotName = 'bbbb';
+BoldBlot.tagName = 'strong';
+Quill.register(BoldBlot);
+
+
 export class MixedInput implements IRegexInput {
     // base node
     public el: HTMLDivElement;
@@ -23,6 +30,7 @@ export class MixedInput implements IRegexInput {
     private _quill: Quill | null;
 
     constructor(parentElement: RegexElement, inputDiv: HTMLDivElement) {
+        console.log('constructor')
         // *** set the parent element when constructing the input
         this.parentElement = parentElement;
 
@@ -81,11 +89,14 @@ export class MixedInput implements IRegexInput {
     }
 
     public initQuill = (): void => {
+        console.log('here')
         this._quill = new Quill('#mixed-input-area', {
             modules: {
                 toolbar: false
             },
         })
+        this._quill.setText('');
+        this._quill.insertText(0, 'Test', { bbbb: true });
     }
 
     // Returns students' text input

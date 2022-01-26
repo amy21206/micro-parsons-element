@@ -658,6 +658,7 @@ export class RegexElement extends HTMLElement {
     attributeChangedCallback(name: string, oldValue: any, newValue: any) {
         switch (name) {
             case 'input-type': {
+                console.log('attributechanged: input-type')
                 this.initRegexInput(this.root.querySelector('.regex-input-div') as HTMLDivElement);
                 break;
             }
@@ -669,10 +670,11 @@ export class RegexElement extends HTMLElement {
     }
 
     private initRegexInput(inputDiv: HTMLDivElement) {
+        console.log('initregexinput');
         inputDiv.innerHTML = '';
         this.patternValidFlag = true;
         let inputType = this.getAttribute('input-type');
-        this.inputType = inputType == 'mixed' ? 'mixed' : ('parsons' ? 'parsons' : 'text');
+        this.inputType = (inputType == 'mixed' ? 'mixed' : (inputType =='parsons' ? 'parsons' : 'text'));
         this._parsonsData = new Array<string>();
         this.parsonsExplanation = null;
         inputDiv.append('Your regular expression:');
