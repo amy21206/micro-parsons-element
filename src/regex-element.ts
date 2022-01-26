@@ -684,9 +684,7 @@ export class RegexElement extends HTMLElement {
         if (this.inputType == 'mixed') {
             // init elements: mixed regex input
             // todo: I don't think I added how it should behave for switching
-            this.regexInput = new MixedInput();
-            inputDiv.appendChild(this.regexInput.el);
-
+            this.regexInput = new MixedInput(this, inputDiv);
         } else if (this.inputType == 'parsons') {
             // init elements: parsons regex input
             this.regexInput = new ParsonsInput();
