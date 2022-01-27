@@ -1,19 +1,62 @@
 import Quill from 'quill';
+import Delta from 'quill-delta';
 import Sortable, { MoveEvent } from 'sortablejs';
-import { RegexEvent } from '../LoggingEvents';
+// need to import this to make sure the not editable blocks work
+// import {BlockBlot} from './BlockBlot';
+let Embed = Quill.import('blots/embed');
+
+export class ParsonsBlot extends Embed {
+
+    // public _value: string;
+
+    // constructor() {
+    //     super();
+    //     this._value = 'test';
+    // }
+
+    static create(content: string){
+        let node: HTMLElement = super.create(content);
+        node.innerText = content;
+        node.contentEditable = 'false';
+        return node;
+    }
+
+    static value(node: HTMLElement) {
+        return node.childNodes[0].textContent;
+    }
+
+    // public static formats() {
+    //     return 'span';
+    // }
+
+
+
+    // public format(name: string, value: string) {
+    //     if (name === 'link' && value) {
+    //         this.domNode.setAttribute('href'), value;
+    //     } else {
+    //         super.format(name, value);
+    //     }
+    // }
+
+    // public formats() {
+    //     let formats = super.formats();
+    //     formats['link'] = BlockBlot.formats(this.domNode);
+    //     return formats;
+    // }
+}
+
+ParsonsBlot.blotName = 'parsons';
+ParsonsBlot.tagName = 'SPAN';
+// ParsonsBlot.className = 'parsons-block';
+
+Quill.register(ParsonsBlot);
 
 declare class RegexElement {
     logEvent(event: any): void;
     public temporaryInputEvent: any;
     appendChild(childElement: HTMLElement): void;
 }
-
-let Inline = Quill.import('blots/inline');
-class BoldBlot extends Inline { }
-BoldBlot.blotName = 'bbbb';
-BoldBlot.tagName = 'strong';
-Quill.register(BoldBlot);
-
 
 export class MixedInput implements IRegexInput {
     // base node
@@ -28,6 +71,8 @@ export class MixedInput implements IRegexInput {
     // The input area is not a child of this.el, but is put under the parent node, outside the shadow root.
     public _inputArea: HTMLDivElement;
     private _quill: Quill | null;
+
+    // private block: BlockBlot | null;
 
     constructor(parentElement: RegexElement, inputDiv: HTMLDivElement) {
         console.log('constructor')
@@ -61,6 +106,8 @@ export class MixedInput implements IRegexInput {
         // adding functionality for quill
         this._quill = null;
         this.initQuill();
+        
+        // this.block = null;
     }
 
     // Constructs the HTML of the base element
@@ -96,7 +143,11 @@ export class MixedInput implements IRegexInput {
             },
         })
         this._quill.setText('');
-        this._quill.insertText(0, 'Test', { bbbb: true });
+        console.log('test');
+        this._quill.updateContents(
+            new Delta().insert({ parsons: 'ThisIsABlock'}).insert('Test')
+        );
+        console.log('test1');
     }
 
     // Returns students' text input
