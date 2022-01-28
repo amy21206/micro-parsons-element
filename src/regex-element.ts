@@ -334,6 +334,8 @@ export class RegexElement extends HTMLElement {
         this._parsonsData = data;
         if (this.inputType == 'parsons') {
             (this.regexInput as ParsonsInput).setSourceBlocks(data, this.parsonsExplanation);
+        } else if (this.inputType = 'mixed') {
+            (this.regexInput as MixedInput).setSourceBlocks(data, this.parsonsExplanation);
         }
     }
 
@@ -410,6 +412,10 @@ export class RegexElement extends HTMLElement {
         global_sheet.innerHTML += '.Pass .ql-editor { box-shadow: 0 0 2px 5px #bcebd7; margin: 5px; }\n';
         global_sheet.innerHTML += '.Fail .ql-editor { box-shadow: 0 0 2px 5px #ebd071; margin: 5px; }\n';
         global_sheet.innerHTML += '.Error .ql-editor { box-shadow: 0 0 2px 5px #ff99b3; margin: 5px; }\n';
+        // For Parsons Block inside mixed input
+        global_sheet.innerHTML += '.parsons-blot {display: inline-block; font-family: monospace; font-size: large; background-color: white; padding: 1px 2px; border: 1px solid; border-color:gray; margin: 0 1px; border-radius: 2px; position: relative;}\n';
+        global_sheet.innerHTML += '.parsons-block:hover, .parsons-block:focus { border-color: black; padding: 0 6px; border: 2px solid;}\n';
+
         this.appendChild(global_sheet);
     }
 

@@ -16,8 +16,9 @@ import "./packages/regex-element/regex-element.js";
 // document.querySelector('.test-div').innerHTML = `<regex-element input-type='parsons' id="abcd"></regex-element>`;
 document.querySelector('.test-div').innerHTML = `<regex-element input-type='mixed' id="abcd"></regex-element>`;
 // document.querySelector('.test-div').innerHTML = `<regex-element id="abcd" input-type='text'></regex-element>`;
-// let parsonsElement = document.querySelector('#abcd');
-// parsonsElement.parsonsData = ['(', ')', '[', ']', 'a', 'e', 'i', 'o', 'u', 'z', '-', '*', '^'];
+let parsonsElement = document.querySelector('#abcd');
+parsonsElement.parsonsExplanation = ['explanation of [aeiou]', 'repeat 0 or more', 'start from the beginning of the string']
+parsonsElement.parsonsData = ['[aeiou]', '*', '^'];
 // parsonsElement.setTestString('match:\nunicorn\nelement\n\ndo not match:\nbanana\napple\n');
 </script>
 </body>
