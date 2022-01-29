@@ -677,7 +677,18 @@ export class RegexElement extends HTMLElement {
 
     private initRegexInput(inputDiv: HTMLDivElement) {
         console.log('initregexinput');
+        // clearing previous input (if exist)
         inputDiv.innerHTML = '';
+        // clearing quill divs out side the shadow root (if exist)
+        const mixed_input_div = document.querySelector('#mixed-input-area');
+        if (mixed_input_div) {
+            mixed_input_div.remove();
+        }
+        const regex_input_div = document.querySelector('#regex-input');
+        if (regex_input_div) {
+            regex_input_div.remove();
+        }
+
         this.patternValidFlag = true;
         let inputType = this.getAttribute('input-type');
         this.inputType = (inputType == 'mixed' ? 'mixed' : (inputType =='parsons' ? 'parsons' : 'text'));

@@ -12,6 +12,13 @@ export class ParsonsBlot extends Embed {
         node.innerText = content;
         node.contentEditable = 'false';
         node.draggable = true;
+        node.ondragstart = (event) => {
+            event.dataTransfer!.dropEffect = 'move'
+            event.dataTransfer!.effectAllowed = 'move'
+            // event.dataTransfer!.setData('text/html', newBlock.outerHTML)
+            // event.dataTransfer!.setData('text', node.innerText)
+            event.dataTransfer!.setData("text/plain", content);
+        }
         return node;
     }
 
@@ -96,6 +103,13 @@ export class MixedInput implements IRegexInput {
         mixedInputSlot.name = 'mixed-input-slot';
         this.el.appendChild(mixedInputSlot);
 
+        const button = document.createElement('button');
+        button.innerText = 'abcd'
+        button.onclick = (): void => {
+            this._quill!.insertText(0, 'abc');
+        };
+        this.el.appendChild(button);
+
         // adding under the parent element (outside shadow root)
         this.parentElement.appendChild(this._inputArea);
     }
@@ -106,30 +120,61 @@ export class MixedInput implements IRegexInput {
                 toolbar: false
             },
         })
-        this._quill.setText('');
         this._quill.updateContents(
-            new Delta().insert({ parsons: 'ThisIsABlock'}).insert('Test')
+        //     // new Delta().insert({ parsons: 'ThisIsABlock'}).insert('Test')
+            new Delta().insert('Test')
         );
+        console.log(this._quill);
+        console.log(this._inputArea.ondrop)
         this._inputArea.ondrop = (event) => {
             console.log('ondrop')
             console.log(event)
+            let data = event.dataTransfer!.getData("text");
+            let index = this._quill!.getSelection(true).index;
+            console.log(data)
+            console.log(event.dataTransfer)
+            this._quill!.insertEmbed(index, 'parsons', data)
             event.preventDefault();
-            console.log((event.target! as HTMLElement).innerText)
-            this._quill!.updateContents(
-                new Delta().insert({ parsons: (event.target! as HTMLElement).innerText})
-            );
-            console.log('inserted')
+            // event.preventDefault();
+            // console.log((event.target! as HTMLElement).innerText)
+            // this._quill = new Quill('#mixed-input-area', {
+            //     modules: {
+            //         toolbar: false
+            //     },
+            // })
+            // console.log(this._quill!.getText());
+            // console.log(this._quill)
+            // this._quill!.setText('');
+            // console.log(this._quill!.getText());
+            // this._quill!.updateContents(
+            //     new Delta().insert({ parsons: event.dataTransfer?.getData('text')})
+            //     // new Delta().insert('heyheyhey')
+            // );
+            // this._quill!.insertText(0, 'def');
+            // this._quill!.updateContents(
+            //     // new Delta().insert({ parsons: (event.target! as HTMLElement).innerText})
+            //     // new Delta().insert({ parsons: 'NewBlockInserted' })
+            //     new Delta().insert('heyheyhey')
+            // );
+            // console.log(this._quill);
+            // console.log('inserted')
+            // event.preventDefault();
         }
         this._inputArea.ondragover = (event) => {
             console.log('ondragover')
-            console.log(event)
+            // console.log(event)
             event.preventDefault();
         }
-        this._inputArea.ondragend = (event) => {
-            console.log('ondragend')
-            console.log(event)
-            event.preventDefault();
-        }
+        // this._inputArea.ondragend = (event) => {
+        //     console.log('ondragend')
+        //     // console.log(event)
+        //     let data = event.dataTransfer!.getData("text");
+        //     let index = this._quill!.getSelection(true).index;
+        //     console.log(data)
+        //     console.log(event.dataTransfer)
+        //     this._quill!.insertEmbed(index, 'parsons', data)
+        //     event.preventDefault();
+        // }
     }
 
     public setSourceBlocks = (data: Array<string>, tooltips: Array<string> | null): void => {
@@ -148,9 +193,6 @@ export class MixedInput implements IRegexInput {
                 newBlock.innerText = data[i];
             }
             newBlock.draggable = true;
-            newBlock.ondragstart = (event) => {
-                event.dataTransfer?.setData
-            }
             newBlock.style.display = 'inline-block';
             newBlock.classList.add('parsons-block');
             if (tooltips && tooltips.length > i) {
@@ -181,6 +223,25 @@ export class MixedInput implements IRegexInput {
                     }
                 }
             }
+            newBlock.ondragstart = (event) => {
+                console.log('ondragstart')
+                // event.dataTransfer!.dropEffect = 'copy'
+                // event.dataTransfer!.effectAllowed = 'copy'
+                // event.dataTransfer!.setData('text/html', newBlock.outerHTML)
+                event.dataTransfer!.setData('text/plain', data[i])
+            }
+            // newBlock.ondragend = (event) => {
+            //     // let data = event.dataTransfer!.getData("text/html");
+            //     console.log('ondragend')
+            //     let data = event.dataTransfer!.getData("text");
+            //     let index = this._quill!.getSelection(true).index;
+            //     console.log(data)
+            //     console.log(event.dataTransfer)
+            //     this._quill!.insertEmbed(index, 'parsons', data)
+            // }
+            // newBlock.ondragstart = (event) => {
+            //     event.dataTransfer?.setData("text/html", newBlock.outerHTML);
+            // }
             // newBlock.onclick = () => {
             //     // console.log('normal block onclick');
             //     if ((newBlock.parentNode as HTMLDivElement).classList.contains('drag-area')) {
