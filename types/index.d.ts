@@ -33,6 +33,12 @@ interface IRegexOptions {
 	getFlags(): string?;
 }
 
+interface Skulpt {
+	configure: any
+	builtinFiles: any
+	importMainWithBody: any
+} 
+
 interface Pyodide {
 	_module: PyodideModule
 

@@ -13,6 +13,7 @@ declare global {
     interface Window {
         languagePluginUrl: string
         pyodide: Pyodide
+        Sk: Skulpt
         regexStudentId: string
         regexCourseId: string
     }
@@ -79,6 +80,16 @@ export class RegexElement extends HTMLElement {
     // highlights the result using findall. used for study 1 and 2.
     public matchFindall: boolean;
 
+    public outf(text: string) {
+        console.log('sk output')
+        console.log(text)
+    }
+    public builtinRead(x: any) {
+        if (window.Sk.builtinFiles === undefined || window.Sk.builtinFiles["files"][x] === undefined)
+            throw "File not found: '" + x + "'";
+        return window.Sk.builtinFiles["files"][x];
+    }
+
     constructor() {
         super();
 
@@ -89,6 +100,17 @@ export class RegexElement extends HTMLElement {
         // window.languagePluginUrl = 'http://127.0.0.1:8081/pyodide/';
         this.pyodideInitialized = false;
         this.initPyodide();
+
+        window.Sk.configure({
+            output: this.outf,
+            read: this.builtinRead
+        });
+
+        try {
+            window.Sk.importMainWithBody("<stdin>", false, "print('Hello World')");
+        } catch (e) {
+            alert(e);
+        }
 
         // add style
         this.addStyle();

@@ -7,3 +7,5 @@ node_modules/
 
 # pyodide packages
 pyodide/
+
+skulpt-1.3.0/
