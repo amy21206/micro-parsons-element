@@ -6,7 +6,7 @@ declare class RegexElement{
     logEvent(event: any): void;
 }
 
-export class RegexInput implements IRegexInput {
+export class TextInput implements IRegexInput {
     // The input element
     public el: HTMLDivElement;
     public quill: Quill | null;

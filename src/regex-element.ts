@@ -1,13 +1,11 @@
 import { ParsonsInput } from './ParsonsInput';
 import { languagePluginLoader } from './external/pyodide';
-import { RegexInput } from './RegexInput';
+import { TextInput } from './TextInput';
 import { TestStringInput } from './TestStringInput';
 import { StatusOutput } from './StatusOutput';
 import { TestButton } from './TestButton';
 import { RegexOptions } from './RegexOptions';
 import { UnitTestTable } from './UnitTestTable';
-// import { RegexToolS3BucketLogger } from 'schema_logger/dist/loggers/regex_tool_s3_bucket_logger';
-import { AWSAPIGatewayWrapper } from "@educational-technology-collective/etc_http_aws_api_gateway_wrapper"
 import { RegexStatusTag } from './RegexStatusTag';
 import { RegexEvent } from './LoggingEvents';
 
@@ -66,8 +64,6 @@ export class RegexElement extends HTMLElement {
     public unitTestTable: UnitTestTable;
 
     // private logger: Logger;
-    private logger: AWSAPIGatewayWrapper;
-
     private patternValidFlag: boolean;
 
     // data for logging
@@ -85,20 +81,6 @@ export class RegexElement extends HTMLElement {
 
     constructor() {
         super();
-
-        // this.logger = new ConsoleLogger();
-        // this.logger = new RegexToolS3BucketLogger({
-        //     api: "https://cjglpwd044.execute-api.us-east-1.amazonaws.com/regex-tool-api-aws-edtech-labs-si-umich-edu",
-        //     bucket: "regex-tool-s3-aws-edtech-labs-si-umich-edu",
-        //     path: "coursera_test"
-        // });
-        this.logger = new AWSAPIGatewayWrapper({
-            url: "https://cjglpwd044.execute-api.us-east-1.amazonaws.com/regex-tool-api-aws-edtech-labs-si-umich-edu",
-            bucket: "regex-tool-s3-aws-edtech-labs-si-umich-edu",
-            path: "SIADS505",
-            retry: 1000,
-            errorHandler: console.error
-        });
 
         this.root = this.attachShadow({ mode: 'open' });
 
@@ -628,13 +610,6 @@ export class RegexElement extends HTMLElement {
             'client-timestamp': this._getTimestamp()
         };
         // console.log({...basicEvent, ...eventContent});
-        this.logger.request({
-            data: {
-                ...basicEvent,
-                ...eventContent
-            },
-            Level: 'info'
-        });
     }
 
     private _getTimestamp = (): string => {
@@ -753,20 +728,20 @@ export class RegexElement extends HTMLElement {
             regex_slot.name = 'regex-input'
             inputDiv.appendChild(regex_slot);
             // TODO: (refactor) rename RegexInput
-            this.regexInput = new RegexInput();
+            this.regexInput = new TextInput();
             this.appendChild(this.regexInput.el);
             this.regexInput.el.slot = 'regex-input';
-            (this.regexInput as RegexInput).initQuill();
-            (this.regexInput as RegexInput).quill?.on('text-change', (delta) => {
-                (this.regexInput as RegexInput).removeFormat();
+            (this.regexInput as TextInput).initQuill();
+            (this.regexInput as TextInput).quill?.on('text-change', (delta) => {
+                (this.regexInput as TextInput).removeFormat();
                 // logging free input event
                 this.temporaryInputEvent = {
                     'event-type': 'free-input',
-                    dropped: (this.regexInput as RegexInput).droppedText,
+                    dropped: (this.regexInput as TextInput).droppedText,
                     delta: delta,
                     answer: this.regexInput.getText()
                 };
-                (this.regexInput as RegexInput).droppedText = false;
+                (this.regexInput as TextInput).droppedText = false;
                 // update status indicator
                 this.patternValidFlag = this.pyodide_compilePattern();
                 if (this.patternValidFlag) {
@@ -823,7 +798,7 @@ export class RegexElement extends HTMLElement {
 
     public resetTool() {
         if (this.inputType != 'parsons') {
-            const regexInput = this.regexInput as RegexInput;
+            const regexInput = this.regexInput as TextInput;
             regexInput.quill?.setText('', 'silent');
         }
         this.regexErrorMessage.classList.add('hidden');
