@@ -37,6 +37,8 @@ interface Skulpt {
 	configure: any
 	builtinFiles: any
 	importMainWithBody: any
+	importModule: any
+	execLimit:number
 } 
 
 interface Pyodide {

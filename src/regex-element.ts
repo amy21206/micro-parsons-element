@@ -73,8 +73,6 @@ export class RegexElement extends HTMLElement {
 
     public temporaryInputEvent: any;
 
-    private pyodideInitialized: boolean;
-
     private _testStatusDiv: HTMLDivElement;
 
     // highlights the result using findall. used for study 1 and 2.
@@ -95,21 +93,20 @@ export class RegexElement extends HTMLElement {
 
         this.root = this.attachShadow({ mode: 'open' });
 
-        // init pyodide
-        window.languagePluginUrl = 'https://cdn.jsdelivr.net/pyodide/v0.16.1/full/';
-        // window.languagePluginUrl = 'http://127.0.0.1:8081/pyodide/';
-        this.pyodideInitialized = false;
-        this.initPyodide();
-
         window.Sk.configure({
             output: this.outf,
             read: this.builtinRead
         });
 
+        // time limit for running each run
+        window.Sk.execLimit = 1000;
+
         try {
-            window.Sk.importMainWithBody("<stdin>", false, "print('Hello World')");
+            window.Sk.importMainWithBody("<stdin>", false, "import re\nprint(re.search('\d+', 'abc12d4'))", false);
+            
         } catch (e) {
-            alert(e);
+            console.log(e)
+            alert(e)
         }
 
         // add style
@@ -219,7 +216,7 @@ export class RegexElement extends HTMLElement {
                 this.positivePrevText = this.positiveTestStringInput.getText();
                 // updating test_string in pyodide
                 // window.pyodide.globals.test_string = this.testStringInput.getText().slice(0, -1);
-                if (this.pyodideInitialized && this.checkWhileTyping && this.patternValidFlag) {
+                if (this.checkWhileTyping && this.patternValidFlag) {
                     this.match();
                 } else {
                     this.positiveTestStringInput.quill?.removeFormat(0, this.positiveTestStringInput.quill.getLength() - 1, 'silent');
@@ -265,7 +262,7 @@ export class RegexElement extends HTMLElement {
                 this.negativePrevText = this.negativeTestStringInput.getText();
                 // updating test_string in pyodide
                 // window.pyodide.globals.test_string = this.testStringInput.getText().slice(0, -1);
-                if (this.pyodideInitialized && this.checkWhileTyping && this.patternValidFlag) {
+                if (this.checkWhileTyping && this.patternValidFlag) {
                     this.match();
                 } else {
                     this.negativeTestStringInput.quill?.removeFormat(0, this.negativeTestStringInput.quill.getLength() - 1, 'silent');
@@ -364,17 +361,6 @@ export class RegexElement extends HTMLElement {
     }
 
 
-    // Initializes Pyodide
-    // ref: https://pyodide.readthedocs.io/en/latest/usage/quickstart.html
-    private initPyodide = (): void => {
-        languagePluginLoader.then(() => {
-            this.statusOutput.text.value += "Init finished.\n";
-            window.pyodide.globals.test_string = this.positivePrevText;
-            this.pyodideInitialized = true;
-            this.dispatchEvent(new Event('init-finished'));
-        });
-    }
-
     // TODO[refactor]: put stylesheet in a separate css/scss file
     private addStyle = (): void => {
         const sheet = document.createElement('style');
@@ -433,6 +419,23 @@ export class RegexElement extends HTMLElement {
         global_sheet.innerHTML += '.Fail .ql-editor { box-shadow: 0 0 2px 5px #ebd071; margin: 5px; }\n';
         global_sheet.innerHTML += '.Error .ql-editor { box-shadow: 0 0 2px 5px #ff99b3; margin: 5px; }\n';
         this.appendChild(global_sheet);
+    }
+
+    private _match = (pattern: string, source: string, flags: string|null): void => {
+        let pyCode = '';
+        pyCode += 'import re\n';
+
+        // compile pattern with flags
+        if (flags) {
+            pyCode += 'pattern = re.compile(\'' + pattern + '\',' + flags + ')\n';
+        } else {
+            pyCode += 'pattern = re.compile(\''+ pattern + '\')\n';
+        }
+        
+        // run the match
+        pyCode += 'print([x for x in re.finditer(pattern, \'' + source + '\')])\n';
+
+        
     }
 
     /**
