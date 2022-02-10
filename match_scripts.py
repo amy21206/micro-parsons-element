@@ -1,22 +1,37 @@
+# simplified version: only showing the matches, not groups
 import re
-regex_input = '\bis\b'
+regex_input = '(abc(de))'
 flags = 're.MULTILINE'
-source = 'the tree is isadf'
+source = 'abcdeabcde'
 
-# if flags
-# pattern = re.compile(regex_input, )
-# if no flags
-pattern = re.compile(regex_input)
+pattern = re.compile(regex_input, re.MULTILINE)
 print([x for x in re.finditer(pattern, source)])
 
 matches = []
 m = re.search(pattern, source)
-print(m)
+has_start_of_line = False
+# take out all the parentheses before the first symbol, and see if the symbol is '^'
+i = 0
+while i < len(regex_input):
+    if regex_input[i] != '(':
+        # we have found the first symbol
+        if regex_input[i] == '^':
+            has_start_of_line = True
+            break
+        else:
+            pass
+        break
+    else:
+        if i + 1 < len(regex_input) and regex_input[i + 1] != '?':
+            i = i + 1
+        elif i + 2 < len(regex_input) and regex_input[i + 2] == ':' or regex_input[i + 2] == '=' or regex_input[i + 2] == '!':
+
+# print(m)
 offset = 0
 while (m):
     if m.start() != m.end():
         matches.append((m.start() + offset, m.end() + offset))
-    if m.end() == len(source) or regex_input[0] == '^' or regex_input[0:2] == '\\A':
+    if m.end() == len(source) or regex_input[0:2] == '\\A':
         break
     if m.start() == m.end():
         source = source[m.end() + 1:]

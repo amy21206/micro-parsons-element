@@ -121,7 +121,8 @@ export class TestStringInput implements ITestStringInput {
         }
     }
 
-    // TODO: (UI) differentiate between different matches
+    // TODO: (UI) differentiate between different matches.
+    // update match result with group info. Each group is a different color.
     public updateGroupedMatchResult = (matches: Array<Array<MatchGroup>>, colors: Array<string>): void => {
         this.quill?.removeFormat(0, this.quill.getLength() - 1, 'silent');
         if (matches.length == 0) {
@@ -147,6 +148,27 @@ export class TestStringInput implements ITestStringInput {
                     'background': colors[index]
                 }, 'silent');
             }
+        }
+    }
+
+    // update match result that does not has group info. Each match is a different color.
+    public updateMatchResultNoGroup = (matches: Array<{st:number, ed: number}>, colors: Array<string>): void => {
+        this.quill?.removeFormat(0, this.quill.getLength() - 1, 'silent');
+        if (matches.length == 0) {
+            return;
+        }
+
+        const groupCount = matches.length;
+        if (colors.length < groupCount) {
+            this.generateColor(colors, groupCount - colors.length);
+        }
+
+        // highlight the matches in a group sequence such that inner groups' color will cover outer groups'.
+        let index = 0;
+        for (index; index < matches.length; ++ index) {
+            this.quill?.formatText(matches[index].st, matches[index].ed - matches[index].st, {
+                'background': colors[index]
+            }, 'silent');
         }
     }
 

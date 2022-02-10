@@ -1,5 +1,4 @@
 import { ParsonsInput } from './ParsonsInput';
-import { languagePluginLoader } from './external/pyodide';
 import { TextInput } from './TextInput';
 import { TestStringInput } from './TestStringInput';
 import { StatusOutput } from './StatusOutput';
@@ -12,7 +11,6 @@ import { RegexEvent } from './LoggingEvents';
 declare global {
     interface Window {
         languagePluginUrl: string
-        pyodide: Pyodide
         Sk: Skulpt
         regexStudentId: string
         regexCourseId: string
@@ -88,6 +86,70 @@ export class RegexElement extends HTMLElement {
         return window.Sk.builtinFiles["files"][x];
     }
 
+    // copied from Skulpt source code
+    static _Sk_validGroups = ["(?:", "(?=", "(?!"];
+    private _Sk_convert = (pattern: string): any => {
+        var newpattern;
+        var match;
+        var i;
+        // Look for disallowed constructs
+        match = pattern.match(/\(\?./g);
+        if (match) {
+            for (i = 0; i < match.length; i++) {
+                if (RegexElement._Sk_validGroups.indexOf(match[i]) == -1) {
+                    throw new window.Sk.builtin.ValueError("Disallowed group in pattern: '"
+                        + match[i] + "'");
+                }
+            }
+        }
+        newpattern = pattern.replace("/\\/g", "\\\\");
+        newpattern = pattern.replace(/([^\\]){,(?![^\[]*\])/g, "$1{0,");
+        return newpattern;
+    };
+
+    // adapted from Skulpt source code (findall)
+    // problem: can only show the first and last match of the position, no grouping information
+    private _Sk_finditer = (pattern: string, string: string, flags: string = 'gm'): Array<{st: number, ed: number}> => {
+        let pat = pattern;
+        let str = string;
+        pat = this._Sk_convert(pat);
+        // flags can only be global, ignorecase, and multiline
+        let regex = new RegExp(pat, flags);
+        if (pat.match(/\$/)) {
+            var newline_at_end = new RegExp(/\n$/);
+            if (str.match(newline_at_end)) {
+                str = str.slice(0, -1);
+            }
+        }
+        let match_result = [];
+        let pos_result = [];
+        let match;
+        while ((match = regex.exec(str)) != null) {
+            // console.log(match)
+            console.log("Matched '" + match[0] + "' at position " + match.index +
+                 "; next search at " + regex.lastIndex);
+            console.log("match: " + JSON.stringify(match));
+            pos_result.push({st: match.index, ed: regex.lastIndex})
+            if (match.length < 2) {
+                match_result.push(new window.Sk.builtin.str(match[0]));
+            } else if (match.length == 2) {
+                match_result.push(new window.Sk.builtin.str(match[1]));
+            } else {
+                var groups = [];
+                for (var i = 1; i < match.length; i++) {
+                    groups.push(new window.Sk.builtin.str(match[i]));
+                }
+                match_result.push(new window.Sk.builtin.tuple(groups));
+            }
+            if (match.index === regex.lastIndex) {
+                regex.lastIndex += 1;
+            }
+        }
+
+        return pos_result;
+        // return new window.Sk.builtin.list(match_result);
+    };
+
     constructor() {
         super();
 
@@ -100,14 +162,6 @@ export class RegexElement extends HTMLElement {
 
         // time limit for running each run
         window.Sk.execLimit = 1000;
-
-        try {
-            window.Sk.importMainWithBody("<stdin>", false, "import re\nprint(re.search('\d+', 'abc12d4'))", false);
-            
-        } catch (e) {
-            console.log(e)
-            alert(e)
-        }
 
         // add style
         this.addStyle();
@@ -217,7 +271,8 @@ export class RegexElement extends HTMLElement {
                 // updating test_string in pyodide
                 // window.pyodide.globals.test_string = this.testStringInput.getText().slice(0, -1);
                 if (this.checkWhileTyping && this.patternValidFlag) {
-                    this.match();
+                    // this.match();
+                    this._match_with_Sk();
                 } else {
                     this.positiveTestStringInput.quill?.removeFormat(0, this.positiveTestStringInput.quill.getLength() - 1, 'silent');
                 }
@@ -263,7 +318,8 @@ export class RegexElement extends HTMLElement {
                 // updating test_string in pyodide
                 // window.pyodide.globals.test_string = this.testStringInput.getText().slice(0, -1);
                 if (this.checkWhileTyping && this.patternValidFlag) {
-                    this.match();
+                    // this.match();
+                    this._match_with_Sk();
                 } else {
                     this.negativeTestStringInput.quill?.removeFormat(0, this.negativeTestStringInput.quill.getLength() - 1, 'silent');
                 }
@@ -404,9 +460,11 @@ export class RegexElement extends HTMLElement {
         sheet.innerHTML += '.show {display:block;}\n';
         // unittest
         sheet.innerHTML += '.regex-unittest > table, .regex-unittest td {border: 1px solid black; padding: 3px; text-align: center; border-collapse: collapse;}\n'
-        sheet.innerHTML += '.regex-unittest.collapse{display:none;}\n'
+        // TODO: showing the table for now
+        // sheet.innerHTML += '.regex-unittest > table, .regex-unittest td {border: 1px solid black; padding: 3px; text-align: center;}\n'
+        // sheet.innerHTML += '.regex-unittest.collapse{display:none;}\n'
         // for study 0: hide the table
-        sheet.innerHTML += '.regex-unittest{display:none;}\n'
+        // sheet.innerHTML += '.regex-unittest{display:none;}\n'
 
         document.body.appendChild(sheet);
         this.root.appendChild(sheet);
@@ -421,21 +479,49 @@ export class RegexElement extends HTMLElement {
         this.appendChild(global_sheet);
     }
 
-    private _match = (pattern: string, source: string, flags: string|null): void => {
-        let pyCode = '';
-        pyCode += 'import re\n';
-
-        // compile pattern with flags
-        if (flags) {
-            pyCode += 'pattern = re.compile(\'' + pattern + '\',' + flags + ')\n';
-        } else {
-            pyCode += 'pattern = re.compile(\''+ pattern + '\')\n';
+    /**
+     * Runs a function similar to re.finditer() with data from regex and test string input.
+     * Highlights the result in the test string input.
+     */
+    // TODO: separate positive and negative test string to prevent additional calculation when test string is changed
+    private _match_with_Sk = (): void => {
+        let positiveTestString = this.positivePrevText;
+        let negativeTestString = this.negativePrevText;
+        let regex = this.regexInput.getText();
+        if (regex == '') {
+            // ignore empty regex
+            return;
         }
+        // TODO: add flags. defaulted to gm for now
+        // something to do with regexOptions
         
-        // run the match
-        pyCode += 'print([x for x in re.finditer(pattern, \'' + source + '\')])\n';
+        // updates test string highlight
+        this.positiveTestStringInput.updateMatchResultNoGroup(this._Sk_finditer(regex, positiveTestString), this.groupColor);
+        this.negativeTestStringInput.updateMatchResultNoGroup(this._Sk_finditer(regex, negativeTestString), this.groupColor);
 
-        
+        // TODO: add log
+        // the code below is the one for pyodide
+        // const positiveMatchTestStringEvent: RegexEvent.MatchTestStringEvent = {
+        //     'event-type': 'match',
+        //     'slot': 'positive',
+        //     trigger: RegexEvent.MatchTriggerType.AUTO,
+        //     regex: this.regexInput.getText(),
+        //     'test-string': this.positivePrevText,
+        //     flags: this.regexOptions.getFlagList(),
+        //     "match-result": this.positiveMatchResult
+        // }
+        // this.logEvent(positiveMatchTestStringEvent);
+        // const negativeMatchTestStringEvent: RegexEvent.MatchTestStringEvent = {
+        //     'event-type': 'match',
+        //     'slot': 'negative',
+        //     trigger: RegexEvent.MatchTriggerType.AUTO,
+        //     regex: this.regexInput.getText(),
+        //     'test-string': this.negativePrevText,
+        //     flags: this.regexOptions.getFlagList(),
+        //     "match-result": this.negativeMatchResult
+        // }
+        // this.logEvent(negativeMatchTestStringEvent);
+        // negative test strings
     }
 
     /**
@@ -443,153 +529,168 @@ export class RegexElement extends HTMLElement {
      * Highlights the result in the test string input;
      * Prints python output.
     */
-    public match = (): void => {
-        this.statusOutput.text.value = ''
-        let pydata = 'import re\n';
-        window.pyodide.globals.positive_test_string = this.positivePrevText;
-        window.pyodide.globals.negative_test_string = this.negativePrevText;
-        if (this.regexInput.getText() != '') {
-            window.pyodide.globals.regex_input = this.regexInput.getText();
-        } else {
-            return;
-        }
-        if (this.regexOptions.getFlags() != null) {
-            pydata += 'pattern = re.compile(regex_input, ' + this.regexOptions.getFlags() + ')\n';
-        } else {
-            pydata += 'pattern = re.compile(regex_input)\n';
-        }
-        pydata += 'source = positive_test_string\n';
-        pydata += 'global positive_match_result\n';
-        pydata += 'positive_match_result = []\n';
-        // TODO: (performance)try to reduce assigning data here
-        pydata += 'for match_obj in re.finditer(pattern, source):\n';
-        pydata += '    match_data = []\n';
-        pydata += '    positive_match_result.append(match_data)\n';
-        pydata += '    for group_id in range(pattern.groups + 1):\n';
-        pydata += '        group_data = {}\n';
-        pydata += '        match_data.append(group_data)\n';
-        pydata += '        group_data[\'group_id\'] = group_id\n';
-        pydata += '        group_data[\'start\'] = match_obj.start(group_id)\n';
-        pydata += '        group_data[\'end\'] = match_obj.end(group_id)\n';
-        pydata += '        group_data[\'data\'] = match_obj.group(group_id)\n';
-        pydata += '    for name, index in pattern.groupindex.items():\n';
-        pydata += '        match_data[index][\'name\'] = name\n';
-        pydata += 'source = negative_test_string\n';
-        pydata += 'global negative_match_result\n';
-        pydata += 'negative_match_result = []\n';
-        // TODO: (performance)try to reduce assigning data here
-        pydata += 'for match_obj in re.finditer(pattern, source):\n';
-        pydata += '    match_data = []\n';
-        pydata += '    negative_match_result.append(match_data)\n';
-        pydata += '    for group_id in range(pattern.groups + 1):\n';
-        pydata += '        group_data = {}\n';
-        pydata += '        match_data.append(group_data)\n';
-        pydata += '        group_data[\'group_id\'] = group_id\n';
-        pydata += '        group_data[\'start\'] = match_obj.start(group_id)\n';
-        pydata += '        group_data[\'end\'] = match_obj.end(group_id)\n';
-        pydata += '        group_data[\'data\'] = match_obj.group(group_id)\n';
-        pydata += '    for name, index in pattern.groupindex.items():\n';
-        pydata += '        match_data[index][\'name\'] = name\n';
-        window.pyodide.runPythonAsync(pydata)
-            .then(_ => {
-                // TODO: (robustness)test edge cases with no match
-                this.positiveMatchResult = window.pyodide.globals.positive_match_result as Array<Array<MatchGroup>>;
-                this.negativeMatchResult = window.pyodide.globals.negative_match_result as Array<Array<MatchGroup>>;
-                this.addMatchResultToOutput();
-                // TODO: (feature)fix highlighting with group information
-                this.positiveTestStringInput.updateGroupedMatchResult(this.positiveMatchResult, this.groupColor);
-                this.negativeTestStringInput.updateGroupedMatchResult(this.negativeMatchResult, this.groupColor);
-                // this.testStringInput.updateGroupedMatchResult_exp(this.matchResult);
-                // log match result
-                // TODO: it is always auto in this study, but could change in other studies
-                const positiveMatchTestStringEvent: RegexEvent.MatchTestStringEvent = {
-                    'event-type': 'match',
-                    'slot': 'positive',
-                    trigger: RegexEvent.MatchTriggerType.AUTO,
-                    regex: this.regexInput.getText(),
-                    'test-string': this.positivePrevText,
-                    flags: this.regexOptions.getFlagList(),
-                    "match-result": this.positiveMatchResult
-                }
-                this.logEvent(positiveMatchTestStringEvent);
-                const negativeMatchTestStringEvent: RegexEvent.MatchTestStringEvent = {
-                    'event-type': 'match',
-                    'slot': 'negative',
-                    trigger: RegexEvent.MatchTriggerType.AUTO,
-                    regex: this.regexInput.getText(),
-                    'test-string': this.negativePrevText,
-                    flags: this.regexOptions.getFlagList(),
-                    "match-result": this.negativeMatchResult
-                }
-                this.logEvent(negativeMatchTestStringEvent);
-            })
-            .catch((err) => { this.addTextToOutput(err) });
-    }
+    // public match = (): void => {
+    //     this.statusOutput.text.value = ''
+    //     let pydata = 'import re\n';
+    //     window.pyodide.globals.positive_test_string = this.positivePrevText;
+    //     window.pyodide.globals.negative_test_string = this.negativePrevText;
+    //     if (this.regexInput.getText() != '') {
+    //         window.pyodide.globals.regex_input = this.regexInput.getText();
+    //     } else {
+    //         return;
+    //     }
+    //     if (this.regexOptions.getFlags() != null) {
+    //         pydata += 'pattern = re.compile(regex_input, ' + this.regexOptions.getFlags() + ')\n';
+    //     } else {
+    //         pydata += 'pattern = re.compile(regex_input)\n';
+    //     }
+    //     pydata += 'source = positive_test_string\n';
+    //     pydata += 'global positive_match_result\n';
+    //     pydata += 'positive_match_result = []\n';
+    //     // TODO: (performance)try to reduce assigning data here
+    //     pydata += 'for match_obj in re.finditer(pattern, source):\n';
+    //     pydata += '    match_data = []\n';
+    //     pydata += '    positive_match_result.append(match_data)\n';
+    //     pydata += '    for group_id in range(pattern.groups + 1):\n';
+    //     pydata += '        group_data = {}\n';
+    //     pydata += '        match_data.append(group_data)\n';
+    //     pydata += '        group_data[\'group_id\'] = group_id\n';
+    //     pydata += '        group_data[\'start\'] = match_obj.start(group_id)\n';
+    //     pydata += '        group_data[\'end\'] = match_obj.end(group_id)\n';
+    //     pydata += '        group_data[\'data\'] = match_obj.group(group_id)\n';
+    //     pydata += '    for name, index in pattern.groupindex.items():\n';
+    //     pydata += '        match_data[index][\'name\'] = name\n';
+    //     pydata += 'source = negative_test_string\n';
+    //     pydata += 'global negative_match_result\n';
+    //     pydata += 'negative_match_result = []\n';
+    //     // TODO: (performance)try to reduce assigning data here
+    //     pydata += 'for match_obj in re.finditer(pattern, source):\n';
+    //     pydata += '    match_data = []\n';
+    //     pydata += '    negative_match_result.append(match_data)\n';
+    //     pydata += '    for group_id in range(pattern.groups + 1):\n';
+    //     pydata += '        group_data = {}\n';
+    //     pydata += '        match_data.append(group_data)\n';
+    //     pydata += '        group_data[\'group_id\'] = group_id\n';
+    //     pydata += '        group_data[\'start\'] = match_obj.start(group_id)\n';
+    //     pydata += '        group_data[\'end\'] = match_obj.end(group_id)\n';
+    //     pydata += '        group_data[\'data\'] = match_obj.group(group_id)\n';
+    //     pydata += '    for name, index in pattern.groupindex.items():\n';
+    //     pydata += '        match_data[index][\'name\'] = name\n';
+    //     window.pyodide.runPythonAsync(pydata)
+    //         .then(_ => {
+    //             // TODO: (robustness)test edge cases with no match
+    //             this.positiveMatchResult = window.pyodide.globals.positive_match_result as Array<Array<MatchGroup>>;
+    //             this.negativeMatchResult = window.pyodide.globals.negative_match_result as Array<Array<MatchGroup>>;
+    //             this.addMatchResultToOutput();
+    //             // TODO: (feature)fix highlighting with group information
+    //             this.positiveTestStringInput.updateGroupedMatchResult(this.positiveMatchResult, this.groupColor);
+    //             this.negativeTestStringInput.updateGroupedMatchResult(this.negativeMatchResult, this.groupColor);
+    //             // this.testStringInput.updateGroupedMatchResult_exp(this.matchResult);
+    //             // log match result
+    //             // TODO: it is always auto in this study, but could change in other studies
+    //             const positiveMatchTestStringEvent: RegexEvent.MatchTestStringEvent = {
+    //                 'event-type': 'match',
+    //                 'slot': 'positive',
+    //                 trigger: RegexEvent.MatchTriggerType.AUTO,
+    //                 regex: this.regexInput.getText(),
+    //                 'test-string': this.positivePrevText,
+    //                 flags: this.regexOptions.getFlagList(),
+    //                 "match-result": this.positiveMatchResult
+    //             }
+    //             this.logEvent(positiveMatchTestStringEvent);
+    //             const negativeMatchTestStringEvent: RegexEvent.MatchTestStringEvent = {
+    //                 'event-type': 'match',
+    //                 'slot': 'negative',
+    //                 trigger: RegexEvent.MatchTriggerType.AUTO,
+    //                 regex: this.regexInput.getText(),
+    //                 'test-string': this.negativePrevText,
+    //                 flags: this.regexOptions.getFlagList(),
+    //                 "match-result": this.negativeMatchResult
+    //             }
+    //             this.logEvent(negativeMatchTestStringEvent);
+    //         })
+    //         .catch((err) => { this.addTextToOutput(err) });
+    // }
 
-    /**
-     * Runs re.compile() without flags
-    */
-    public pyodide_compilePattern = (): boolean => {
-        // console.log('compile')
-        if (this.regexInput.getText() == '') {
+    private _compilePattern_Sk = (): boolean => {
+        let regex = this.regexInput.getText();
+        if (regex == '') {
             this.regexErrorMessage.classList.add('hidden');
             return false;
         }
-        this.statusOutput.text.value = ''
-        let pydata = 'import re\n';
-        window.pyodide.globals.regex_input = this.regexInput.getText();
-        pydata += 'compiled_pattern = re.compile(regex_input)\n';
-        let successFlag = false;
         try {
-            window.pyodide.runPython(pydata);
-            successFlag = true;
-            this.regexErrorMessage.classList.add('hidden');
-            this.regexErrorMessage.innerText = 'No Error';
-            this.regexErrorPosition = -1;
-        } catch (err) {
-            successFlag = false;
-            // updates error message
-            const regexError = String(err).split('\n');
-            const errorMessage = regexError[regexError.length - 2];
-            const errorMessageSplit = errorMessage.split(' ');
-            this.regexErrorPosition = parseInt(errorMessageSplit[errorMessageSplit.length - 1]);
-            this.regexErrorMessage.innerText = errorMessage;
-            if (this.regexErrorMessage.classList.contains('hidden')) {
-                this.regexErrorMessage.classList.remove('hidden');
-            }
+            new RegExp(regex);
+            return true;
+        } catch (e) {
+            console.log(e)
+            return false;
         }
-        return successFlag;
     }
 
-    private addToOutput = (originalOutput: Array<string | Array<string>>): void => {
-        let output = '';
-        originalOutput.forEach(element => {
-            output += '(' + element.toString() + '),';
-        });
-        this.statusOutput.text.value += '>>>' + this.regexInput.getText() + '\n' + output + '\n';
-    }
+    // /**
+    //  * Runs re.compile() without flags
+    // */
+    // public pyodide_compilePattern = (): boolean => {
+    //     // console.log('compile')
+    //     if (this.regexInput.getText() == '') {
+    //         this.regexErrorMessage.classList.add('hidden');
+    //         return false;
+    //     }
+    //     this.statusOutput.text.value = ''
+    //     let pydata = 'import re\n';
+    //     window.pyodide.globals.regex_input = this.regexInput.getText();
+    //     pydata += 'compiled_pattern = re.compile(regex_input)\n';
+    //     let successFlag = false;
+    //     try {
+    //         window.pyodide.runPython(pydata);
+    //         successFlag = true;
+    //         this.regexErrorMessage.classList.add('hidden');
+    //         this.regexErrorMessage.innerText = 'No Error';
+    //         this.regexErrorPosition = -1;
+    //     } catch (err) {
+    //         successFlag = false;
+    //         // updates error message
+    //         const regexError = String(err).split('\n');
+    //         const errorMessage = regexError[regexError.length - 2];
+    //         const errorMessageSplit = errorMessage.split(' ');
+    //         this.regexErrorPosition = parseInt(errorMessageSplit[errorMessageSplit.length - 1]);
+    //         this.regexErrorMessage.innerText = errorMessage;
+    //         if (this.regexErrorMessage.classList.contains('hidden')) {
+    //             this.regexErrorMessage.classList.remove('hidden');
+    //         }
+    //     }
+    //     return successFlag;
+    // }
 
-    private addTextToOutput = (output: string): void => {
-        this.statusOutput.text.value += '>>>' + this.regexInput.getText() + '\n' + output + '\n';
-    }
+    // private addToOutput = (originalOutput: Array<string | Array<string>>): void => {
+    //     let output = '';
+    //     originalOutput.forEach(element => {
+    //         output += '(' + element.toString() + '),';
+    //     });
+    //     this.statusOutput.text.value += '>>>' + this.regexInput.getText() + '\n' + output + '\n';
+    // }
 
-    private addMatchResultToOutput = (): void => {
-        let output = '';
-        // currently disabling output
-        // for (let i = 0; i < this.matchResult.length; ++i) {
-        //     output += 'Match ' + i.toString() + ':\n';
-        //     for (let j = 0; j < this.matchResult[i].length; ++j) {
-        //         output += 'Group ' + j.toString() + ': ';
-        //         output += this.matchResult[i][j].data + ' span(' + this.matchResult[i][j].start + ', ' + this.matchResult[i][j].end + ') ';
-        //         if (this.matchResult[i][j].name) {
-        //             output += this.matchResult[i][j].name;
-        //         }
-        //         output += '\n';
-        //     }
-        //     output += '\n';
-        // }
-        // this.statusOutput.text.value += '>>>\n' + output;
-    }
+    // private addTextToOutput = (output: string): void => {
+    //     this.statusOutput.text.value += '>>>' + this.regexInput.getText() + '\n' + output + '\n';
+    // }
+
+    // private addMatchResultToOutput = (): void => {
+    //     let output = '';
+    //     // currently disabling output
+    //     // for (let i = 0; i < this.matchResult.length; ++i) {
+    //     //     output += 'Match ' + i.toString() + ':\n';
+    //     //     for (let j = 0; j < this.matchResult[i].length; ++j) {
+    //     //         output += 'Group ' + j.toString() + ': ';
+    //     //         output += this.matchResult[i][j].data + ' span(' + this.matchResult[i][j].start + ', ' + this.matchResult[i][j].end + ') ';
+    //     //         if (this.matchResult[i][j].name) {
+    //     //             output += this.matchResult[i][j].name;
+    //     //         }
+    //     //         output += '\n';
+    //     //     }
+    //     //     output += '\n';
+    //     // }
+    //     // this.statusOutput.text.value += '>>>\n' + output;
+    // }
 
     public setPositiveInitialTestString(text: string) {
         this.positiveTestStringInput.setText(text);
@@ -602,7 +703,7 @@ export class RegexElement extends HTMLElement {
     }
 
     public setTestCases(testCases: Array<TestCase>) {
-        // console.log('set test cases');
+        console.log('set test cases');
         this.unitTestTable.setTestCases(testCases);
     }
 
@@ -712,7 +813,8 @@ export class RegexElement extends HTMLElement {
             this.regexInput.el.addEventListener('regexChanged', () => {
                 this.regexInput.removeFormat();
                 if (this.checkWhileTyping) {
-                    this.patternValidFlag = this.pyodide_compilePattern();
+                    // this.patternValidFlag = this.pyodide_compilePattern();
+                    this.patternValidFlag = this._compilePattern_Sk();
                     // log regex input event
                     this._logRegexInputEvent();
                     if (this.patternValidFlag) {
@@ -724,7 +826,8 @@ export class RegexElement extends HTMLElement {
                         this._testStatusDiv.classList.add('regex-test-status');
                         this._testStatusDiv.classList.add(passCount == this.unitTestTable.testCaseCount ? 'Pass' : 'Fail');
                         this._testStatusDiv.innerText = 'Test cases passed: ' + passCount + '/' + this.unitTestTable.testCaseCount;
-                        this.match();
+                        // this.match();
+                        this._match_with_Sk();
                         if (passCount === this.unitTestTable.testCaseCount) {
                             // console.log('dispatch');
                             this.dispatchEvent(new CustomEvent('passed-all-testcases'));
@@ -768,7 +871,8 @@ export class RegexElement extends HTMLElement {
                 };
                 (this.regexInput as TextInput).droppedText = false;
                 // update status indicator
-                this.patternValidFlag = this.pyodide_compilePattern();
+                // this.patternValidFlag = this.pyodide_compilePattern();
+                this.patternValidFlag = this._compilePattern_Sk();
                 if (this.patternValidFlag) {
                     this.regexStatus.updateStatus('valid');
                 } else {
@@ -786,7 +890,8 @@ export class RegexElement extends HTMLElement {
                         this._testStatusDiv.className = '';
                         this._testStatusDiv.classList.add('regex-test-status');
                         this._testStatusDiv.classList.add(passCount == this.unitTestTable.testCaseCount ? 'Pass' : 'Fail');
-                        this.match();
+                        // this.match();
+                        this._match_with_Sk();
                         if (passCount === this.unitTestTable.testCaseCount) {
                             // console.log('dispatch');
                             this.dispatchEvent(new CustomEvent('passed-all-testcases'));
