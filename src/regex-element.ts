@@ -27,8 +27,8 @@ export class RegexElement extends HTMLElement {
     private inputType: string;
 
     private regexStatus: RegexStatusTag;
-    private regexErrorMessage: HTMLDivElement;
-    private regexErrorPosition: number;
+    // private regexErrorMessage: HTMLDivElement;
+    // private regexErrorPosition: number;
 
     // The input box for positive test strings (with highlight)
     public positiveTestStringInput: TestStringInput;
@@ -213,8 +213,8 @@ export class RegexElement extends HTMLElement {
         this.regexStatus = new RegexStatusTag();
         this.regexInput = new ParsonsInput();
         this.inputType = 'parsons';
-        this.regexErrorMessage = document.createElement('div');
-        this.regexErrorPosition = -1;
+        // this.regexErrorMessage = document.createElement('div');
+        // this.regexErrorPosition = -1;
         this.initRegexInput(inputDiv);
 
         this._testStatusDiv = document.createElement('div');
@@ -615,7 +615,7 @@ export class RegexElement extends HTMLElement {
     private _compilePattern_Sk = (): boolean => {
         let regex = this.regexInput.getText();
         if (regex == '') {
-            this.regexErrorMessage.classList.add('hidden');
+            // this.regexErrorMessage.classList.add('hidden');
             return false;
         }
         try {
@@ -751,7 +751,7 @@ export class RegexElement extends HTMLElement {
             valid: this.patternValidFlag
         };
         if (!this.patternValidFlag) {
-            regexInputEvent['error-message'] = this.regexErrorMessage.innerText;
+            // regexInputEvent['error-message'] = this.regexErrorMessage.innerText;
         }
         this.logEvent(regexInputEvent);
     }
@@ -833,13 +833,22 @@ export class RegexElement extends HTMLElement {
                             this.dispatchEvent(new CustomEvent('passed-all-testcases'));
                         }
                     } else {
-                        if (this.regexErrorMessage.classList.contains('hidden')) {
-                            // it means the regex is actually empty
+                        // if (this.regexErrorMessage.classList.contains('hidden')) {
+                        //     // it means the regex is actually empty
+                        //     this.regexStatus.updateStatus('');
+                        // } else {
+                        //     this.regexStatus.updateStatus('error');
+                        //     this.regexInput.updateTestStatus('Error');
+                        //     this.regexInput.highlightError(this.regexErrorPosition);
+                        //     // console.log('highlight error: ');
+                        //     // console.log(this.regexErrorPosition);
+                        // }
+                        if (this.regexInput.getText() == '') {
                             this.regexStatus.updateStatus('');
                         } else {
                             this.regexStatus.updateStatus('error');
                             this.regexInput.updateTestStatus('Error');
-                            this.regexInput.highlightError(this.regexErrorPosition);
+                            // this.regexInput.highlightError(this.regexErrorPosition);
                             // console.log('highlight error: ');
                             // console.log(this.regexErrorPosition);
                         }
@@ -877,7 +886,7 @@ export class RegexElement extends HTMLElement {
                     this.regexStatus.updateStatus('valid');
                 } else {
                     this.regexStatus.updateStatus('error');
-                    this.regexInput.highlightError(this.regexErrorPosition);
+                    // this.regexInput.highlightError(this.regexErrorPosition);
                 }
                 // console.log(this.patternValidFlag);
                 this._logRegexInputEvent();
@@ -897,13 +906,14 @@ export class RegexElement extends HTMLElement {
                             this.dispatchEvent(new CustomEvent('passed-all-testcases'));
                         }
                     } else {
-                        if (this.regexErrorMessage.classList.contains('hidden')) {
+                        // if (this.regexErrorMessage.classList.contains('hidden')) {
+                        if (this.regexInput.getText() == '') {
                             // it means the regex is actually empty
                             this.regexStatus.updateStatus('');
                         } else {
                             this.regexStatus.updateStatus('error');
                             this.regexInput.updateTestStatus('Error');
-                            this.regexInput.highlightError(this.regexErrorPosition);
+                            // this.regexInput.highlightError(this.regexErrorPosition);
                         }
                         this.positiveTestStringInput.quill?.removeFormat(0, this.positiveTestStringInput.quill.getLength() - 1, 'silent');
                         this.negativeTestStringInput.quill?.removeFormat(0, this.negativeTestStringInput.quill.getLength() - 1, 'silent');
@@ -915,10 +925,10 @@ export class RegexElement extends HTMLElement {
             })
         }
         this.regexInput.parentElement = this;
-        this.regexErrorMessage = document.createElement('div');
-        this.regexErrorMessage.classList.add('regex-error-message');
-        inputDiv.appendChild(this.regexErrorMessage);
-        this.regexErrorPosition = -1;
+        // this.regexErrorMessage = document.createElement('div');
+        // this.regexErrorMessage.classList.add('regex-error-message');
+        // inputDiv.appendChild(this.regexErrorMessage);
+        // this.regexErrorPosition = -1;
 
         // init elements: regex options dropdown
         this.regexOptions = new RegexOptions();
@@ -931,7 +941,7 @@ export class RegexElement extends HTMLElement {
             const regexInput = this.regexInput as TextInput;
             regexInput.quill?.setText('', 'silent');
         }
-        this.regexErrorMessage.classList.add('hidden');
+        // this.regexErrorMessage.classList.add('hidden');
         this.regexStatus.updateStatus('');
         this.positiveTestStringInput.quill?.removeFormat(0, this.positiveTestStringInput.quill.getLength() - 1, 'silent');
         this.negativeTestStringInput.quill?.removeFormat(0, this.negativeTestStringInput.quill.getLength() - 1, 'silent');
