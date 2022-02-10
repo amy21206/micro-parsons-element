@@ -24,6 +24,9 @@ export class UnitTestTable implements IUnitTestTable {
 
     private columnsEnabled: Array<string>;
     public parentElement: RegexElement | null;
+
+    // for saving current index
+    private testcaseIndex: number;
     constructor() {
         // init the element in HTML 
         this.el = document.createElement('div');
@@ -61,6 +64,8 @@ export class UnitTestTable implements IUnitTestTable {
         // allow groups by default
         this.noGroupsAllowed = false;
         this.parentElement = null;
+
+        this.testcaseIndex = 0;
     }
 
     // not used: Return value: 'Pass' if all pass, 'Error' if one error, 'Fail' if no error but at least one fail
@@ -97,9 +102,19 @@ export class UnitTestTable implements IUnitTestTable {
         return passCount;
     }
 
-    public _match_SK_output(text: string) {
-        // TODO: just simply compare the string output with the desired output string.
+    public _match_SK_output = (text: string, index: number, testCase: TestCase): void => {
+        // convert the output result to list of string
+        let splitMatches = text.slice(1, text.length - 2).split(', '); 
+        let matches = [];
+        for (let i = 0; i < splitMatches.length; ++ i) {
+            if (splitMatches[i].length >= 2) {
+                matches.push(splitMatches[i].slice(1, splitMatches[i].length - 1));
+            }
+        }
+        const result: UnitTestResult = {success: true, match: matches, errorMessage: null}; 
+        this._createRow(index, testCase, result);
     }
+
     public builtinRead(x: any) {
         if (window.Sk.builtinFiles === undefined || window.Sk.builtinFiles["files"][x] === undefined)
             throw "File not found: '" + x + "'";
@@ -112,70 +127,20 @@ export class UnitTestTable implements IUnitTestTable {
     private _match_SK = (index: number, regex: string, testCase: TestCase): string => {
         const result: UnitTestResult = {success: false, match: null, errorMessage: null}; 
         // TODO: default to using global and multiline
-        const pyCode = 'import re\nprint(re.findall(\''+ regex +'\', ' + '\'' + testCase.input + '\', re.MULTILINE))';
+        let pyCode = '';
+            if (this.strictMatch) {
+                pyCode = 'import re\nprint(re.findall(\'^'+ regex +'$\', ' + '\'' + testCase.input + '\', re.MULTILINE))';
+            } else {
+                pyCode = 'import re\nprint(re.findall(\''+ regex +'\', ' + '\'' + testCase.input + '\', re.MULTILINE))';
+            }
+        this.testcaseIndex = index;
         window.Sk.configure({
-            output: this._match_SK_output,
+            output: (text:string) => {this._match_SK_output(text, index, testCase)},
             read: this.builtinRead
         });
         window.Sk.importMainWithBody("<stdin>", false, pyCode, true);
         return 'Pass'
     }
-
-    // /**
-    //  * Runs re.findall() with data from regex and test string input;
-    //  * Highlights the result in the test string input;
-    //  * Prints python output.
-    // */
-    // private match = (index: number, regex: string, testCase: TestCase): string => {
-    //     const result: UnitTestResult = {success: false, match: null, errorMessage: null}; 
-    //     let pydata = 'import re\n';
-    //     window.pyodide.globals.running = true;
-    //     window.pyodide.globals.unit_test_string = testCase.input;
-    //     window.pyodide.globals.unit_regex_input = regex;
-    //     pydata += 'global unit_match_group_cnt\n';
-    //     if (this.flags != null && this.flags != '') {
-    //         if (this.strictMatch) {
-    //             pydata += 'unit_pattern = re.compile(' + '\'^(\' + unit_regex_input + \')$\', '+this.flags+')\n';
-    //         } else {
-    //             pydata += 'unit_pattern = re.compile(unit_regex_input, '+this.flags+')\n';
-    //         }
-    //     } else {
-    //         if (this.strictMatch) {
-    //             pydata += 'unit_pattern = re.compile(' + '\'^(\' + unit_regex_input + \')$\')\n';
-    //         } else {
-    //             pydata += 'unit_pattern = re.compile(unit_regex_input)\n';
-    //         }
-    //     }
-    //     pydata += 'unit_match_group_cnt = unit_pattern.groups\n';
-    //     pydata += 'unit_source = unit_test_string\n';
-    //     pydata += 'global unit_match_result\n';
-    //     if (this.strictMatch) {
-    //         pydata += 'unit_match_result_object = re.match(unit_pattern,unit_source)\n';
-    //         pydata += 'if (unit_match_result_object):\n';
-    //         if (this.noGroupsAllowed && window.pyodide.globals.unit_match_group_cnt >= 2) {
-    //             pydata += '    unit_match_result = [unit_match_result_object.group(2)]\n';
-    //         } else {
-    //             pydata += '    unit_match_result = [unit_match_result_object.group(0)]\n';
-    //         }
-    //         pydata += 'else:\n';
-    //         pydata += '    unit_match_result = []\n';
-    //     } else {
-    //         pydata += 'unit_match_result = re.findall(unit_pattern,unit_source)\n';
-    //     }
-    //     try {
-    //         window.pyodide.runPython(pydata);
-    //         result.success = true;
-    //         result.match = window.pyodide.globals.unit_match_result as Array<string>;
-    //         // console.log(result)
-    //         // console.log(testCase);
-    //         return this._createRow(index, testCase, result);
-    //     } catch(err) {
-    //         result.success = false;
-    //         result.errorMessage = String(err).replaceAll('<', '&lt;').replaceAll('>','&gt;').replaceAll('\n','<br/>').replaceAll(' ', '&nbsp;');
-    //         // console.log(err);
-    //         return this._createRow(index, testCase, result);
-    //     }
-    // }
 
     // returns: 'Pass' if pass, 'Fail' if fail, 'Error' if error
     private _createRow = (index: number, testCase: TestCase, result: UnitTestResult): string => {
