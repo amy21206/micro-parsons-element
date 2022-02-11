@@ -21,6 +21,7 @@ export class UnitTestTable implements IUnitTestTable {
     // TODO: refactor this into strictgroup.
     public noGroupsAllowed: boolean;
     private latestResults: Array<UnitTestResult>;
+    private latestStatus: string;
 
     private columnsEnabled: Array<string>;
     public parentElement: RegexElement | null;
@@ -54,6 +55,7 @@ export class UnitTestTable implements IUnitTestTable {
         this.testCaseCount = 0;
         this.hintRevealed = [];
         this.latestResults = [];
+        this.latestStatus = '';
 
         // not matching groups strictly by default
         this.strictGroup = false;
@@ -112,7 +114,7 @@ export class UnitTestTable implements IUnitTestTable {
             }
         }
         const result: UnitTestResult = {success: true, match: matches, errorMessage: null}; 
-        this._createRow(index, testCase, result);
+        this.latestStatus = this._createRow(index, testCase, result);
     }
 
     public builtinRead(x: any) {
@@ -139,7 +141,7 @@ export class UnitTestTable implements IUnitTestTable {
             read: this.builtinRead
         });
         window.Sk.importMainWithBody("<stdin>", false, pyCode, true);
-        return 'Pass'
+        return this.latestStatus;
     }
 
     // returns: 'Pass' if pass, 'Fail' if fail, 'Error' if error
@@ -150,6 +152,7 @@ export class UnitTestTable implements IUnitTestTable {
         // creating the status(the first) column
         const row = document.createElement('tr');
         let status: string = result.success? (JSON.stringify(result.match) === JSON.stringify(testCase.expect) ? 'Pass' : 'Fail') : 'Error';
+        console.log(status)
         // if (status == 'Pass' && JSON.stringify(testCase.expect) != '[]' && this.noGroupsAllowed && window.pyodide.globals.unit_match_group_cnt != 1) {
         //     status = 'Fail'
         //     // fail because no group is allowed
