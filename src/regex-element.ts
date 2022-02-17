@@ -2,7 +2,6 @@ import { ParsonsInput } from './ParsonsInput';
 import { TextInput } from './TextInput';
 import { TestStringInput } from './TestStringInput';
 import { StatusOutput } from './StatusOutput';
-import { TestButton } from './TestButton';
 import { RegexOptions } from './RegexOptions';
 import { UnitTestTable } from './UnitTestTable';
 import { RegexStatusTag } from './RegexStatusTag';
@@ -45,9 +44,6 @@ export class RegexElement extends HTMLElement {
     // Python output
     public statusOutput: StatusOutput;
 
-    // The button to trigger matching
-    public testButton: TestButton;
-
     // *temporary: The checkbox to enable always check (will be integrated in options later)
     private checkWhileTyping: boolean;
 
@@ -76,9 +72,13 @@ export class RegexElement extends HTMLElement {
     // highlights the result using findall. used for study 1 and 2.
     public matchFindall: boolean;
 
+    public static toolCount: number = 0;
+
+    public toolNumber: number;
+
     public outf(text: string) {
-        console.log('sk output')
-        console.log(text)
+        // console.log('sk output')
+        // console.log(text)
     }
     public builtinRead(x: any) {
         if (window.Sk.builtinFiles === undefined || window.Sk.builtinFiles["files"][x] === undefined)
@@ -153,6 +153,10 @@ export class RegexElement extends HTMLElement {
     constructor() {
         super();
 
+        RegexElement.toolCount += 1;
+        console.log(RegexElement.toolCount);
+        this.toolNumber = RegexElement.toolCount;
+
         this.root = this.attachShadow({ mode: 'open' });
 
         window.Sk.configure({
@@ -172,28 +176,6 @@ export class RegexElement extends HTMLElement {
         // this.root.appendChild(unitTestButton);
         // unitTestButton.onclick = () => this.unitTestTable.check(this.regexInput.getText());
 
-        // init elements: button for match
-        // TODO: disabled the button for study 0 and 1.
-        // this.root.appendChild(document.createElement('br'));
-        this.testButton = new TestButton();
-        // this.root.appendChild(this.testButton.el);
-        // this.testButton.el.onclick = this.match;
-
-        // init elements: checkbox
-        // TODO[feature]: replace this with an option module 
-        // const checkbox = document.createElement('input');
-        // checkbox.setAttribute('type', 'checkbox');
-        // checkbox.checked = false;
-        // this.root.appendChild(checkbox);
-        // this.root.append('always check on input');
-        // this.checkWhileTyping = false;
-        // checkbox.addEventListener('change', () => {
-        //     this.checkWhileTyping = checkbox.checked;
-        //     if (this.checkWhileTyping) {
-        //         this.match();
-        //     }
-        // })
-
         // TODO: make this an option; for now always enabled the 'always check' for study 0 and 1.
         this.checkWhileTyping = true;
 
@@ -206,12 +188,12 @@ export class RegexElement extends HTMLElement {
         const inputDiv = document.createElement('div');
         inputAndTestStatusDiv.appendChild(inputDiv);
         inputDiv.classList.add('regex-input-div');
-        this.regexOptions = new RegexOptions();
+        this.regexOptions = new RegexOptions(this);
         this.patternValidFlag = true;
         this._parsonsData = new Array<string>();
         this.parsonsExplanation = null;
-        this.regexStatus = new RegexStatusTag();
-        this.regexInput = new ParsonsInput();
+        this.regexStatus = new RegexStatusTag(this);
+        this.regexInput = new ParsonsInput(this);
         this.inputType = 'parsons';
         // this.regexErrorMessage = document.createElement('div');
         // this.regexErrorPosition = -1;
@@ -247,13 +229,12 @@ export class RegexElement extends HTMLElement {
         resetPositiveTestStringButton.innerText = 'Reset'
         resetPositiveTestStringButton.onclick = this.resetPositiveTestString;
 
-        this.positiveTestStringInput = new TestStringInput('positive');
+        this.positiveTestStringInput = new TestStringInput('positive', this);
         this.positiveTestStringInput.slotName = 'positive';
         this.appendChild(this.positiveTestStringInput.el);
         this.positiveTestStringInput.el.slot = 'positive-test-string-input';
         this.positiveTestStringInput.initQuill();
         this.positivePrevText = this.positiveTestStringInput.getText();
-        this.positiveTestStringInput.parentElement = this;
         this.positiveTestStringInput.quill?.on('text-change', (delta, _, source) => {
             if (source == 'user') {
                 const testStringInputEvent: RegexEvent.TestStringInputEvent = {
@@ -294,13 +275,12 @@ export class RegexElement extends HTMLElement {
         resetNegativeTestStringButton.innerText = 'Reset'
         resetNegativeTestStringButton.onclick = this.resetNegativeTestString;
 
-        this.negativeTestStringInput = new TestStringInput('negative');
+        this.negativeTestStringInput = new TestStringInput('negative', this);
         this.negativeTestStringInput.slotName = 'negative';
         this.appendChild(this.negativeTestStringInput.el);
         this.negativeTestStringInput.el.slot = 'negative-test-string-input';
         this.negativeTestStringInput.initQuill();
         this.negativePrevText = this.negativeTestStringInput.getText();
-        this.negativeTestStringInput.parentElement = this;
         this.negativeTestStringInput.quill?.on('text-change', (delta, _, source) => {
             if (source == 'user') {
                 const testStringInputEvent: RegexEvent.TestStringInputEvent = {
@@ -327,12 +307,11 @@ export class RegexElement extends HTMLElement {
         })
 
         // init element: unit test table
-        this.unitTestTable = new UnitTestTable();
-        this.unitTestTable.parentElement = this;
+        this.unitTestTable = new UnitTestTable(this);
         this.root.appendChild(this.unitTestTable.el);
 
         // init element: python output
-        this.statusOutput = new StatusOutput();
+        this.statusOutput = new StatusOutput(this);
         this.root.appendChild(this.statusOutput.el);
 
         // initialize the match result array
@@ -802,13 +781,13 @@ export class RegexElement extends HTMLElement {
         this._parsonsData = new Array<string>();
         this.parsonsExplanation = null;
         inputDiv.append('Your regular expression:');
-        this.regexStatus = new RegexStatusTag();
+        this.regexStatus = new RegexStatusTag(this);
         inputDiv.appendChild(this.regexStatus.el);
         inputDiv.appendChild(document.createElement('br'));
         // todo:(UI) fix the css for the input
         if (this.inputType == 'parsons') {
             // init elements: parsons regex input
-            this.regexInput = new ParsonsInput();
+            this.regexInput = new ParsonsInput(this);
             inputDiv.appendChild(this.regexInput.el);
             this.regexInput.el.addEventListener('regexChanged', () => {
                 this.regexInput.removeFormat();
@@ -865,7 +844,7 @@ export class RegexElement extends HTMLElement {
             regex_slot.name = 'regex-input'
             inputDiv.appendChild(regex_slot);
             // TODO: (refactor) rename RegexInput
-            this.regexInput = new TextInput();
+            this.regexInput = new TextInput(this);
             this.appendChild(this.regexInput.el);
             this.regexInput.el.slot = 'regex-input';
             (this.regexInput as TextInput).initQuill();
@@ -924,14 +903,13 @@ export class RegexElement extends HTMLElement {
                 }
             })
         }
-        this.regexInput.parentElement = this;
         // this.regexErrorMessage = document.createElement('div');
         // this.regexErrorMessage.classList.add('regex-error-message');
         // inputDiv.appendChild(this.regexErrorMessage);
         // this.regexErrorPosition = -1;
 
         // init elements: regex options dropdown
-        this.regexOptions = new RegexOptions();
+        this.regexOptions = new RegexOptions(this);
         // inputDiv.appendChild(this.regexOptions.el);
 
     }

@@ -1,8 +1,18 @@
+declare class RegexElement {
+    public toolNumber: number;
+}
+
 export class RegexStatusTag implements IRegexStatusTag {
     // The input element
     public el: HTMLSpanElement;
     public status: string;
-    constructor() {
+
+    private parentElement: RegexElement;
+
+    constructor(parentElement: RegexElement) {
+
+        this.parentElement = parentElement;
+
         this.el = document.createElement('span');
         this.el.classList.add('regex-status');
         

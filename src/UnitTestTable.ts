@@ -3,6 +3,7 @@ import { RegexEvent } from "./LoggingEvents";
 declare class RegexElement{
     logEvent(event: any): void;
     matchFindall: boolean;
+    toolNumber: number;
 }
 
 export class UnitTestTable implements IUnitTestTable {
@@ -24,14 +25,16 @@ export class UnitTestTable implements IUnitTestTable {
     private latestStatus: string;
 
     private columnsEnabled: Array<string>;
-    public parentElement: RegexElement | null;
+    public parentElement: RegexElement;
 
     // for saving current index
     private testcaseIndex: number;
-    constructor() {
+    constructor(parentElement: RegexElement) {
+        this.parentElement = parentElement;
+
         // init the element in HTML 
         this.el = document.createElement('div');
-        this.el.id = 'unittest-table';
+        this.el.id = 'regextool-' + this.parentElement.toolNumber + '-unittest-table';
         this.el.classList.add('regex-unittest');
         // the element is hidden initially.
         this.el.classList.add('collapse');
@@ -65,7 +68,6 @@ export class UnitTestTable implements IUnitTestTable {
 
         // allow groups by default
         this.noGroupsAllowed = false;
-        this.parentElement = null;
 
         this.testcaseIndex = 0;
     }

@@ -4,6 +4,7 @@ import { RegexEvent } from './LoggingEvents';
 
 declare class RegexElement{
     logEvent(event: any): void;
+    toolNumber: number;
 }
 
 export class TextInput implements IRegexInput {
@@ -11,26 +12,25 @@ export class TextInput implements IRegexInput {
     public el: HTMLDivElement;
     public quill: Quill | null;
     private groups: Array<PatternGroup>;
-    public parentElement: RegexElement | null;
+    public parentElement: RegexElement;
     public droppedText: boolean;
-    constructor() {
+
+    constructor(parentElement: RegexElement) {
+        this.parentElement = parentElement;
         this.el = document.createElement('div');
-        this.el.id = 'regex-input'
+        this.el.id = 'regextool-' + this.parentElement.toolNumber + '-regex-input';
         this.el.classList.add('regex-input');
         
         this.quill = null;
         
         this.groups = new Array<PatternGroup>();
 
-        // this.el.classList.add('regex-textbox')
-        // this.el.setAttribute("rows", "1");
-        this.parentElement = null;
         this.droppedText = false;
     }
     
     public initQuill = (): void => {
         // initializing quill
-        this.quill = new Quill('#regex-input', {
+        this.quill = new Quill('#regextool-' + this.parentElement.toolNumber + '-regex-input', {
             modules: {
                 toolbar: false
             },

@@ -1,3 +1,7 @@
+declare class RegexElement {
+    public toolNumber: number;
+}
+
 export class RegexOptions implements IRegexOptions {
     public el: HTMLDivElement;
     private triggerButton: HTMLButtonElement;
@@ -5,8 +9,12 @@ export class RegexOptions implements IRegexOptions {
     private flags: Array<string>;
     private buttons: Array<HTMLButtonElement>;
     private selectedFlags: Array<string>;
+    private parentElement: RegexElement;
 
-    constructor() {
+    constructor(parentElement: RegexElement) {
+
+        this.parentElement = parentElement; 
+
         this.el = document.createElement('div');
         this.el.classList.add('regex-options-dropdown');
 

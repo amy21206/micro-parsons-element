@@ -1,6 +1,6 @@
 interface IRegexInput {
+    parentElement: RegexElement;
 	el: HTMLDivElement;
-    parentElement: RegexElement | null;
 	getText(): string;
 	updateTestStatus(string): void;
 	highlightError(number): void;

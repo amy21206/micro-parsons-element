@@ -26,6 +26,7 @@ Quill.register(GroupBlot);
 declare class RegexElement{
     logEvent(event: any): void;
     matchFindall: boolean;
+    toolNumber: number;
 }
 
 export class TestStringInput implements ITestStringInput {
@@ -33,25 +34,25 @@ export class TestStringInput implements ITestStringInput {
     public el: HTMLDivElement;
     public quill: Quill | null;
     public droppedText: boolean;
-    public parentElement: RegexElement | null;
+    public parentElement: RegexElement;
     public slotName: string;
     public highlightMode: string;
 
-    constructor(slotName: string) {
+    constructor(slotName: string, parentElement: RegexElement) {
+        this.parentElement = parentElement;
         this.el = document.createElement('div');
         this.slotName = slotName;
-        this.el.id = 'test-string-input' + slotName;
+        this.el.id = 'regextool-' + this.parentElement.toolNumber + '-test-string-input' + slotName;
         this.el.classList.add('regex-test-string');
         this.quill = null;
         // console.log(Quill);
         this.droppedText = false;
-        this.parentElement = null;
         this.highlightMode = 're.finditer';
     }
     
     public initQuill = (): void => {
         // initializing quill
-        this.quill = new Quill('#test-string-input'+ this.slotName, {
+        this.quill = new Quill('#regextool-' + this.parentElement.toolNumber + '-test-string-input' + this.slotName, {
             modules: {
                 toolbar: false
             },

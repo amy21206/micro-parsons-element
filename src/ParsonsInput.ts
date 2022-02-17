@@ -4,6 +4,7 @@ import { RegexEvent } from './LoggingEvents';
 declare class RegexElement {
     logEvent(event: any): void;
     public temporaryInputEvent: any;
+    public toolNumber: number;
 }
 
 export class ParsonsInput implements IRegexInput {
@@ -16,11 +17,14 @@ export class ParsonsInput implements IRegexInput {
     private _dragArea: HTMLDivElement;
     private _dropSortable: Sortable;
     private _dragSortable: Sortable;
-    public parentElement: RegexElement | null;
+    public parentElement: RegexElement;
     private _prevPosition: number;
-    constructor() {
+    constructor(parentElement: RegexElement) {
         this.el = document.createElement('div');
-        this.el.id = 'parsons-input'
+
+        this.parentElement = parentElement;
+
+        this.el.id = 'regextool-' + this.parentElement.toolNumber + '-parsons-input'
 
         this.el.append('Drag or click to select from the symbols below to form your regex')
 
@@ -59,8 +63,6 @@ export class ParsonsInput implements IRegexInput {
             animation: 150
         });
         this._initSortable();
-
-        this.parentElement = null;
     }
 
     public getText = (): string => {
