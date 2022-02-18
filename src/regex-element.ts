@@ -126,9 +126,9 @@ export class RegexElement extends HTMLElement {
         let match;
         while ((match = regex.exec(str)) != null) {
             // console.log(match)
-            console.log("Matched '" + match[0] + "' at position " + match.index +
-                 "; next search at " + regex.lastIndex);
-            console.log("match: " + JSON.stringify(match));
+            // console.log("Matched '" + match[0] + "' at position " + match.index +
+            //      "; next search at " + regex.lastIndex);
+            // console.log("match: " + JSON.stringify(match));
             pos_result.push({st: match.index, ed: regex.lastIndex})
             if (match.length < 2) {
                 match_result.push(new window.Sk.builtin.str(match[0]));
@@ -154,7 +154,7 @@ export class RegexElement extends HTMLElement {
         super();
 
         RegexElement.toolCount += 1;
-        console.log(RegexElement.toolCount);
+        // console.log(RegexElement.toolCount);
         this.toolNumber = RegexElement.toolCount;
 
         this.root = this.attachShadow({ mode: 'open' });
@@ -329,14 +329,14 @@ export class RegexElement extends HTMLElement {
                 enabled: false
             }
             this.logEvent(visibilityStatusEvent);
-            console.log("visibility not working");
+            // console.log("visibility not working");
         } else {
             const visibilityStatusEvent: RegexEvent.PageVisibilityCapturable = {
                 'event-type': 'page-visibility-status',
                 enabled: true
             }
             this.logEvent(visibilityStatusEvent);
-            console.log("add visibility change");
+            // console.log("add visibility change");
             document.addEventListener("visibilitychange", (event) => {
                 let pageStatusEvent: RegexEvent.PageStatusEvent;
                 if (document.hidden) {
@@ -377,8 +377,8 @@ export class RegexElement extends HTMLElement {
         // stub for student and problem id
         this.studentId = this._getStudentIdFromURL();
         this.problemId = this.getAttribute('problem-id') || '';
-        console.log(this.studentId);
-        console.log(this.problemId);
+        // console.log(this.studentId);
+        // console.log(this.problemId);
 
         this.temporaryInputEvent = null;
         this.matchFindall = true;
@@ -443,7 +443,7 @@ export class RegexElement extends HTMLElement {
         // sheet.innerHTML += '.regex-unittest > table, .regex-unittest td {border: 1px solid black; padding: 3px; text-align: center;}\n'
         // sheet.innerHTML += '.regex-unittest.collapse{display:none;}\n'
         // for study 0: hide the table
-        // sheet.innerHTML += '.regex-unittest{display:none;}\n'
+        sheet.innerHTML += '.hidetests .regex-unittest{display:none;}\n'
 
         document.body.appendChild(sheet);
         this.root.appendChild(sheet);
@@ -758,7 +758,7 @@ export class RegexElement extends HTMLElement {
         this.logEvent(problemFinished);
     }
 
-    static get observedAttributes() { return ['input-type', 'problem-id']; }
+    static get observedAttributes() { return ['input-type', 'problem-id', 'hidetests']; }
 
     attributeChangedCallback(name: string, oldValue: any, newValue: any) {
         switch (name) {
@@ -769,6 +769,13 @@ export class RegexElement extends HTMLElement {
             case 'problem-id': {
                 this.problemId = newValue;
                 break;
+            }
+            case 'hidetests': {
+                if (newValue) {
+                    this.unitTestTable.el.style.display = 'none';
+                } else {
+                    this.unitTestTable.el.style.display = 'block';
+                }
             }
         }
     }

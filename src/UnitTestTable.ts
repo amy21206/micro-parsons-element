@@ -1,6 +1,6 @@
 import { RegexEvent } from "./LoggingEvents";
 
-declare class RegexElement{
+declare class RegexElement extends HTMLElement{
     logEvent(event: any): void;
     matchFindall: boolean;
     toolNumber: number;
@@ -36,8 +36,13 @@ export class UnitTestTable implements IUnitTestTable {
         this.el = document.createElement('div');
         this.el.id = 'regextool-' + this.parentElement.toolNumber + '-unittest-table';
         this.el.classList.add('regex-unittest');
+        if (this.parentElement.getAttribute('hidetests')) {
+            this.el.style.display = 'none';
+        } else {
+            this.el.style.display = 'block';
+        }
         // the element is hidden initially.
-        this.el.classList.add('collapse');
+        // this.el.classList.add('collapse');
 
         // columns enabled besides the status column
         // TODO: only enabled notes for study 0 and 1
@@ -154,7 +159,7 @@ export class UnitTestTable implements IUnitTestTable {
         // creating the status(the first) column
         const row = document.createElement('tr');
         let status: string = result.success? (JSON.stringify(result.match) === JSON.stringify(testCase.expect) ? 'Pass' : 'Fail') : 'Error';
-        console.log(status)
+        // console.log(status)
         // if (status == 'Pass' && JSON.stringify(testCase.expect) != '[]' && this.noGroupsAllowed && window.pyodide.globals.unit_match_group_cnt != 1) {
         //     status = 'Fail'
         //     // fail because no group is allowed
@@ -212,7 +217,6 @@ export class UnitTestTable implements IUnitTestTable {
     }
 
     public setTestCases = (testCases: Array<TestCase>): void => {
-        console.log('unittest 242')
         this.testCases = testCases;
         // TODO: make this an option. Set all revealed for study 0 and 1.
         this.hintRevealed = Array(testCases.length).fill(true);
