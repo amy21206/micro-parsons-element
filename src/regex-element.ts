@@ -714,6 +714,8 @@ export class RegexElement extends HTMLElement {
             'input-type': this.inputType,
             'client-timestamp': this._getTimestamp()
         };
+        const ev = new CustomEvent('regex-element', {bubbles: true, detail: {...basicEvent, ...eventContent}});
+        this.dispatchEvent(ev);
         // console.log({...basicEvent, ...eventContent});
     }
 
