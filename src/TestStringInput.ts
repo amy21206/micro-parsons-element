@@ -186,9 +186,17 @@ export class TestStringInput implements ITestStringInput {
 
     // TODO: (structure) move this function to the main element after adding highlight to input
     private generateColor = (colors: Array<string>, cnt: number): void => {
-        const newcolors = randomColor({count: 10, luminosity: 'light'});
-        for(let i = 0; i < cnt; ++ i) {
-            colors.push(newcolors[i]);
+        // const newcolors = randomColor({count: 10, luminosity: 'light'});
+        // for(let i = 0; i < cnt; ++ i) {
+        //     colors.push(newcolors[i]);
+        // }
+        let len = colors.length
+        for (let i = len; i < len + cnt; ++i) {
+            if (i % 2 == 0) {
+                colors.push('#b0d4a9')
+            } else {
+                colors.push('#98d18c')
+            }
         }
     }
 
