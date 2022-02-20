@@ -19,7 +19,7 @@ export namespace RegexEvent {
     }
 
     export type ParsonsInputEvent = {
-        'event-type': 'parsons';
+        'event-type': 'parsons-input';
         action: ParsonsInputAction;
         position: [number, number];
         answer: Array<string>;
@@ -40,8 +40,8 @@ export namespace RegexEvent {
         start: boolean; // true if start showing the tooltip, false if stop showing the tooltip.
     }
 
-    export type FreeInputEvent = {
-        'event-type': 'free-input';
+    export type TextInputEvent = {
+        'event-type': 'text-input';
         dropped: boolean; 
         delta: any;
         answer: string;
@@ -49,8 +49,8 @@ export namespace RegexEvent {
         'error-message': string | null;
     }
 
-    export type FreeKeyboardEvent = {
-        'event-type': 'free-input-keyboard';
+    export type TextKeyboardEvent = {
+        'event-type': 'text-input-keyboard';
         range: any;
         keys: Array<string>; 
     }

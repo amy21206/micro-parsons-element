@@ -40,8 +40,8 @@ export class TextInput implements IRegexInput {
                 shortKey: true,
             },
             (range, context) => {
-                const freeKeyboardEvent: RegexEvent.FreeKeyboardEvent = {
-                    'event-type': 'free-input-keyboard',
+                const freeKeyboardEvent: RegexEvent.TextKeyboardEvent = {
+                    'event-type': 'text-input-keyboard',
                     range: range,
                     keys: ['ctrl', 'c'] 
                 }
@@ -56,8 +56,8 @@ export class TextInput implements IRegexInput {
                 shortKey: true,
             },
             (range, context) => {
-                const freeKeyboardEvent: RegexEvent.FreeKeyboardEvent = {
-                    'event-type': 'free-input-keyboard',
+                const freeKeyboardEvent: RegexEvent.TextKeyboardEvent = {
+                    'event-type': 'text-input-keyboard',
                     range: range,
                     keys: ['ctrl', 'v'] 
                 }
@@ -146,5 +146,14 @@ export class TextInput implements IRegexInput {
         this.quill?.formatText(position, 1, {
             'background': '#ff99b3'
         }, 'silent');
+    }
+
+    public restoreAnswer(type: string, answer: any): void {
+        // TODO (misplaced): consider removing expandable blocks
+        // TODO: add logging to restoring answer
+        if (type != 'text' || typeof answer !== 'string') {
+            return;
+        }
+        this.quill?.setText(answer);
     }
 }

@@ -5,6 +5,7 @@ interface IRegexInput {
 	updateTestStatus(string): void;
 	highlightError(number): void;
 	removeFormat(): void;
+	restoreAnswer(type: string, answer: any): void;
 }
 
 interface IRegexStatusTag {

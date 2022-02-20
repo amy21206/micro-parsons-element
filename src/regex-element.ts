@@ -861,7 +861,7 @@ export class RegexElement extends HTMLElement {
                 (this.regexInput as TextInput).removeFormat();
                 // logging free input event
                 this.temporaryInputEvent = {
-                    'event-type': 'free-input',
+                    'event-type': 'text-input',
                     dropped: (this.regexInput as TextInput).droppedText,
                     delta: delta,
                     answer: this.regexInput.getText()
@@ -934,6 +934,14 @@ export class RegexElement extends HTMLElement {
         this.negativeTestStringInput.quill?.removeFormat(0, this.negativeTestStringInput.quill.getLength() - 1, 'silent');
         this._testStatusDiv.innerText = '';
         this.unitTestTable.setError();
+    }
+
+    // restore student answer from outside storage
+    public restoreAnswer(type: string | undefined, answer: string | Array<string> | undefined) {
+        if (type == undefined || answer == undefined) {
+            return;
+        }
+        this.regexInput.restoreAnswer(type, answer);
     }
 }
 
