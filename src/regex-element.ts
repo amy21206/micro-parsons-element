@@ -833,9 +833,11 @@ export class RegexElement extends HTMLElement {
                         // }
                         if (this.regexInput.getText() == '') {
                             this.regexStatus.updateStatus('');
+                            this.unitTestTable.check('');
                         } else {
                             this.regexStatus.updateStatus('error');
                             this.regexInput.updateTestStatus('Error');
+                            this.unitTestTable.setError();
                             // this.regexInput.highlightError(this.regexErrorPosition);
                             // console.log('highlight error: ');
                             // console.log(this.regexErrorPosition);
@@ -843,7 +845,6 @@ export class RegexElement extends HTMLElement {
                         this.positiveTestStringInput.quill?.removeFormat(0, this.positiveTestStringInput.quill.getLength() - 1, 'silent');
                         this.negativeTestStringInput.quill?.removeFormat(0, this.negativeTestStringInput.quill.getLength() - 1, 'silent');
                         this._testStatusDiv.innerText = 'Test cases passed: 0/' + this.unitTestTable.testCaseCount;
-                        this.unitTestTable.setError();
                     }
                 }
             }, false)
@@ -898,15 +899,16 @@ export class RegexElement extends HTMLElement {
                         if (this.regexInput.getText() == '') {
                             // it means the regex is actually empty
                             this.regexStatus.updateStatus('');
+                            this.unitTestTable.check('');
                         } else {
                             this.regexStatus.updateStatus('error');
                             this.regexInput.updateTestStatus('Error');
+                            this.unitTestTable.setError();
                             // this.regexInput.highlightError(this.regexErrorPosition);
                         }
                         this.positiveTestStringInput.quill?.removeFormat(0, this.positiveTestStringInput.quill.getLength() - 1, 'silent');
                         this.negativeTestStringInput.quill?.removeFormat(0, this.negativeTestStringInput.quill.getLength() - 1, 'silent');
                         this._testStatusDiv.innerText = 'Test cases passed: 0/' + this.unitTestTable.testCaseCount;
-                        this.unitTestTable.setError();
                     }
                     // check and update the background color of the parsons input based on the unit test results
                 }

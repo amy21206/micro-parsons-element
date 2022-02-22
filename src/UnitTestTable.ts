@@ -80,8 +80,10 @@ export class UnitTestTable implements IUnitTestTable {
     // not used: Return value: 'Pass' if all pass, 'Error' if one error, 'Fail' if no error but at least one fail
     // return number of test cases passed
 	public check = (regex: string) : number => {
-        // assume pyodide is initiallized.
-        // TODO: (robustness) test if pyodide is initialized
+        if (regex == '') {
+            this.table.innerHTML = this.table.rows[0].innerHTML;
+            return 0;
+        }
         let status: string = 'Pass';
         let passCount: number = 0;
         if (this.el.classList.contains('collapse')) {
@@ -153,8 +155,6 @@ export class UnitTestTable implements IUnitTestTable {
 
     // returns: 'Pass' if pass, 'Fail' if fail, 'Error' if error
     private _createRow = (index: number, testCase: TestCase, result: UnitTestResult): string => {
-        // console.log(testCase);
-        // console.log(result);
         this.latestResults.push(result);
         // creating the status(the first) column
         const row = document.createElement('tr');
