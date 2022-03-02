@@ -154,7 +154,7 @@ export class UnitTestTable implements IUnitTestTable {
     }
 
     // returns: 'Pass' if pass, 'Fail' if fail, 'Error' if error
-    private _createRow = (index: number, testCase: TestCase, result: UnitTestResult): string => {
+    private _createRow = (index: number, testCase: TestCase, result: UnitTestResult, isEmptyRegex: boolean = false): string => {
         this.latestResults.push(result);
         // creating the status(the first) column
         const row = document.createElement('tr');
