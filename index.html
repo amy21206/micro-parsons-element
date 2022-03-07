@@ -72,8 +72,8 @@ print "Hello World"
 <body>
 <div class="test-div" style="width:600px"></div>
 <script type="module">
-import "./packages/regex-element/regex-element.js";
-document.querySelector('.test-div').innerHTML = `<regex-element input-type='parsons' id="abcd"></regex-element>`;
+import "./packages/horizontal-parsons/horizontal-parsons.js";
+document.querySelector('.test-div').innerHTML = `<horizontal-parsons input-type='parsons' id="abcd"></regex-element>`;
 let parsonsElement = document.querySelector('#abcd');
 parsonsElement.parsonsData = ['([a-z])', '[aeiou]', '[^aeiou]', '*', '+'];
 parsonsElement.parsonsExplanation = ['letter a to z', 'letter a, e, i, o, or u', 'any character except a, e, i, o, u', '*', '+'];

@@ -5,7 +5,7 @@ import css from 'rollup-plugin-import-css';
 import json from '@rollup/plugin-json';
 
 const INPUTS = [
-  'regex-element'
+  'horizontal-parsons'
 ];
 
 export default INPUTS.map((input) => {

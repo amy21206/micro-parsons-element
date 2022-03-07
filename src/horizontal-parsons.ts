@@ -16,7 +16,7 @@ declare global {
     }
 }
 
-export class RegexElement extends HTMLElement {
+export class HorizontalParsons extends HTMLElement {
 
     private root: ShadowRoot;
 
@@ -96,7 +96,7 @@ export class RegexElement extends HTMLElement {
         match = pattern.match(/\(\?./g);
         if (match) {
             for (i = 0; i < match.length; i++) {
-                if (RegexElement._Sk_validGroups.indexOf(match[i]) == -1) {
+                if (HorizontalParsons._Sk_validGroups.indexOf(match[i]) == -1) {
                     throw new window.Sk.builtin.ValueError("Disallowed group in pattern: '"
                         + match[i] + "'");
                 }
@@ -153,9 +153,9 @@ export class RegexElement extends HTMLElement {
     constructor() {
         super();
 
-        RegexElement.toolCount += 1;
+        HorizontalParsons.toolCount += 1;
         // console.log(RegexElement.toolCount);
-        this.toolNumber = RegexElement.toolCount;
+        this.toolNumber = HorizontalParsons.toolCount;
 
         this.root = this.attachShadow({ mode: 'open' });
 
@@ -947,4 +947,4 @@ export class RegexElement extends HTMLElement {
     }
 }
 
-customElements.define('regex-element', RegexElement);
+customElements.define('horizontal-parsons', HorizontalParsons);

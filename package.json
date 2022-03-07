@@ -1,11 +1,11 @@
 {
-  "name": "regex_helper_component",
+  "name": "horizontal-parsons",
   "version": "1.0.0",
   "description": "",
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "if [ -d ./bin ]; then rm -r ./bin; fi && tsc && cp -r ./src/external ./bin/ && cp -r ./src/style ./bin/ && rollup -c"
+    "build": "if [ -d ./bin ]; then rm -r ./bin; fi && tsc && cp -r ./src/style ./bin/ && rollup -c"
   },
   "author": "",
   "license": "ISC",
