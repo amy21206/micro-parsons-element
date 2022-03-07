@@ -1,13 +1,13 @@
 import Sortable, { MoveEvent } from 'sortablejs';
 import { RegexEvent } from './LoggingEvents';
 
-declare class RegexElement {
+declare class HorizontalParsons {
     logEvent(event: any): void;
     public temporaryInputEvent: any;
     public toolNumber: number;
 }
 
-export class ParsonsInput implements IRegexInput {
+export class ParsonsInput implements IHParsonsInput {
     // The input element
     public el: HTMLDivElement;
     // TODO(refactor): make expandable blocks more easy to use
@@ -17,16 +17,16 @@ export class ParsonsInput implements IRegexInput {
     private _dragArea: HTMLDivElement;
     private _dropSortable: Sortable;
     private _dragSortable: Sortable;
-    public parentElement: RegexElement;
+    public parentElement: HorizontalParsons;
     private _prevPosition: number;
-    constructor(parentElement: RegexElement) {
+    constructor(parentElement: HorizontalParsons) {
         this.el = document.createElement('div');
 
         this.parentElement = parentElement;
 
         this.el.id = 'regextool-' + this.parentElement.toolNumber + '-parsons-input'
 
-        this.el.append('Drag or click to select from the symbols below to form your regex')
+        this.el.append('Drag or click to select from the symbols below to form your code')
 
         this._dragArea = document.createElement('div');
         this.el.appendChild(this._dragArea);
@@ -34,7 +34,7 @@ export class ParsonsInput implements IRegexInput {
         this._dragArea.style.height = '20px';
         this._dragArea.style.backgroundColor = '#fffcc4';
 
-        this.el.append('Regex:')
+        this.el.append('Your Code:')
 
         this._dropArea = document.createElement('div');
         this.el.appendChild(this._dropArea);
@@ -513,7 +513,7 @@ export class ParsonsInput implements IRegexInput {
         return position;
     }
 
-    private _getTextArray = (): Array<string> => {
+    public _getTextArray = (): Array<string> => {
         let answer: Array<string> = [];
         if (this._dropArea.hasChildNodes()) {
             let el = this._dropArea.firstChild as HTMLDivElement;

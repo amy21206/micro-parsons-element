@@ -1,5 +1,5 @@
-interface IRegexInput {
-    parentElement: RegexElement;
+interface IHParsonsInput {
+    parentElement: HorizontalParsons;
 	el: HTMLDivElement;
 	getText(): string;
 	updateTestStatus(string): void;

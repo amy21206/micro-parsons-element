@@ -2,20 +2,20 @@ import Quill from 'quill';
 import {randomColor} from 'randomcolor';
 import { RegexEvent } from './LoggingEvents';
 
-declare class RegexElement{
+declare class HParsonsElement{
     logEvent(event: any): void;
     toolNumber: number;
 }
 
-export class TextInput implements IRegexInput {
+export class TextInput implements IHParsonsInput {
     // The input element
     public el: HTMLDivElement;
     public quill: Quill | null;
     private groups: Array<PatternGroup>;
-    public parentElement: RegexElement;
+    public parentElement: HParsonsElement;
     public droppedText: boolean;
 
-    constructor(parentElement: RegexElement) {
+    constructor(parentElement: HParsonsElement) {
         this.parentElement = parentElement;
         this.el = document.createElement('div');
         this.el.id = 'regextool-' + this.parentElement.toolNumber + '-regex-input';

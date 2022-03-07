@@ -77,19 +77,15 @@ document.querySelector('.test-div').innerHTML = `<horizontal-parsons input-type=
 let parsonsElement = document.querySelector('#abcd');
 parsonsElement.parsonsData = ['([a-z])', '[aeiou]', '[^aeiou]', '*', '+'];
 parsonsElement.parsonsExplanation = ['letter a to z', 'letter a, e, i, o, or u', 'any character except a, e, i, o, u', '*', '+'];
-parsonsElement.setPositiveInitialTestString('unicorn\nelement\n');
-parsonsElement.setNegativeInitialTestString('banana\napple\n');
-parsonsElement.setTestCases([
-          { input: 'unicorn', expect: ['unicorn'], notes: 'A matching testcase' },
-          { input: 'element', expect: ['element'], notes: 'A matching testcase' },
-          { input: 'banana', expect: [], notes: 'A word starts with a non-vowel and ends with a vowel.' },
-          { input: 'bananu', expect: [], notes: 'A word starts with a non-vowel and ends with a vowel.' },
-          { input: 'apple', expect: [], notes: 'A word that starts with a vowel and ends with a vowel.' },
-          { input: 'baby', expect: [], notes: 'A word that starts with a non-vowel and ends with a non-vowel.' },
-          { input: 'az', expect: ['az'], notes: 'A word that starts with a vowel and ends with a vowel.' },
-          { input: 'abcdefghizsdz', expect: ['abcdefghizsdz'], notes: '' },
-          { input: 'abc9defghizsdz', expect: [], notes: 'includes numbers in the middle' }
-        ]);
+</script>
+<button onclick="test()">haha</button>
+<script>
+function test(){
+    alert('clicked!');
+    let parsonsElement = document.querySelector('#abcd');
+    console.log(parsonsElement.getCurrentInput());
+    console.log(parsonsElement.getParsonsTextArray());
+}
 </script>
 </body>
 
