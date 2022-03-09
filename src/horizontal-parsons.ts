@@ -41,20 +41,13 @@ export class HParsonsElement extends HTMLElement {
         this.addStyle();
 
         // a div wrapping the input and the test case status
-        const inputAndTestStatusDiv = document.createElement('div');
-        this.root.append(inputAndTestStatusDiv);
-        inputAndTestStatusDiv.classList.add('regex-input-and-test-status');
-
         // init regex input based on the input type
-        const inputDiv = document.createElement('div');
-        inputAndTestStatusDiv.appendChild(inputDiv);
-        inputDiv.classList.add('regex-input-div');
         this._parsonsData = new Array<string>();
         this.parsonsExplanation = null;
         this.inputType = 'parsons';
         // this.regexErrorMessage = document.createElement('div');
         // this.regexErrorPosition = -1;
-        this.initRegexInput(inputDiv);
+        this.initRegexInput();
         this.temporaryInputEvent = {};
     }
 
@@ -168,29 +161,28 @@ export class HParsonsElement extends HTMLElement {
     attributeChangedCallback(name: string, oldValue: any, newValue: any) {
         switch (name) {
             case 'input-type': {
-                this.initRegexInput(this.root.querySelector('.regex-input-div') as HTMLDivElement);
+                this.initRegexInput();
                 break;
             }
         }
     }
 
-    private initRegexInput(inputDiv: HTMLDivElement) {
-        inputDiv.innerHTML = '';
+    private initRegexInput() {
+        this.root.innerHTML = '';
         let inputType = this.getAttribute('input-type');
         this.inputType = inputType == 'parsons' ? 'parsons' : 'text';
         this._parsonsData = new Array<string>();
         this.parsonsExplanation = null;
-        inputDiv.appendChild(document.createElement('br'));
         // todo:(UI) fix the css for the input
         if (this.inputType == 'parsons') {
             // init elements: parsons regex input
             this.hparsonsInput = new ParsonsInput(this);
-            inputDiv.appendChild(this.hparsonsInput.el);
+            this.root.appendChild(this.hparsonsInput.el);
         } else {
             // (this.inputType == 'text')
             const regex_slot = document.createElement('slot');
             regex_slot.name = 'regex-input'
-            inputDiv.appendChild(regex_slot);
+            this.root.appendChild(regex_slot);
             // TODO: (refactor) rename RegexInput
             this.hparsonsInput = new TextInput(this);
             this.appendChild(this.hparsonsInput.el);
