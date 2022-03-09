@@ -26,21 +26,19 @@ export class ParsonsInput implements IHParsonsInput {
 
         this.el.id = 'regextool-' + this.parentElement.toolNumber + '-parsons-input'
 
-        this.el.append('Drag or click to select from the symbols below to form your code')
+        const dragTip = document.createElement('div');
+        dragTip.innerText = 'Drag or click to select from the symbols below to form your code';
 
         this._dragArea = document.createElement('div');
         this.el.appendChild(this._dragArea);
         this._dragArea.classList.add('drag-area');
-        this._dragArea.style.height = '20px';
-        this._dragArea.style.backgroundColor = '#fffcc4';
 
-        this.el.append('Your Code:')
+        const dropTip = document.createElement('div');
+        dropTip.innerText = 'Your code:';
 
         this._dropArea = document.createElement('div');
         this.el.appendChild(this._dropArea);
         this._dropArea.classList.add('drop-area');
-        this._dropArea.style.height = '20px';
-        // this._dropArea.style.backgroundColor = '#bcebd7';
         this._prevPosition = -1;
 
         this.expandableBlocks = [];
