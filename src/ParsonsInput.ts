@@ -28,6 +28,8 @@ export class ParsonsInput implements IHParsonsInput {
 
         const dragTip = document.createElement('div');
         dragTip.innerText = 'Drag or click to select from the symbols below to form your code';
+        dragTip.classList.add('hparsons-tip');
+        this.el.append(dragTip);
 
         this._dragArea = document.createElement('div');
         this.el.appendChild(this._dragArea);
@@ -35,6 +37,8 @@ export class ParsonsInput implements IHParsonsInput {
 
         const dropTip = document.createElement('div');
         dropTip.innerText = 'Your code:';
+        dropTip.classList.add('hparsons-tip');
+        this.el.append(dropTip);
 
         this._dropArea = document.createElement('div');
         this.el.appendChild(this._dropArea);
@@ -47,7 +51,7 @@ export class ParsonsInput implements IHParsonsInput {
         this._dragSortable = new Sortable(this._dragArea, {
             group: {
                 name: 'shared',
-                pull: 'clone',
+                pull: true,
                 put: false
             },
             sort: false,

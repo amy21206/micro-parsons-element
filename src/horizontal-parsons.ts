@@ -70,6 +70,7 @@ export class HParsonsElement extends HTMLElement {
         const sheet = document.createElement('style');
         // parsons block
         sheet.innerHTML += '.hparsons-input {padding: 15px;}\n';
+        sheet.innerHTML += '.hparsons-tip { font-style: italic; }\n';
         sheet.innerHTML += '.parsons-block {display: inline-block; font-family: monospace; border-color:gray; margin: 0 1px; position: relative; border-radius: 10px; background-color: #efefef; border: 1px solid #d3d3d3; padding: 5px 10px; margin-top: 5px;}\n';
         sheet.innerHTML += '.parsons-block:hover, .parsons-block:focus { border-color: black;}\n';
         sheet.innerHTML += '.drop-area { background-color: #ffa; padding: 0 5px; height: 42px; }\n';
@@ -80,8 +81,6 @@ export class HParsonsElement extends HTMLElement {
         sheet.innerHTML += '.drag-area { background-color: #efefff; padding: 0 5px; height: 42px; }\n';
         // unittest
 
-        // document.body.appendChild(sheet);
-        console.log('appending sheet')
         this.root.appendChild(sheet);
 
         const global_sheet = document.createElement('style');
