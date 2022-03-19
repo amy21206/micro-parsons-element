@@ -1,15 +1,5 @@
 import { ParsonsInput } from './ParsonsInput';
 import { TextInput } from './TextInput';
-import { RegexEvent } from './LoggingEvents';
-
-// declare global {
-//     interface Window {
-//         languagePluginUrl: string
-//         Sk: Skulpt
-//         regexStudentId: string
-//         regexCourseId: string
-//     }
-// }
 
 export class HParsonsElement extends HTMLElement {
 
@@ -91,17 +81,13 @@ export class HParsonsElement extends HTMLElement {
     }
 
     public logEvent = (eventContent: any): void => {
-        console.log('hparsons, logevent')
-        // const basicEvent: RegexEvent.BasicEvent = {
-        //     'student-id': window.regexStudentId || 'stub-id',
-        //     'course-id': window.regexCourseId || 'stub-course-id',
-        //     'problem-id': this.problemId,
-        //     'input-type': this.inputType,
-        //     'client-timestamp': this._getTimestamp()
-        // };
-        // const ev = new CustomEvent('regex-element', {bubbles: true, detail: {...basicEvent, ...eventContent}});
-        // this.dispatchEvent(ev);
-        // // console.log({...basicEvent, ...eventContent});
+        // TODO: fix the logging scheme for horizontal parsons in general.
+        // Right now it only dispatches event of moving parsons blocks.
+        const basicEvent = {
+            'input-type': this.inputType,
+        };
+        const ev = new CustomEvent('horizontal-parsons', {bubbles: true, detail: {...basicEvent, ...eventContent}});
+        this.dispatchEvent(ev);
     }
 
     // private _getTimestamp = (): string => {
