@@ -33,6 +33,7 @@ export class HParsonsElement extends HTMLElement {
         this.root.append(this.inputDiv)
         const reusable = this.getAttribute('reuse-blocks') ? true : false;
         this.hparsonsInput = new ParsonsInput(this, reusable);
+        // console.log(reusable)
 
         // a div wrapping the input and the test case status
         // init regex input based on the input type

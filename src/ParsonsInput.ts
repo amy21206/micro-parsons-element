@@ -112,47 +112,104 @@ export class ParsonsInput implements IHParsonsInput {
         this._dragSortable.destroy();
         this._dropSortable.destroy();
 
-        this._dragSortable = new Sortable(this._dragArea, {
-            group: {
-                name: 'shared',
-                // pull: 'clone',
-                // put: false
-            },
-            // sort: false,
-            direction: 'horizontal',
-            animation: 150,
-            draggable: '.parsons-block',
-        });
+        if (this.reusable) {
+            this._dragSortable = new Sortable(this._dragArea, {
+                group: {
+                    name: 'shared',
+                    pull: 'clone',
+                    put: false
+                },
+                sort: false,
+                direction: 'horizontal',
+                animation: 150,
+                draggable: '.parsons-block',
+            });
 
-        this._dropSortable = new Sortable(this._dropArea, {
-            group: 'shared',
-            direction: 'horizontal',
-            animation: 150,
-            draggable: '.parsons-block',
-            onAdd: (event) => {
-                const inputEvent = {
-                    'event-type': 'parsons-input',
-                    action: 'add',
-                    position: [-1, this._getBlockPosition(event.item)],
-                    answer: this._getTextArray(),
-                };
-                this.parentElement.logEvent(inputEvent);
-            },
-            onStart: (event) => {
-                this._prevPosition = this._getBlockPosition(event.item);
-            },
-            onEnd: (event) => {
-                let endposition = this._getBlockPosition(event.item);
-                const action = endposition == -1 ? 'remove' : 'move';
-                const inputEvent = {
-                    'event-type': 'parsons-input',
-                    action: action,
-                    position: [this._prevPosition, endposition],
-                    answer: this._getTextArray(),
-                };
-                this.parentElement.logEvent(inputEvent);
-            },
-        });
+            this._dropSortable = new Sortable(this._dropArea, {
+                group: 'shared',
+                direction: 'horizontal',
+                animation: 150,
+                draggable: '.parsons-block',
+                onAdd: (event) => {
+                    const inputEvent = {
+                        'event-type': 'parsons-input',
+                        action: 'add',
+                        position: [-1, this._getBlockPosition(event.item)],
+                        answer: this._getTextArray(),
+                    };
+                    this.parentElement.logEvent(inputEvent);
+                },
+                onStart: (event) => {
+                    this._prevPosition = this._getBlockPosition(event.item);
+                },
+                onEnd: (event) => {
+                    let endposition;
+                    let action = 'move';
+                    const upperbound = this._dropArea.getBoundingClientRect().top;
+                    const lowerbound = this._dropArea.getBoundingClientRect().bottom;
+                    if ((event as any).originalEvent.clientY > lowerbound || (event as any).originalEvent.clientY < upperbound ) {
+                        const item = event.item as HTMLElement;
+                        if (item.parentNode) {
+                            item.parentNode.removeChild(item);
+                        }
+                        endposition = -1;
+                        action = 'remove';
+                    } else {
+                        endposition = this._getBlockPosition(event.item);
+                    }
+                    const inputEvent = {
+                        'event-type': 'parsons-input',
+                        action: action,
+                        position: [this._prevPosition, endposition],
+                        answer: this._getTextArray(),
+                    };
+                    this.parentElement.logEvent(inputEvent);
+                },
+            });
+
+        } else {
+            this._dragSortable = new Sortable(this._dragArea, {
+                group: {
+                    name: 'shared',
+                    // pull: 'clone',
+                    // put: false
+                },
+                // sort: false,
+                direction: 'horizontal',
+                animation: 150,
+                draggable: '.parsons-block',
+            });
+
+            this._dropSortable = new Sortable(this._dropArea, {
+                group: 'shared',
+                direction: 'horizontal',
+                animation: 150,
+                draggable: '.parsons-block',
+                onAdd: (event) => {
+                    const inputEvent = {
+                        'event-type': 'parsons-input',
+                        action: 'add',
+                        position: [-1, this._getBlockPosition(event.item)],
+                        answer: this._getTextArray(),
+                    };
+                    this.parentElement.logEvent(inputEvent);
+                },
+                onStart: (event) => {
+                    this._prevPosition = this._getBlockPosition(event.item);
+                },
+                onEnd: (event) => {
+                    let endposition = this._getBlockPosition(event.item);
+                    const action = endposition == -1 ? 'remove' : 'move';
+                    const inputEvent = {
+                        'event-type': 'parsons-input',
+                        action: action,
+                        position: [this._prevPosition, endposition],
+                        answer: this._getTextArray(),
+                    };
+                    this.parentElement.logEvent(inputEvent);
+                },
+            });
+        }
     }
 
     public updateTestStatus = (result: string): void => {
