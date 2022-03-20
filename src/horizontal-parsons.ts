@@ -32,7 +32,8 @@ export class HParsonsElement extends HTMLElement {
         this.inputDiv.classList.add('hparsons-input');
         this.root.append(this.inputDiv)
         const reusable = this.getAttribute('reuse-blocks') ? true : false;
-        this.hparsonsInput = new ParsonsInput(this, reusable);
+        const randomize = this.getAttribute('randomize') ? true : false;
+        this.hparsonsInput = new ParsonsInput(this, reusable, randomize);
         // console.log(reusable)
 
         // a div wrapping the input and the test case status
@@ -130,7 +131,8 @@ export class HParsonsElement extends HTMLElement {
         if (this.inputType == 'parsons') {
             // init elements: parsons regex input
             const reusable = this.getAttribute('reuse-blocks') != null ? true : false;
-            this.hparsonsInput = new ParsonsInput(this, reusable);
+            const randomize = this.getAttribute('randomize') != null ? true : false;
+            this.hparsonsInput = new ParsonsInput(this, reusable, randomize);
             this.inputDiv.appendChild(this.hparsonsInput.el);
         } else {
             // (this.inputType == 'text')

@@ -20,7 +20,8 @@ export class ParsonsInput implements IHParsonsInput {
     public parentElement: HorizontalParsons;
     private _prevPosition: number;
     public reusable: boolean;
-    constructor(parentElement: HorizontalParsons, reusable: boolean) {
+    private randomize: boolean;
+    constructor(parentElement: HorizontalParsons, reusable: boolean, randomize: boolean) {
         this.el = document.createElement('div');
 
         this.parentElement = parentElement;
@@ -50,6 +51,7 @@ export class ParsonsInput implements IHParsonsInput {
         this.expandableBlockTooltips = null;
 
         this.reusable = reusable;
+        this.randomize = randomize;
 
         this._dragSortable = new Sortable(this._dragArea, {
             group: 'shared',
@@ -81,6 +83,16 @@ export class ParsonsInput implements IHParsonsInput {
         }
     }
 
+    // Durstenfeld shuffle
+    private shuffleArray(array: Array<any>) {
+        for (let i = array.length - 1; i > 0; i--) {
+            let j = Math.floor(Math.random() * (i + 1));
+            let temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+    }
+}
+
     public setSourceBlocks = (data: Array<string>, tooltips: Array<string> | null): void => {
         // reset
         // this._dragSortable.destroy();
@@ -91,6 +103,13 @@ export class ParsonsInput implements IHParsonsInput {
         this._dropArea.innerHTML = '';
 
         // adding normal blocks
+        if (this.randomize) {
+            let originalData = JSON.stringify(data);
+            this.shuffleArray(data);
+            while (JSON.stringify(data) == originalData) {
+                this.shuffleArray(data);
+            }
+        }
         for (let i = 0; i < data.length; ++i) {
             const newBlock = document.createElement('div');
             this._dragArea.appendChild(newBlock);
