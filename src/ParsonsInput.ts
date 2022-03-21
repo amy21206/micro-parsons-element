@@ -10,17 +10,19 @@ declare class HorizontalParsons {
 export class ParsonsInput implements IHParsonsInput {
     // The input element
     public el: HTMLDivElement;
-    // TODO(refactor): make expandable blocks more easy to use
-    public expandableBlocks: Array<string>;
-    public expandableBlockTooltips: Array<string> | null;
     private _dropArea: HTMLDivElement;
     private _dragArea: HTMLDivElement;
-    private _dropSortable: Sortable;
-    private _dragSortable: Sortable;
+    private _dropSortable: Sortable | null;
+    private _dragSortable: Sortable | null;
     public parentElement: HorizontalParsons;
     private _prevPosition: number;
     public reusable: boolean;
     private randomize: boolean;
+    private storedSourceBlocks: Array<string>;
+    private storedSourceBlockExplanations: Array<string> | null;
+
+    // if the input has been initialized once
+    private initialized: boolean;
     constructor(parentElement: HorizontalParsons, reusable: boolean, randomize: boolean) {
         this.el = document.createElement('div');
 
@@ -47,25 +49,17 @@ export class ParsonsInput implements IHParsonsInput {
         this._dropArea.classList.add('drop-area');
         this._prevPosition = -1;
 
-        this.expandableBlocks = [];
-        this.expandableBlockTooltips = null;
+        this.storedSourceBlocks = [];
+        this.storedSourceBlockExplanations = null;
 
         this.reusable = reusable;
         this.randomize = randomize;
 
-        this._dragSortable = new Sortable(this._dragArea, {
-            group: 'shared',
-            direction: 'horizontal',
-            animation: 150
-        });
-
-        this._dropSortable = new Sortable(this._dropArea, {
-            group: 'shared',
-            direction: 'horizontal',
-            animation: 150
-        });
+        this._dragSortable = null;
+        this._dropSortable = null;
         this._initSortable();
 
+        this.initialized = false;
     }
 
     public getText = (): string => {
@@ -90,19 +84,11 @@ export class ParsonsInput implements IHParsonsInput {
             let temp = array[i];
             array[i] = array[j];
             array[j] = temp;
+        }
     }
-}
 
     public setSourceBlocks = (data: Array<string>, tooltips: Array<string> | null): void => {
-        // reset
-        // this._dragSortable.destroy();
-        // this._dropSortable.destroy();
-
-        // clearing previous settings 
-        this._dragArea.innerHTML = '';
-        this._dropArea.innerHTML = '';
-
-        // adding normal blocks
+        // shuffle source blocks if randomize
         if (this.randomize) {
             let originalData = JSON.stringify(data);
             this.shuffleArray(data);
@@ -110,15 +96,32 @@ export class ParsonsInput implements IHParsonsInput {
                 this.shuffleArray(data);
             }
         }
-        for (let i = 0; i < data.length; ++i) {
+
+        this.storedSourceBlocks = data;
+        this.storedSourceBlockExplanations = tooltips;
+        this._resetInput();
+    }
+
+    // TODO: not efficient enough. should not need to create new elements; simply sorting them should be good.
+    private _resetInput = (): void => {
+        // clearing previous blocks
+        while (this._dragArea.firstChild) {
+            this._dragArea.removeChild(this._dragArea.firstChild);
+        }
+        while (this._dropArea.firstChild) {
+            this._dropArea.removeChild(this._dropArea.firstChild);
+        }
+
+        // add new blocks
+        for (let i = 0; i < this.storedSourceBlocks.length; ++i) {
             const newBlock = document.createElement('div');
             this._dragArea.appendChild(newBlock);
-            if (data[i] === ' ') {
+            if (this.storedSourceBlocks[i] === ' ') {
                 // console.log('here');
                 newBlock.innerHTML = '&nbsp;';
             } else {
                 // console.log(data[i]);
-                newBlock.innerText = data[i];
+                newBlock.innerText = this.storedSourceBlocks[i];
             }
             newBlock.style.display = 'inline-block';
             newBlock.classList.add('parsons-block');
@@ -127,7 +130,6 @@ export class ParsonsInput implements IHParsonsInput {
             }
         }
 
-        this._initSortable();
     }
 
     private _onBlockClicked = (block: Node): void => {
@@ -167,8 +169,6 @@ export class ParsonsInput implements IHParsonsInput {
     }
 
     private _initSortable = (): void => {
-        this._dragSortable.destroy();
-        this._dropSortable.destroy();
 
         if (this.reusable) {
             this._dragSortable = new Sortable(this._dragArea, {
@@ -290,10 +290,6 @@ export class ParsonsInput implements IHParsonsInput {
         this._dropArea.classList.add(result);
     }
 
-    public setExpandableBlocks = (expandableBlocks: Array<string>): void => {
-        this.expandableBlocks = expandableBlocks;
-    }
-
     private _getBlockPosition = (block: Node): number => {
         let position = -1;
         const parent = this._dropArea;
@@ -351,6 +347,16 @@ export class ParsonsInput implements IHParsonsInput {
                 el = el.nextSibling as HTMLDivElement;
                 el.style.removeProperty('background-color');
             }
+        }
+    }
+    
+    public resetInput = (): void => {
+        if (this.reusable) {
+            while (this._dropArea.firstChild) {
+                this._dropArea.removeChild(this._dropArea.firstChild);
+            }
+        } else {
+            this._resetInput();
         }
     }
 

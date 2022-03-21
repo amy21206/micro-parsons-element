@@ -159,11 +159,17 @@ export class HParsonsElement extends HTMLElement {
         }
     }
 
-    public resetTool() {
+    public resetInput() {
         if (this.inputType != 'parsons') {
             const regexInput = this.hparsonsInput as TextInput;
             regexInput.quill?.setText('', 'silent');
+        } else if (this.inputType == 'parsons') {
+            (this.hparsonsInput as ParsonsInput).resetInput();
         }
+        const resetEvent = {
+            'event-type': 'reset',
+        };
+        this.logEvent(resetEvent);
     }
 
     // restore student answer from outside storage
