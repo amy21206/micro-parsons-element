@@ -38,7 +38,7 @@ export class ParsonsInput implements IHParsonsInput {
         this._dragArea.classList.add('drag-area');
 
         const dropTip = document.createElement('div');
-        dropTip.innerText = 'Your code:';
+        dropTip.innerText = 'Your code (click on a block to remove it):';
         dropTip.classList.add('hparsons-tip');
         this.el.append(dropTip);
 
