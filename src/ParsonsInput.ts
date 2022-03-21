@@ -29,7 +29,7 @@ export class ParsonsInput implements IHParsonsInput {
         this.el.id = 'regextool-' + this.parentElement.toolNumber + '-parsons-input'
 
         const dragTip = document.createElement('div');
-        dragTip.innerText = 'Drag from the blocks below to form your code';
+        dragTip.innerText = 'Drag or click the blocks below to form your code:';
         dragTip.classList.add('hparsons-tip');
         this.el.append(dragTip);
 
@@ -122,6 +122,27 @@ export class ParsonsInput implements IHParsonsInput {
             }
             newBlock.style.display = 'inline-block';
             newBlock.classList.add('parsons-block');
+            newBlock.onclick = () => {
+                // adding the block to the input area
+                if (newBlock.parentElement == this._dragArea) {
+                    let endPosition;
+                    if (this.reusable) {
+                        const newBlockCopy = newBlock.cloneNode(true);
+                        this._dropArea.appendChild(newBlockCopy);
+                        endPosition = this._getBlockPosition(newBlockCopy);
+                    } else {
+                        this._dropArea.appendChild(newBlock);
+                        endPosition = this._getBlockPosition(newBlock);
+                    }
+                    const inputEvent = {
+                        'event-type': 'parsons-input',
+                        action: 'add',
+                        position: [-1, endPosition],
+                        answer: this._getTextArray(),
+                    };
+                    this.parentElement.logEvent(inputEvent);
+                }
+            }
         }
 
         this._initSortable();
@@ -251,7 +272,7 @@ export class ParsonsInput implements IHParsonsInput {
         this.expandableBlocks = expandableBlocks;
     }
 
-    private _getBlockPosition = (block: HTMLElement): number => {
+    private _getBlockPosition = (block: Node): number => {
         let position = -1;
         const parent = this._dropArea;
         if (parent) {
@@ -311,6 +332,7 @@ export class ParsonsInput implements IHParsonsInput {
         }
     }
 
+    // TODO: not used for now, not sure if is working correctly
     public restoreAnswer(type: string, answer: any): void {
         if (type != 'parsons' || !Array.isArray(answer)) {
             return;
