@@ -123,29 +123,47 @@ export class ParsonsInput implements IHParsonsInput {
             newBlock.style.display = 'inline-block';
             newBlock.classList.add('parsons-block');
             newBlock.onclick = () => {
-                // adding the block to the input area
-                if (newBlock.parentElement == this._dragArea) {
-                    let endPosition;
-                    if (this.reusable) {
-                        const newBlockCopy = newBlock.cloneNode(true);
-                        this._dropArea.appendChild(newBlockCopy);
-                        endPosition = this._getBlockPosition(newBlockCopy);
-                    } else {
-                        this._dropArea.appendChild(newBlock);
-                        endPosition = this._getBlockPosition(newBlock);
-                    }
-                    const inputEvent = {
-                        'event-type': 'parsons-input',
-                        action: 'add',
-                        position: [-1, endPosition],
-                        answer: this._getTextArray(),
-                    };
-                    this.parentElement.logEvent(inputEvent);
-                }
+                this._onBlockClicked(newBlock);
             }
         }
 
         this._initSortable();
+    }
+
+    private _onBlockClicked = (block: Node): void => {
+        if (block.parentElement == this._dragArea) {
+            let endPosition;
+            if (this.reusable) {
+                const blockCopy = block.cloneNode(true) as HTMLDivElement;
+                blockCopy.onclick = () => this._onBlockClicked(blockCopy);
+                this._dropArea.appendChild(blockCopy);
+                endPosition = this._getBlockPosition(blockCopy);
+            } else {
+                this._dropArea.appendChild(block);
+                endPosition = this._getBlockPosition(block);
+            }
+            const inputEvent = {
+                'event-type': 'parsons-input',
+                action: 'add',
+                position: [-1, endPosition],
+                answer: this._getTextArray(),
+            };
+            this.parentElement.logEvent(inputEvent);
+        } else {
+            const startPosition = this._getBlockPosition(block);
+            if (this.reusable) {
+                this._dropArea.removeChild(block);
+            } else {
+                this._dragArea.appendChild(block);
+            }
+            const inputEvent = {
+                'event-type': 'parsons-input',
+                action: 'remove',
+                position: [startPosition, -1],
+                answer: this._getTextArray(),
+            };
+            this.parentElement.logEvent(inputEvent);
+        }
     }
 
     private _initSortable = (): void => {
@@ -163,6 +181,10 @@ export class ParsonsInput implements IHParsonsInput {
                 direction: 'horizontal',
                 animation: 150,
                 draggable: '.parsons-block',
+                onClone: (event) => {
+                    const newBlock = event.clone;
+                    newBlock.onclick = () => this._onBlockClicked(newBlock);
+                }
             });
 
             this._dropSortable = new Sortable(this._dropArea, {
