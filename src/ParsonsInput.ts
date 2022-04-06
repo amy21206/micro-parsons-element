@@ -1,10 +1,23 @@
 import Sortable, { MoveEvent } from 'sortablejs';
 import { RegexEvent } from './LoggingEvents';
+import hljs from 'highlight.js/lib/core';
+import javascript from 'highlight.js/lib/languages/javascript';
+import python from 'highlight.js/lib/languages/python';
+import java from 'highlight.js/lib/languages/java';
+import sql from 'highlight.js/lib/languages/sql';
+import xml from 'highlight.js/lib/languages/xml';
+
+hljs.registerLanguage('javascript', javascript);
+hljs.registerLanguage('sql', sql);
+hljs.registerLanguage('java', java);
+hljs.registerLanguage('xml', xml);
+hljs.registerLanguage('python', python);
 
 declare class HorizontalParsons {
     logEvent(event: any): void;
     public temporaryInputEvent: any;
     public toolNumber: number;
+    public language: string;
 }
 
 export class ParsonsInput implements IHParsonsInput {
@@ -20,6 +33,7 @@ export class ParsonsInput implements IHParsonsInput {
     private randomize: boolean;
     private storedSourceBlocks: Array<string>;
     private storedSourceBlockExplanations: Array<string> | null;
+    private hljsLanguage: string | undefined;
 
     // if the input has been initialized once
     private initialized: boolean;
@@ -60,6 +74,15 @@ export class ParsonsInput implements IHParsonsInput {
         this._initSortable();
 
         this.initialized = false;
+
+        let languageMap = new Map(Object.entries({
+            'html': 'xml',
+            'python': 'python',
+            'javascript': 'javascript',
+            'java': 'java',
+            'sql': 'sql'
+        }))
+        this.hljsLanguage = languageMap.get(parentElement.language);
     }
 
     public getText = (): string => {
@@ -121,7 +144,11 @@ export class ParsonsInput implements IHParsonsInput {
                 newBlock.innerHTML = '&nbsp;';
             } else {
                 // console.log(data[i]);
-                newBlock.innerText = this.storedSourceBlocks[i];
+                if (this.hljsLanguage) {
+                    newBlock.innerHTML = hljs.highlight(this.storedSourceBlocks[i], {language: this.hljsLanguage, ignoreIllegals: true}).value
+                } else {
+                    newBlock.innerText = this.storedSourceBlocks[i];
+                }
             }
             newBlock.style.display = 'inline-block';
             newBlock.classList.add('parsons-block');

@@ -3,7 +3,7 @@ import { TextInput } from './TextInput';
 
 export class HParsonsElement extends HTMLElement {
 
-    private root: ShadowRoot;
+    private root: HTMLElement;
 
     private _parsonsData: Array<string>;
     public parsonsExplanation: Array<string> | null;
@@ -18,6 +18,8 @@ export class HParsonsElement extends HTMLElement {
 
     public inputDiv: HTMLDivElement;
 
+    public language: string;
+
     constructor() {
         super();
 
@@ -25,7 +27,8 @@ export class HParsonsElement extends HTMLElement {
         // console.log(RegexElement.toolCount);
         this.toolNumber = HParsonsElement.toolCount;
 
-        this.root = this.attachShadow({ mode: 'open' });
+        // this.root = this.attachShadow({ mode: 'open' });
+        this.root = this;
 
         this.addStyle();
         this.inputDiv = document.createElement('div');
@@ -45,6 +48,8 @@ export class HParsonsElement extends HTMLElement {
         // this.regexErrorPosition = -1;
         this.initRegexInput();
         this.temporaryInputEvent = {};
+
+        this.language = this.getAttribute('language') || 'none';
     }
 
     set parsonsData(data: Array<string>) {

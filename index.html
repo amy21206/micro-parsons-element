@@ -67,15 +67,16 @@ print "Hello World"
 <head>
 <script src="skulpt.min.js" type="text/javascript"></script>
 <script src="skulpt-stdlib.js" type="text/javascript"></script>
+<link rel="stylesheet" href="xcode.css">
 </head>
 
 <body>
 <div class="test-div" style="width:600px"></div>
 <script type="module">
 import "./packages/horizontal-parsons/horizontal-parsons.js";
-document.querySelector('.test-div').innerHTML = `<horizontal-parsons input-type='parsons' id="abcd"></regex-element>`;
+document.querySelector('.test-div').innerHTML = `<horizontal-parsons input-type='parsons' language='sql' id="abcd"></regex-element>`;
 let parsonsElement = document.querySelector('#abcd');
-parsonsElement.parsonsData = ['([a-z])', '[aeiou]', '[^aeiou]', '*', '+'];
+parsonsElement.parsonsData = ['SELECT', '*', 'FROM', 'test', 'SELECT * FROM test'];
 parsonsElement.parsonsExplanation = ['letter a to z', 'letter a, e, i, o, or u', 'any character except a, e, i, o, u', '*', '+'];
 </script>
 <button onclick="test()">haha</button>

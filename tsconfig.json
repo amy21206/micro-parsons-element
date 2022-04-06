@@ -72,6 +72,7 @@
   },
   "include": [
     "./types/*.d.ts",
-    "./src/*.ts"
+    "./src/*.ts",
+    "./src/style/*.css"
   ]
 }
