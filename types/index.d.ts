@@ -4,6 +4,7 @@ interface IHParsonsInput {
 	getText(): string;
 	updateTestStatus(string): void;
 	highlightError(number): void;
+	setIndent(number): void;
 	removeFormat(): void;
 	restoreAnswer(type: string, answer: any): void;
 }

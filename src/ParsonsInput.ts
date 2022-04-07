@@ -17,7 +17,7 @@ declare class HorizontalParsons {
     logEvent(event: any): void;
     public temporaryInputEvent: any;
     public toolNumber: number;
-    public language: string;
+    public language: string | undefined;
 }
 
 export class ParsonsInput implements IHParsonsInput {
@@ -34,6 +34,9 @@ export class ParsonsInput implements IHParsonsInput {
     private storedSourceBlocks: Array<string>;
     private storedSourceBlockExplanations: Array<string> | null;
     private hljsLanguage: string | undefined;
+
+    private contextBefore: HTMLDivElement;
+    private contextAfter: HTMLDivElement;
 
     // if the input has been initialized once
     private initialized: boolean;
@@ -58,10 +61,24 @@ export class ParsonsInput implements IHParsonsInput {
         dropTip.classList.add('hparsons-tip');
         this.el.append(dropTip);
 
+        const contextBefore = document.createElement('div');
+        contextBefore.id = 'hparsons-' + this.parentElement.toolNumber + '-context-before';
+        contextBefore.classList.add('context');
+        contextBefore.classList.add('hide');
+        this.el.appendChild(contextBefore);
+        this.contextBefore = contextBefore;
+
         this._dropArea = document.createElement('div');
         this.el.appendChild(this._dropArea);
         this._dropArea.classList.add('drop-area');
         this._prevPosition = -1;
+
+        const contextAfter = document.createElement('div');
+        contextAfter.id = 'hparsons-' + this.parentElement.toolNumber + '-context-after';
+        contextAfter.classList.add('context');
+        contextAfter.classList.add('hide');
+        this.el.appendChild(contextAfter);
+        this.contextAfter = contextAfter;
 
         this.storedSourceBlocks = [];
         this.storedSourceBlockExplanations = null;
@@ -75,14 +92,7 @@ export class ParsonsInput implements IHParsonsInput {
 
         this.initialized = false;
 
-        let languageMap = new Map(Object.entries({
-            'html': 'xml',
-            'python': 'python',
-            'javascript': 'javascript',
-            'java': 'java',
-            'sql': 'sql'
-        }))
-        this.hljsLanguage = languageMap.get(parentElement.language);
+        this.hljsLanguage = this.parentElement.language;
     }
 
     public getText = (): string => {
@@ -417,5 +427,11 @@ export class ParsonsInput implements IHParsonsInput {
                 this.el.dispatchEvent(new Event('codeChanged'));
             }
         }
+    }
+    
+    public setIndent = (indent: number): void => {
+        const fontSize = Number(window.getComputedStyle(this.contextBefore, null).getPropertyValue('font-size').slice(0, -2));
+        console.log(window.getComputedStyle(this.contextBefore, null).getPropertyValue('font-size'))
+        this._dropArea.style.paddingLeft = fontSize * indent + 'px';
     }
 }

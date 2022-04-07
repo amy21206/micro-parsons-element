@@ -1,5 +1,17 @@
 import { ParsonsInput } from './ParsonsInput';
 import { TextInput } from './TextInput';
+import hljs from 'highlight.js/lib/core';
+import javascript from 'highlight.js/lib/languages/javascript';
+import python from 'highlight.js/lib/languages/python';
+import java from 'highlight.js/lib/languages/java';
+import sql from 'highlight.js/lib/languages/sql';
+import xml from 'highlight.js/lib/languages/xml';
+
+hljs.registerLanguage('javascript', javascript);
+hljs.registerLanguage('sql', sql);
+hljs.registerLanguage('java', java);
+hljs.registerLanguage('xml', xml);
+hljs.registerLanguage('python', python);
 
 export class HParsonsElement extends HTMLElement {
 
@@ -18,7 +30,10 @@ export class HParsonsElement extends HTMLElement {
 
     public inputDiv: HTMLDivElement;
 
-    public language: string;
+    public language: string|undefined;
+
+    private contextBefore: HTMLDivElement | null;
+    private contextAfter: HTMLDivElement | null;
 
     constructor() {
         super();
@@ -49,7 +64,16 @@ export class HParsonsElement extends HTMLElement {
         this.initRegexInput();
         this.temporaryInputEvent = {};
 
-        this.language = this.getAttribute('language') || 'none';
+        let languageMap = new Map(Object.entries({
+            'html': 'xml',
+            'python': 'python',
+            'javascript': 'javascript',
+            'java': 'java',
+            'sql': 'sql'
+        }));
+        this.language = languageMap.get(this.getAttribute('language') || 'none');
+
+        this.contextBefore = this.contextAfter = null;
     }
 
     set parsonsData(data: Array<string>) {
@@ -80,6 +104,8 @@ export class HParsonsElement extends HTMLElement {
         sheet.innerHTML += '.parsons-block .tooltip::after {content: " ";position: absolute; top: 100%;left: 50%; margin-left: -5px; border-width: 5px; border-style: solid; border-color: black transparent transparent transparent;}\n';
         sheet.innerHTML += '.drag-area .parsons-block:hover .tooltip { visibility: visible;}\n';
         sheet.innerHTML += '.drag-area { background-color: #efefff; padding: 0 5px; height: 42px; margin: 2px 0; }\n';
+        sheet.innerHTML += '.context.hide {display: none;}\n';
+        sheet.innerHTML += '.context {padding: 0 4px; background-color: #eea; font-family: monospace;}\n';
         // unittest
 
         this.root.appendChild(sheet);
@@ -194,6 +220,34 @@ export class HParsonsElement extends HTMLElement {
 
     public getParsonsTextArray() {
         return (this.hparsonsInput as ParsonsInput)._getTextArray();
+    }
+
+    public setContext = (context: Array<string>): void => {
+        const contextBefore = this.querySelector('#hparsons-' + this.toolNumber + '-context-before') as HTMLDivElement;
+        const contextAfter = this.querySelector('#hparsons-' + this.toolNumber + '-context-after') as HTMLDivElement;
+        let codeIndex = -1;
+        let indent = 0;
+        for (let i = 0; i < context.length; ++i) {
+            indent = context[i].indexOf('****');
+            if (indent != -1) {
+                codeIndex = i;
+                break;
+            }
+        }
+        if (this.language) {
+            contextBefore.innerHTML = hljs.highlight(context.slice(0, codeIndex).join('\n'), {language: this.language, ignoreIllegals: true}).value
+            contextAfter.innerHTML = hljs.highlight(context.slice(codeIndex + 1).join('\n'), {language: this.language, ignoreIllegals: true}).value
+        } else {
+            contextBefore.innerText = context.slice(0, codeIndex).join('\n');
+            contextAfter.innerText = context.slice(codeIndex + 1).join('\n');
+        }
+        contextBefore.classList.remove('hide')
+        contextAfter.classList.remove('hide')
+        if (indent) {
+            this.hparsonsInput.setIndent(indent);
+            console.log('indent:')
+            console.log(indent)
+        }
     }
 }
 

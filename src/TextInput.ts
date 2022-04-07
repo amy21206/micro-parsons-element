@@ -149,11 +149,14 @@ export class TextInput implements IHParsonsInput {
     }
 
     public restoreAnswer(type: string, answer: any): void {
-        // TODO (misplaced): consider removing expandable blocks
         // TODO: add logging to restoring answer
         if (type != 'text' || typeof answer !== 'string') {
             return;
         }
         this.quill?.setText(answer);
+    }
+
+    public setIndent = (indent: number): void => {
+        
     }
 }
