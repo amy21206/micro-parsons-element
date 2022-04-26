@@ -42,7 +42,7 @@ export class ParsonsInput implements IHParsonsInput {
 
         this.parentElement = parentElement;
 
-        this.el.id = 'regextool-' + this.parentElement.toolNumber + '-parsons-input'
+        this.el.id = 'hparsonstool-' + this.parentElement.toolNumber + '-parsons-input'
 
         const dragTip = document.createElement('div');
         dragTip.innerText = 'Drag or click the blocks below to form your code:';

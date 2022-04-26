@@ -18,7 +18,7 @@ export class TextInput implements IHParsonsInput {
     constructor(parentElement: HParsonsElement) {
         this.parentElement = parentElement;
         this.el = document.createElement('div');
-        this.el.id = 'regextool-' + this.parentElement.toolNumber + '-regex-input';
+        this.el.id = 'hparsonstool-' + this.parentElement.toolNumber + '-text-input';
         this.el.classList.add('regex-input');
         
         this.quill = null;
