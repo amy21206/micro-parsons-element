@@ -73,8 +73,8 @@ print "Hello World"
 <body>
 <div class="test-div" style="width:600px"></div>
 <script type="module">
-import "./packages/horizontal-parsons/horizontal-parsons.js";
-document.querySelector('.test-div').innerHTML = `<horizontal-parsons input-type='parsons' language='sql' id="abcd"></regex-element>`;
+import "./packages/micro-parsons/micro-parsons.js";
+document.querySelector('.test-div').innerHTML = `<micro-parsons input-type='parsons' language='sql' id="abcd"></micro-parsons>`;
 let parsonsElement = document.querySelector('#abcd');
 parsonsElement.parsonsData = ['SELECT', '*', 'FROM', 'test', 'SELECT * FROM test'];
 parsonsElement.parsonsExplanation = ['letter a to z', 'letter a, e, i, o, or u', 'any character except a, e, i, o, u', '*', '+'];

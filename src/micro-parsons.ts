@@ -96,7 +96,8 @@ export class HParsonsElement extends HTMLElement {
         const basicEvent = {
             'input-type': this.inputType,
         };
-        const ev = new CustomEvent('horizontal-parsons', {bubbles: true, detail: {...basicEvent, ...eventContent}});
+        console.log('logging event: ', {...basicEvent, ...eventContent});
+        const ev = new CustomEvent('micro-parsons', {bubbles: true, detail: {...basicEvent, ...eventContent}});
         this.dispatchEvent(ev);
     }
 
@@ -197,4 +198,4 @@ export class HParsonsElement extends HTMLElement {
     }
 }
 
-customElements.define('horizontal-parsons', HParsonsElement);
+customElements.define('micro-parsons', HParsonsElement);

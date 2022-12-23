@@ -1,4 +1,4 @@
-# Regex Component
+# Micro Parsons Component
 
 ## Installing dependencies:
 
@@ -14,15 +14,15 @@ npm run build
 
 ## Using the Component:
 
-After building the code, the element should be in ./packages/test-element/test-element.js.
+After building the code, the element should be in ./packages/micro-parsons/micro-parsons.js.
 
 Include the custom element in a webpage, e.g.:
 
 ```html
 <div class="test-div"></div>
 <script type="module">
-import "./packages/test-element/test-element.js";
-document.querySelector('.test-div').innerHTML = `<regex-element></regex-element>`;
+import "./packages/micro-parsons/micro-parsons.js";
+document.querySelector('.test-div').innerHTML = `<micro-parsons input-type='parsons' language='sql' id="abcd"></micro-parsons>`;
 </script>
 ```
 

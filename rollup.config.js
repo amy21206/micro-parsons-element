@@ -5,7 +5,7 @@ import css from 'rollup-plugin-import-css';
 import json from '@rollup/plugin-json';
 
 const INPUTS = [
-  'horizontal-parsons'
+  'micro-parsons'
 ];
 
 export default INPUTS.map((input) => {
