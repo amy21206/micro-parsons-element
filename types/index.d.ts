@@ -1,7 +1,7 @@
 interface IHParsonsInput {
     parentElement: HorizontalParsons;
 	el: HTMLDivElement;
-	getText(): string;
+	getText(addSpace: boolean): string;
 	updateTestStatus(string): void;
 	highlightError(number): void;
 	removeFormat(): void;

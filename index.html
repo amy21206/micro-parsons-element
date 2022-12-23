@@ -71,21 +71,59 @@ print "Hello World"
 </head>
 
 <body>
-<div class="test-div" style="width:600px"></div>
+<h3>Default: No reuse, no randomize</h3>
+<div class="test-div-1" style="width:600px"></div>
 <script type="module">
 import "./packages/micro-parsons/micro-parsons.js";
-document.querySelector('.test-div').innerHTML = `<micro-parsons input-type='parsons' language='sql' id="abcd"></micro-parsons>`;
-let parsonsElement = document.querySelector('#abcd');
+document.querySelector('.test-div-1').innerHTML = `<micro-parsons input-type='parsons' language='sql' id="micro-parsons-1"></micro-parsons>`;
+let parsonsElement = document.querySelector('#micro-parsons-1');
 parsonsElement.parsonsData = ['SELECT', '*', 'FROM', 'test', 'SELECT * FROM test'];
 parsonsElement.parsonsExplanation = ['letter a to z', 'letter a, e, i, o, or u', 'any character except a, e, i, o, u', '*', '+'];
 </script>
-<button onclick="test()">haha</button>
+<button onclick="test1()">haha</button>
 <script>
-function test(){
-    alert('clicked!');
-    let parsonsElement = document.querySelector('#abcd');
-    console.log(parsonsElement.getCurrentInput());
-    console.log(parsonsElement.getParsonsTextArray());
+function test1(){
+    let parsonsElement = document.querySelector('#micro-parsons-1');
+    console.log('current input: ', parsonsElement.getCurrentInput(true));
+    console.log('text array: ', parsonsElement.getParsonsTextArray());
+}
+</script>
+
+
+<h3>No reuse, randomize</h3>
+<div class="test-div-2" style="width:600px"></div>
+<script type="module">
+import "./packages/micro-parsons/micro-parsons.js";
+document.querySelector('.test-div-2').innerHTML = `<micro-parsons input-type='parsons' language='python' id="micro-parsons-2" randomize></micro-parsons>`;
+let parsonsElement = document.querySelector('#micro-parsons-2');
+parsonsElement.parsonsData = ['print(', '"test"', ')'];
+parsonsElement.parsonsExplanation = ['print', 'string "test"', ''];
+</script>
+<button onclick="test2()">haha</button>
+<script>
+function test2(){
+    let parsonsElement = document.querySelector('#micro-parsons-2');
+    console.log('current input: ', parsonsElement.getCurrentInput(true));
+    console.log('text array: ', parsonsElement.getParsonsTextArray());
+}
+</script>
+
+
+<h3>Reuse, no randomize</h3>
+<div class="test-div-3" style="width:600px"></div>
+<script type="module">
+import "./packages/micro-parsons/micro-parsons.js";
+document.querySelector('.test-div-3').innerHTML = `<micro-parsons input-type='parsons' language='python' id="micro-parsons-3" reuse></micro-parsons>`;
+let parsonsElement = document.querySelector('#micro-parsons-3');
+parsonsElement.parsonsData = ['\\d', '+', '[a-z]'];
+parsonsElement.parsonsExplanation = ['number', 'repeat once or more', 'letters a to z'];
+</script>
+<button onclick="test3()">haha</button>
+<script>
+function test3(){
+    let parsonsElement = document.querySelector('#micro-parsons-3');
+    console.log('current input: ', parsonsElement.getCurrentInput(false));
+    console.log('text array: ', parsonsElement.getParsonsTextArray());
 }
 </script>
 </body>

@@ -1,5 +1,4 @@
 import { ParsonsInput } from './ParsonsInput';
-import { TextInput } from './TextInput';
 
 export class HParsonsElement extends HTMLElement {
 
@@ -16,40 +15,30 @@ export class HParsonsElement extends HTMLElement {
 
     public temporaryInputEvent: any;
 
-    public inputDiv: HTMLDivElement;
-
     public language: string;
 
     constructor() {
         super();
 
         HParsonsElement.toolCount += 1;
-        // console.log(RegexElement.toolCount);
         this.toolNumber = HParsonsElement.toolCount;
 
-        // this.root = this.attachShadow({ mode: 'open' });
         this.root = this;
 
         this.addStyle();
-        this.inputDiv = document.createElement('div');
-        this.inputDiv.classList.add('hparsons-input');
-        this.root.append(this.inputDiv)
         const reusable = this.getAttribute('reuse-blocks') ? true : false;
         const randomize = this.getAttribute('randomize') ? true : false;
         this.hparsonsInput = new ParsonsInput(this, reusable, randomize);
-        // console.log(reusable)
 
         // a div wrapping the input and the test case status
         // init regex input based on the input type
         this._parsonsData = new Array<string>();
         this.parsonsExplanation = null;
         this.inputType = 'parsons';
-        // this.regexErrorMessage = document.createElement('div');
-        // this.regexErrorPosition = -1;
-        this.initRegexInput();
+        this.language = this.getAttribute('language') || 'none';
+        this.initInput();
         this.temporaryInputEvent = {};
 
-        this.language = this.getAttribute('language') || 'none';
     }
 
     set parsonsData(data: Array<string>) {
@@ -80,14 +69,8 @@ export class HParsonsElement extends HTMLElement {
         sheet.innerHTML += '.parsons-block .tooltip::after {content: " ";position: absolute; top: 100%;left: 50%; margin-left: -5px; border-width: 5px; border-style: solid; border-color: black transparent transparent transparent;}\n';
         sheet.innerHTML += '.drag-area .parsons-block:hover .tooltip { visibility: visible;}\n';
         sheet.innerHTML += '.drag-area { background-color: #efefff; padding: 0 5px; height: 42px; margin: 2px 0; }\n';
-        // unittest
 
         this.root.appendChild(sheet);
-
-        const global_sheet = document.createElement('style');
-        global_sheet.innerHTML += '.regex-input .ql-editor {height: fit-content;}\n';
-        global_sheet.innerHTML += '.ql-editor { box-shadow: 0 0 2px 5px #b1dafa; margin: 5px; }\n';
-        this.appendChild(global_sheet);
     }
 
     public logEvent = (eventContent: any): void => {
@@ -96,85 +79,23 @@ export class HParsonsElement extends HTMLElement {
         const basicEvent = {
             'input-type': this.inputType,
         };
-        console.log('logging event: ', {...basicEvent, ...eventContent});
         const ev = new CustomEvent('micro-parsons', {bubbles: true, detail: {...basicEvent, ...eventContent}});
         this.dispatchEvent(ev);
     }
 
-    // private _getTimestamp = (): string => {
-    //     const timestamp = new Date();
-    //     return timestamp.getFullYear() + '/' + (timestamp.getMonth() + 1) + '/' + timestamp.getDate() + '/' + timestamp.getHours() + '/' + timestamp.getMinutes() + '/' + timestamp.getSeconds() + '/' + timestamp.getMilliseconds();
-    // }
-
-    // // log regex input event along with compilation result
-    // private _logRegexInputEvent = (): void => {
-    //     // TODO: just using any here. but regexInputEvent is actually RegexEvent.ParsonsInputEvent or FreeInputEvent... so much trouble with typing!!
-    //     let regexInputEvent: any = {
-    //         ...this.temporaryInputEvent,
-    //         valid: this.patternValidFlag
-    //     };
-    //     if (!this.patternValidFlag) {
-    //         // regexInputEvent['error-message'] = this.regexErrorMessage.innerText;
-    //     }
-    //     this.logEvent(regexInputEvent);
-    // }
-
-    static get observedAttributes() { return ['input-type']; }
-
-    attributeChangedCallback(name: string, oldValue: any, newValue: any) {
-        switch (name) {
-            case 'input-type': {
-                this.initRegexInput();
-                break;
-            }
-        }
-    }
-
-    private initRegexInput() {
-        this.inputDiv.innerHTML = '';
-        let inputType = this.getAttribute('input-type');
-        this.inputType = inputType == 'parsons' ? 'parsons' : 'text';
+    private initInput() {
+        // the only mode supporting is parsons right now; removed the text entry mode
+        this.inputType = 'parsons';
         this._parsonsData = new Array<string>();
         this.parsonsExplanation = null;
-        // todo:(UI) fix the css for the input
-        if (this.inputType == 'parsons') {
-            // init elements: parsons regex input
-            const reusable = this.getAttribute('reuse-blocks') != null ? true : false;
-            const randomize = this.getAttribute('randomize') != null ? true : false;
-            this.hparsonsInput = new ParsonsInput(this, reusable, randomize);
-            this.inputDiv.appendChild(this.hparsonsInput.el);
-        } else {
-            // (this.inputType == 'text')
-            const regex_slot = document.createElement('slot');
-            regex_slot.name = 'regex-input'
-            this.inputDiv.appendChild(regex_slot);
-            // TODO: (refactor) rename RegexInput
-            this.hparsonsInput = new TextInput(this);
-            this.appendChild(this.hparsonsInput.el);
-            this.hparsonsInput.el.slot = 'regex-input';
-            (this.hparsonsInput as TextInput).initQuill();
-            (this.hparsonsInput as TextInput).quill?.on('text-change', (delta) => {
-                (this.hparsonsInput as TextInput).removeFormat();
-                // logging free input event
-                this.temporaryInputEvent = {
-                    'event-type': 'text-input',
-                    dropped: (this.hparsonsInput as TextInput).droppedText,
-                    delta: delta,
-                    answer: this.hparsonsInput.getText()
-                };
-                (this.hparsonsInput as TextInput).droppedText = false;
-                // this._logRegexInputEvent();
-            })
-        }
+        const reusable = this.getAttribute('reuse-blocks') != null ? true : false;
+        const randomize = this.getAttribute('randomize') != null ? true : false;
+        this.hparsonsInput = new ParsonsInput(this, reusable, randomize);
+        this.root.appendChild(this.hparsonsInput.el);
     }
 
     public resetInput() {
-        if (this.inputType != 'parsons') {
-            const regexInput = this.hparsonsInput as TextInput;
-            regexInput.quill?.setText('', 'silent');
-        } else if (this.inputType == 'parsons') {
-            (this.hparsonsInput as ParsonsInput).resetInput();
-        }
+        (this.hparsonsInput as ParsonsInput).resetInput();
         const resetEvent = {
             'event-type': 'reset',
         };
@@ -189,8 +110,8 @@ export class HParsonsElement extends HTMLElement {
         this.hparsonsInput.restoreAnswer(type, answer);
     }
 
-    public getCurrentInput() {
-        return this.hparsonsInput.getText();
+    public getCurrentInput(addSpace: boolean) {
+        return this.hparsonsInput.getText(addSpace);
     }
 
     public getParsonsTextArray() {
