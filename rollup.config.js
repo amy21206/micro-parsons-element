@@ -3,6 +3,7 @@ import typescript from '@rollup/plugin-typescript';
 import commonjs from '@rollup/plugin-commonjs';
 import css from 'rollup-plugin-import-css';
 import json from '@rollup/plugin-json';
+import terser from '@rollup/plugin-terser';
 
 const INPUTS = [
   'micro-parsons'
@@ -19,7 +20,7 @@ export default INPUTS.map((input) => {
       interop: 'auto',
     },
     plugins: [
-      // terser(),
+      terser(),
       // filesize({
       //   showMinifiedSize: false,
       //   showBeforeSizes: 'build'
