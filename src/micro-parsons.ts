@@ -58,6 +58,8 @@ export class HParsonsElement extends HTMLElement {
         // parsons block
         sheet.innerHTML += '.hparsons-input {padding: 15px;}\n';
         sheet.innerHTML += '.hparsons-tip { font-style: italic; }\n';
+        sheet.innerHTML += '.parsons-tooltip{ visibility: hidden; max-width: 120px; width: max-content; background-color: black; color: #fff; text-align: center; border-radius: 6px; padding: 5px 0; position: absolute; z-index: 1; top: 30px;}\n';
+        sheet.innerHTML += '.parsons-block:hover .parsons-tooltip{ visibility: visible;}\n';
         sheet.innerHTML += '.parsons-block {display: inline-block; font-family: monospace; border-color:gray; margin: 0 1px; position: relative; border-radius: 10px; background-color: #efefef; border: 1px solid #d3d3d3; padding: 5px 10px; margin-top: 5px;}\n';
         sheet.innerHTML += '.drop-area .parsons-block.incorrectPosition {background-color: #ffbaba; border: 1px solid red;}\n';
         sheet.innerHTML += '.parsons-block:hover, .parsons-block:focus { border-color: black;}\n';

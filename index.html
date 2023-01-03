@@ -77,8 +77,8 @@ print "Hello World"
 import "./packages/micro-parsons/micro-parsons.js";
 document.querySelector('.test-div-1').innerHTML = `<micro-parsons input-type='parsons' language='sql' id="micro-parsons-1"></micro-parsons>`;
 let parsonsElement = document.querySelector('#micro-parsons-1');
-parsonsElement.parsonsData = ['SELECT', '*', 'FROM', 'test', 'SELECT * FROM test', 'SELECT test FROM *', 'UNUSED1', 'UNUSED2'];
 parsonsElement.parsonsExplanation = ['letter a to z', 'letter a, e, i, o, or u', 'any character except a, e, i, o, u', '*', '+'];
+parsonsElement.parsonsData = ['SELECT', '*', 'FROM', 'test', 'SELECT * FROM test', 'SELECT test FROM *', 'UNUSED1', 'UNUSED2'];
 </script>
 <button onclick="test1()">haha</button>
 <script>
@@ -96,8 +96,8 @@ function test1(){
 import "./packages/micro-parsons/micro-parsons.js";
 document.querySelector('.test-div-2').innerHTML = `<micro-parsons input-type='parsons' language='python' id="micro-parsons-2" randomize></micro-parsons>`;
 let parsonsElement = document.querySelector('#micro-parsons-2');
-parsonsElement.parsonsData = ['print(', '"test"', ')'];
 parsonsElement.parsonsExplanation = ['print', 'string "test"', ''];
+parsonsElement.parsonsData = ['print(', '"test"', ')'];
 </script>
 <button onclick="test2()">haha</button>
 <script>
@@ -115,8 +115,8 @@ function test2(){
 import "./packages/micro-parsons/micro-parsons.js";
 document.querySelector('.test-div-3').innerHTML = `<micro-parsons input-type='parsons' language='python' id="micro-parsons-3" reuse-blocks></micro-parsons>`;
 let parsonsElement = document.querySelector('#micro-parsons-3');
-parsonsElement.parsonsData = ['\\d', '+', '[a-z]'];
 parsonsElement.parsonsExplanation = ['number', 'repeat once or more', 'letters a to z'];
+parsonsElement.parsonsData = ['\\d', '+', '[a-z]'];
 </script>
 <button onclick="test3()">haha</button>
 <script>

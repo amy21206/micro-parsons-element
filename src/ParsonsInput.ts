@@ -155,6 +155,13 @@ export class ParsonsInput implements IHParsonsInput {
             newBlock.onclick = () => {
                 this._onBlockClicked(newBlock);
             }
+            // creating tooltip
+            if (this.storedSourceBlockExplanations && this.storedSourceBlockExplanations[i]) {
+                const tooltip = document.createElement('div');
+                tooltip.innerText = this.storedSourceBlockExplanations[i];
+                tooltip.classList.add('parsons-tooltip');
+                newBlock.appendChild(tooltip);
+            }
         }
 
     }
