@@ -1,5 +1,5 @@
 import Sortable, { MoveEvent } from 'sortablejs';
-import { ParsonsEvent } from './LoggingEvents';
+import { MicroParsonsEvent } from './LoggingEvents';
 import hljs from 'highlight.js/lib/core';
 import javascript from 'highlight.js/lib/languages/javascript';
 import python from 'highlight.js/lib/languages/python';
@@ -178,9 +178,9 @@ export class ParsonsInput implements IHParsonsInput {
                 this._dropArea.appendChild(block);
                 endPosition = this._getBlockPosition(block);
             }
-            const inputEvent = {
-                'event-type': 'parsons-input',
-                action: 'add',
+            const inputEvent: MicroParsonsEvent.Input = {
+                'type': 'input',
+                action: MicroParsonsEvent.InputAction.ADD,
                 position: [-1, endPosition],
                 answer: this._getTextArray(),
             };
@@ -192,9 +192,9 @@ export class ParsonsInput implements IHParsonsInput {
             } else {
                 this._dragArea.appendChild(block);
             }
-            const inputEvent = {
-                'event-type': 'parsons-input',
-                action: 'remove',
+            const inputEvent: MicroParsonsEvent.Input = {
+                'type': 'input',
+                action: MicroParsonsEvent.InputAction.REMOVE,
                 position: [startPosition, -1],
                 answer: this._getTextArray(),
             };
@@ -227,9 +227,9 @@ export class ParsonsInput implements IHParsonsInput {
                 animation: 150,
                 draggable: '.parsons-block',
                 onAdd: (event) => {
-                    const inputEvent = {
-                        'event-type': 'parsons-input',
-                        action: 'add',
+                    const inputEvent: MicroParsonsEvent.Input = {
+                        'type': 'input',
+                        action: MicroParsonsEvent.InputAction.ADD,
                         position: [-1, this._getBlockPosition(event.item)],
                         answer: this._getTextArray(),
                     };
@@ -240,7 +240,7 @@ export class ParsonsInput implements IHParsonsInput {
                 },
                 onEnd: (event) => {
                     let endposition;
-                    let action = 'move';
+                    let action = MicroParsonsEvent.InputAction.MOVE;
                     const upperbound = this._dropArea.getBoundingClientRect().top;
                     const lowerbound = this._dropArea.getBoundingClientRect().bottom;
                     if ((event as any).originalEvent.clientY > lowerbound || (event as any).originalEvent.clientY < upperbound ) {
@@ -249,12 +249,12 @@ export class ParsonsInput implements IHParsonsInput {
                             item.parentNode.removeChild(item);
                         }
                         endposition = -1;
-                        action = 'remove';
+                        action = MicroParsonsEvent.InputAction.REMOVE;
                     } else {
                         endposition = this._getBlockPosition(event.item);
                     }
-                    const inputEvent = {
-                        'event-type': 'parsons-input',
+                    const inputEvent: MicroParsonsEvent.Input = {
+                        'type': 'input',
                         action: action,
                         position: [this._prevPosition, endposition],
                         answer: this._getTextArray(),
@@ -282,9 +282,9 @@ export class ParsonsInput implements IHParsonsInput {
                 animation: 150,
                 draggable: '.parsons-block',
                 onAdd: (event) => {
-                    const inputEvent = {
-                        'event-type': 'parsons-input',
-                        action: 'add',
+                    const inputEvent:MicroParsonsEvent.Input = {
+                        'type': 'input',
+                        action: MicroParsonsEvent.InputAction.ADD,
                         position: [-1, this._getBlockPosition(event.item)],
                         answer: this._getTextArray(),
                     };
@@ -295,9 +295,9 @@ export class ParsonsInput implements IHParsonsInput {
                 },
                 onEnd: (event) => {
                     let endposition = this._getBlockPosition(event.item);
-                    const action = endposition == -1 ? 'remove' : 'move';
-                    const inputEvent = {
-                        'event-type': 'parsons-input',
+                    const action = endposition == -1 ? MicroParsonsEvent.InputAction.REMOVE : MicroParsonsEvent.InputAction.MOVE;
+                    const inputEvent:MicroParsonsEvent.Input = {
+                        'type': 'input',
                         action: action,
                         position: [this._prevPosition, endposition],
                         answer: this._getTextArray(),
@@ -412,14 +412,13 @@ export class ParsonsInput implements IHParsonsInput {
                     newBlock.parentNode?.removeChild(newBlock);
                     if (this.parentElement) {
                         this.parentElement.temporaryInputEvent = {
-                            'event-type': 'parsons-input',
-                            action: ParsonsEvent.ParsonsInputAction.REMOVE,
+                            'type': 'input',
+                            action: MicroParsonsEvent.InputAction.REMOVE,
                             position: [endPosition, -1],
                             answer: this._getTextArray()
                         };
                     }
                 }
-                this.el.dispatchEvent(new Event('codeChanged'));
             }
         }
     }
