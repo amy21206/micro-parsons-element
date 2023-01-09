@@ -1,3 +1,4 @@
+import { MicroParsonsEvent } from './LoggingEvents';
 import { ParsonsInput } from './ParsonsInput';
 
 export class HParsonsElement extends HTMLElement {
@@ -13,7 +14,7 @@ export class HParsonsElement extends HTMLElement {
 
     public toolNumber: number;
 
-    public temporaryInputEvent: any;
+    public temporaryInputEvent: MicroParsonsEvent.Input|null;
 
     public language: string;
 
@@ -37,7 +38,7 @@ export class HParsonsElement extends HTMLElement {
         this.inputType = 'parsons';
         this.language = this.getAttribute('language') || 'none';
         this.initInput();
-        this.temporaryInputEvent = {};
+        this.temporaryInputEvent = null;
 
     }
 
@@ -58,7 +59,7 @@ export class HParsonsElement extends HTMLElement {
         // parsons block
         sheet.innerHTML += '.hparsons-input {padding: 15px;}\n';
         sheet.innerHTML += '.hparsons-tip { font-style: italic; }\n';
-        sheet.innerHTML += '.parsons-tooltip{ visibility: hidden; max-width: 120px; width: max-content; background-color: black; color: #fff; text-align: center; border-radius: 6px; padding: 5px 0; position: absolute; z-index: 1; top: 30px;}\n';
+        sheet.innerHTML += '.parsons-tooltip{ visibility: hidden; max-width: 120px; width: max-content; background-color: black; color: #fff; text-align: center; border-radius: 6px; padding: 5px; position: absolute; z-index: 1; top: 30px;}\n';
         sheet.innerHTML += '.parsons-block:hover .parsons-tooltip{ visibility: visible;}\n';
         sheet.innerHTML += '.parsons-block {display: inline-block; font-family: monospace; border-color:gray; margin: 0 1px; position: relative; border-radius: 10px; background-color: #efefef; border: 1px solid #d3d3d3; padding: 5px 10px; margin-top: 5px;}\n';
         sheet.innerHTML += '.drop-area .parsons-block.incorrectPosition {background-color: #ffbaba; border: 1px solid red;}\n';
@@ -67,8 +68,8 @@ export class HParsonsElement extends HTMLElement {
         sheet.innerHTML += '.drop-area.incorrect { background-color: #f2dede; border-color: #f2b6b6}\n';
         sheet.innerHTML += '.drop-area.correct { background-color: #dff0d8; border-color: #ade595}\n';
         // TODO:(UI) move the tooltip to the top of the line
-        sheet.innerHTML += '.parsons-block .tooltip { visibility: hidden; width: 200px;  background-color: black; color: #fff; text-align: center; padding: 5px 0; border-radius: 6px;  position: absolute; z-index: 1; margin: 0 10px; bottom: 120%; margin-left: -100px;}\n';
-        sheet.innerHTML += '.parsons-block .tooltip::after {content: " ";position: absolute; top: 100%;left: 50%; margin-left: -5px; border-width: 5px; border-style: solid; border-color: black transparent transparent transparent;}\n';
+        // sheet.innerHTML += '.parsons-block .tooltip { visibility: hidden; width: 200px;  background-color: black; color: #fff; text-align: center; padding: 5px; border-radius: 6px;  position: absolute; z-index: 1; margin: 0 10px; bottom: 120%; margin-left: -100px;}\n';
+        // sheet.innerHTML += '.parsons-block .tooltip::after {content: " ";position: absolute; top: 100%;left: 50%; margin-left: -5px; border-width: 5px; border-style: solid; border-color: black transparent transparent transparent;}\n';
         sheet.innerHTML += '.drag-area .parsons-block:hover .tooltip { visibility: visible;}\n';
         sheet.innerHTML += '.drag-area { background-color: #efefff; padding: 0 5px 5px 5px; min-height: 32px; height: auto; margin: 2px 0; }\n';
 
@@ -76,10 +77,7 @@ export class HParsonsElement extends HTMLElement {
     }
 
     public logEvent = (eventContent: any): void => {
-        const basicEvent = {
-            'input-type': this.inputType,
-        };
-        const ev = new CustomEvent('micro-parsons', {bubbles: true, detail: {...basicEvent, ...eventContent}});
+        const ev = new CustomEvent('micro-parsons', {bubbles: true, detail: {...eventContent}});
         this.dispatchEvent(ev);
     }
 
@@ -96,8 +94,8 @@ export class HParsonsElement extends HTMLElement {
 
     public resetInput() {
         (this.hparsonsInput as ParsonsInput).resetInput();
-        const resetEvent = {
-            'event-type': 'reset',
+        const resetEvent:MicroParsonsEvent.Reset = {
+            'type': 'reset',
         };
         this.logEvent(resetEvent);
     }
