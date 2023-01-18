@@ -1,19 +1,25 @@
-import {nodeResolve} from '@rollup/plugin-node-resolve';
 import typescript from '@rollup/plugin-typescript';
 import commonjs from '@rollup/plugin-commonjs';
 import css from 'rollup-plugin-import-css';
 import json from '@rollup/plugin-json';
 import terser from '@rollup/plugin-terser';
+import {createRequire} from 'node:module';
+import externals from 'rollup-plugin-node-externals';
+import {nodeResolve} from '@rollup/plugin-node-resolve';
+
+const require = createRequire(import.meta.url);
+const pkg = require('./package.json');
 
 const INPUTS = [
   'micro-parsons'
 ];
 
+
 export default INPUTS.map((input) => {
   return {
     input: `./bin/${input}.js`,
     output: {
-      file: `./packages/${input}/${input}.js`,
+      file: `./${input}/${input}.js`,
       format: 'esm',
       sourcemap: true,
       esModule: true,
@@ -26,15 +32,19 @@ export default INPUTS.map((input) => {
       //   showBeforeSizes: 'build'
       // }),
       typescript(),
-      nodeResolve(),
       // nodePolyfills(),
       commonjs(),
       css(),
-      json()
+      json(),
+      externals({
+        include:'highlight.js/lib/languages/sql'
+      }),
+      nodeResolve()
     ],
-    context: 'window'
-    // external: [
-    //   '/node_modules/'
-    // ]
+    context: 'window',
+    external: [
+      '/node_modules/'
+    ]
+    // Mark package dependencies as "external". Rest of configuration omitted.
   }
 });

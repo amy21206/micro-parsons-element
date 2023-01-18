@@ -1,6 +1,5 @@
 # generated output
 bin/
-packages/
 
 # npm packages
 node_modules/
