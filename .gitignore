@@ -1,6 +1,6 @@
 # generated output
 bin/
-micro_parsons/
+micro-parsons/
 
 # npm packages
 node_modules/
