@@ -2,13 +2,13 @@ import { MicroParsonsEvent } from './LoggingEvents';
 import { ParsonsInput } from './ParsonsInput';
 import './style/style.css';
 
-export class HParsonsElement extends HTMLElement {
+export class MicroParsonsElement extends HTMLElement {
 
     private root: HTMLElement;
 
     private _parsonsData: Array<string>;
     public parsonsExplanation: Array<string> | null;
-    public hparsonsInput: IHParsonsInput;
+    public hparsonsInput: IParsonsInput;
     private inputType: string;
 
     public static toolCount: number = 0;
@@ -22,8 +22,8 @@ export class HParsonsElement extends HTMLElement {
     constructor() {
         super();
 
-        HParsonsElement.toolCount += 1;
-        this.toolNumber = HParsonsElement.toolCount;
+        MicroParsonsElement.toolCount += 1;
+        this.toolNumber = MicroParsonsElement.toolCount;
 
         this.root = this;
 
@@ -109,8 +109,8 @@ export const InitMicroParsons = (props: MicroParsonsProps) => {
     const id = props.id ? `id='${props.id}'` : ''
     const innerHTML = `<micro-parsons ${props.reuse ? 'reuse' : ''} ${props.randomize ? 'randomize' : ''} ${language} ${id}></micro-parsons>`
     parentElem.innerHTML = innerHTML;
-    (parentElem.firstChild as HParsonsElement).parsonsExplanation = props.parsonsTooltips;
-    (parentElem.firstChild as HParsonsElement).parsonsData = props.parsonsBlocks;
+    (parentElem.firstChild as MicroParsonsElement).parsonsExplanation = props.parsonsTooltips;
+    (parentElem.firstChild as MicroParsonsElement).parsonsData = props.parsonsBlocks;
 }
 
-customElements.define('micro-parsons', HParsonsElement);
+customElements.define('micro-parsons', MicroParsonsElement);

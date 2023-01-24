@@ -1,4 +1,4 @@
-import Sortable, { MoveEvent } from 'sortablejs';
+import Sortable from 'sortablejs';
 import { MicroParsonsEvent } from './LoggingEvents';
 import hljs from 'highlight.js/lib/core';
 import javascript from 'highlight.js/lib/languages/javascript';
@@ -13,21 +13,21 @@ hljs.registerLanguage('java', java);
 hljs.registerLanguage('xml', xml);
 hljs.registerLanguage('python', python);
 
-declare class HorizontalParsons {
+declare class MicroParsons {
     logEvent(event: any): void;
     public temporaryInputEvent: any;
     public toolNumber: number;
     public language: string;
 }
 
-export class ParsonsInput implements IHParsonsInput {
+export class ParsonsInput implements IParsonsInput {
     // The input element
     public el: HTMLDivElement;
     private _dropArea: HTMLDivElement;
     private _dragArea: HTMLDivElement;
     private _dropSortable: Sortable | null;
     private _dragSortable: Sortable | null;
-    public parentElement: HorizontalParsons;
+    public parentElement: MicroParsons;
     private _prevPosition: number;
     public reusable: boolean;
     private randomize: boolean;
@@ -38,7 +38,7 @@ export class ParsonsInput implements IHParsonsInput {
 
     // if the input has been initialized once
     private initialized: boolean;
-    constructor(parentElement: HorizontalParsons, reusable: boolean, randomize: boolean) {
+    constructor(parentElement: MicroParsons, reusable: boolean, randomize: boolean) {
         this.el = document.createElement('div');
         this.el.classList.add('hparsons-input');
 
@@ -92,16 +92,28 @@ export class ParsonsInput implements IHParsonsInput {
         let ret = '';
         if (this._dropArea.hasChildNodes()) {
             let el = this._dropArea.firstChild as HTMLDivElement;
-            ret += el.innerText;
+            ret += this._getTextFromBlock(el);
             while (el.nextSibling) {
                 el = el.nextSibling as HTMLDivElement;
                 ret += addSpace ? ' ' : '';
-                ret += el.innerText;
+                ret += this._getTextFromBlock(el);
             }
             return ret;
         } else {
             return ret;
         }
+    }
+
+    // getting the code from one block, and ignore tooltip text
+    private _getTextFromBlock = (block: HTMLDivElement): string => {
+        if (!block.lastChild || block.lastChild.nodeType != Node.ELEMENT_NODE) {
+            return block.textContent || '';
+        }
+        const tooltipLength = (block.lastChild as HTMLDivElement).classList.contains('parsons-tooltip') ? (block.lastChild as HTMLDivElement).textContent?.length|| 0 : 0;
+        if (tooltipLength > 0) {
+            return (block.textContent || '').slice(0, -tooltipLength)
+        }
+        return block.textContent || '';
     }
 
     // Durstenfeld shuffle
@@ -348,36 +360,37 @@ export class ParsonsInput implements IHParsonsInput {
         let answer: Array<string> = [];
         if (this._dropArea.hasChildNodes()) {
             let el = this._dropArea.firstChild as HTMLDivElement;
-            answer.push(el.innerText);
+            answer.push(this._getTextFromBlock(el));
             while (el.nextSibling) {
                 el = el.nextSibling as HTMLDivElement;
-                answer.push(el.innerText);
+                answer.push(this._getTextFromBlock(el));
             }
         }
         return answer;
     }
 
-    public highlightError = (position: number): void => {
-        let count = 0;
-        if (this._dropArea.hasChildNodes()) {
-            let el = this._dropArea.firstChild as HTMLDivElement;
-            count += el.innerText.length;
-            if (count >= position) {
-                // the current block contains the symbol with error
-                el.style.backgroundColor = '#ff99b3';
-            } else {
-                while (el.nextSibling) {
-                    el = el.nextSibling as HTMLDivElement;
-                    count += el.innerText.length;
-                    if (count >= position) {
-                        // the current block contains the symbol with error
-                        el.style.backgroundColor = '#ff99b3';
-                        break;
-                    }
-                }
-            }
-        }
-    }
+    // commented out since syntax error highlight is not in use, and this is not tested
+    // public highlightError = (position: number): void => {
+    //     let count = 0;
+    //     if (this._dropArea.hasChildNodes()) {
+    //         let el = this._dropArea.firstChild as HTMLDivElement;
+    //         count += el.innerText.length;
+    //         if (count >= position) {
+    //             // the current block contains the symbol with error
+    //             el.style.backgroundColor = '#ff99b3';
+    //         } else {
+    //             while (el.nextSibling) {
+    //                 el = el.nextSibling as HTMLDivElement;
+    //                 count += el.innerText.length;
+    //                 if (count >= position) {
+    //                     // the current block contains the symbol with error
+    //                     el.style.backgroundColor = '#ff99b3';
+    //                     break;
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
 
     public removeFormat = (): void => {
         if (this._dropArea.hasChildNodes()) {
