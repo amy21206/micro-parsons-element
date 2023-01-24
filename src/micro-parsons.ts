@@ -94,4 +94,23 @@ export class HParsonsElement extends HTMLElement {
     }
 }
 
+export const InitMicroParsons = (props: MicroParsonsProps) => {
+    let parentElem: HTMLElement | null;
+    try {
+        parentElem = document.querySelector(props.selector);
+    } catch {
+        throw('micro-parsons: init: selector error');
+    }
+    if (parentElem == null || parentElem.tagName != 'DIV') {
+        throw('micro-parsons: element not a div');
+    }
+    // TODO: add text support
+    const language = ['javascript', 'sql', 'java', 'xml', 'python'].indexOf(props.language || '') == -1 ? '' : `language='${props.language}'`;
+    const id = props.id ? `id='${props.id}'` : ''
+    const innerHTML = `<micro-parsons ${props.reuse ? 'reuse' : ''} ${props.randomize ? 'randomize' : ''} ${language} ${id}></micro-parsons>`
+    parentElem.innerHTML = innerHTML;
+    (parentElem.firstChild as HParsonsElement).parsonsExplanation = props.parsonsTooltips;
+    (parentElem.firstChild as HParsonsElement).parsonsData = props.parsonsBlocks;
+}
+
 customElements.define('micro-parsons', HParsonsElement);

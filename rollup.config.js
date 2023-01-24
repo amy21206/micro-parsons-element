@@ -45,6 +45,5 @@ export default INPUTS.map((input) => {
     external: [  // comment out when packing dependencies for local testing
       '/node_modules/'
     ]
-    // Mark package dependencies as "external". Rest of configuration omitted.
   }
 });

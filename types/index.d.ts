@@ -8,6 +8,16 @@ interface IHParsonsInput {
 	restoreAnswer(type: string, answer: any): void;
 }
 
+interface MicroParsonsProps {
+	selector: string;
+	id: string | null;
+	reuse: boolean;
+	randomize: boolean;
+	parsonsBlocks: Array<string>;
+	parsonsTooltips: Array<string>;
+	language: string | null;
+}
+
 interface IRegexStatusTag {
 	el: HTMLSpanElement;
 	updateStatus(string): void;
