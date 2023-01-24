@@ -27,7 +27,7 @@ export class MicroParsonsElement extends HTMLElement {
 
         this.root = this;
 
-        const reusable = this.getAttribute('reuse-blocks') ? true : false;
+        const reusable = this.getAttribute('reuse') ? true : false;
         const randomize = this.getAttribute('randomize') ? true : false;
         this.hparsonsInput = new ParsonsInput(this, reusable, randomize);
 
@@ -63,7 +63,7 @@ export class MicroParsonsElement extends HTMLElement {
         this.inputType = 'parsons';
         this._parsonsData = new Array<string>();
         this.parsonsExplanation = null;
-        const reusable = this.getAttribute('reuse-blocks') != null ? true : false;
+        const reusable = this.getAttribute('reuse') != null ? true : false;
         const randomize = this.getAttribute('randomize') != null ? true : false;
         this.hparsonsInput = new ParsonsInput(this, reusable, randomize);
         this.root.appendChild(this.hparsonsInput.el);
