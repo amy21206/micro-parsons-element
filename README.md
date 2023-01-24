@@ -14,17 +14,23 @@ npm run build
 
 ## Using the Component:
 
-After building the code, the element should be in ./packages/micro-parsons/micro-parsons.js.
+Include the custom element in a webpage with the helper function:
 
-Include the custom element in a webpage, e.g.:
+```javascript
+import {InitMicroParsons} from 'micro-parsons';
 
-```html
-<div class="test-div"></div>
-<script type="module">
-import "./packages/micro-parsons/micro-parsons.js";
-document.querySelector('.test-div').innerHTML = `<micro-parsons input-type='parsons' language='sql' id="abcd"></micro-parsons>`;
-</script>
+InitMicroParsons({
+	selector: '.test-div-2',
+    id: 'micro-parsons-2',
+	reuse: false,
+	randomize: true,
+	parsonsBlocks: ['print(', '"test"', ')'],
+	parsonsTooltips: ['print', 'string "test"', ''],
+	language: 'sql'
+});
 ```
+
+See ``index.html`` for more examples.
 
 ## Testing
 
