@@ -50,6 +50,44 @@ function reset(selector){
 }
 window.addEventListener('micro-parsons', (ev) => {console.log(ev);})
 </script>
+
+<h3>Reuse and randomize, testing space character</h3>
+<div class="test-div-4" style="width:600px"></div>
+<button onclick="test4()">haha</button>
+<button onclick="reset('#micro-parsons-4')">reset</button>
+<script>
+function test4(){
+    let parsonsElement = document.querySelector('#micro-parsons-4');
+    console.log('current input: ', parsonsElement.getCurrentInput(false));
+    console.log('text array: ', parsonsElement.getParsonsTextArray());
+}
+</script>
+
+<h3>No reuse, randomize, no tooltips, did not specify language, default randomize and reuse</h3>
+<div class="test-div-5" style="width:600px"></div>
+<button onclick="test5()">haha</button>
+<button onclick="reset('#micro-parsons-5')">reset</button>
+<script>
+function test5(){
+    let parsonsElement = document.querySelector('#micro-parsons-5');
+    console.log('current input: ', parsonsElement.getCurrentInput(true));
+    console.log('text array: ', parsonsElement.getParsonsTextArray());
+}
+</script>
+
+<h3>No reuse, randomize, testing escaped characters</h3>
+<div class="test-div-6" style="width:600px"></div>
+<button onclick="test6()">haha</button>
+<button onclick="reset('#micro-parsons-6')">reset</button>
+<script>
+function test6(){
+    let parsonsElement = document.querySelector('#micro-parsons-6');
+    console.log('current input: ', parsonsElement.getCurrentInput(true));
+    console.log('text array: ', parsonsElement.getParsonsTextArray());
+    console.log('text array first string: ', parsonsElement.getParsonsTextArray()[0]);
+}
+</script>
+
 <script type="module">
 import "./micro-parsons/micro-parsons.js";
 import {InitMicroParsons} from "./micro-parsons/micro-parsons.js"
@@ -80,6 +118,26 @@ InitMicroParsons({
 	parsonsTooltips: ['number', 'repeat once or more', 'letters a to z'],
 	language: 'python'
 });
+InitMicroParsons({
+	selector: '.test-div-4',
+    id: 'micro-parsons-4',
+	reuse: true,
+	randomize: true,
+	parsonsBlocks: ['[A-Z]', ' ', '[a-z]', '^'],
+	parsonsTooltips: ['letter A-Z', 'space', '', 'beginning of a string'],
+	language: 'python'
+});
+InitMicroParsons({
+	selector: '.test-div-5',
+    id: 'micro-parsons-5',
+	parsonsBlocks: ['[A-Z]', ' ', '[a-z]', '^'],
+});
+InitMicroParsons({
+	selector: '.test-div-6',
+    id: 'micro-parsons-6',
+	parsonsBlocks: ['txt = ', '"We are the', 'so-called \\"Vikings\\" ', 'from the north."'],
+});
+
 </script>
 </body>
 

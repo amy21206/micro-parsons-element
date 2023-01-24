@@ -92,11 +92,11 @@ export class ParsonsInput implements IHParsonsInput {
         let ret = '';
         if (this._dropArea.hasChildNodes()) {
             let el = this._dropArea.firstChild as HTMLDivElement;
-            ret += el.innerText.replace(/\xA0/g, ' ');
+            ret += el.innerText;
             while (el.nextSibling) {
                 el = el.nextSibling as HTMLDivElement;
                 ret += addSpace ? ' ' : '';
-                ret += el.innerText.replace(/\xA0/g, ' ');
+                ret += el.innerText;
             }
             return ret;
         } else {
