@@ -33,6 +33,7 @@ export class ParsonsInput implements IHParsonsInput {
     private randomize: boolean;
     private storedSourceBlocks: Array<string>;
     private storedSourceBlockExplanations: Array<string> | null;
+    private blockOrder: Array<number>;
     private hljsLanguage: string | undefined;
 
     // if the input has been initialized once
@@ -65,6 +66,7 @@ export class ParsonsInput implements IHParsonsInput {
         this._prevPosition = -1;
 
         this.storedSourceBlocks = [];
+        this.blockOrder = [];
         this.storedSourceBlockExplanations = null;
 
         this.reusable = reusable;
@@ -113,12 +115,17 @@ export class ParsonsInput implements IHParsonsInput {
     }
 
     public setSourceBlocks = (data: Array<string>, tooltips: Array<string> | null): void => {
+        this.blockOrder = [];
+        for (let i = 0; i < data.length; ++i) {
+            this.blockOrder.push(i)
+        }
+
         // shuffle source blocks if randomize
         if (this.randomize) {
-            let originalData = JSON.stringify(data);
-            this.shuffleArray(data);
-            while (JSON.stringify(data) == originalData) {
-                this.shuffleArray(data);
+            let originalOrder = JSON.stringify(this.blockOrder);
+            this.shuffleArray(this.blockOrder);
+            while (JSON.stringify(this.blockOrder) == originalOrder) {
+                this.shuffleArray(this.blockOrder);
             }
         }
 
@@ -138,16 +145,16 @@ export class ParsonsInput implements IHParsonsInput {
         }
 
         // add new blocks
-        for (let i = 0; i < this.storedSourceBlocks.length; ++i) {
+        for (let i = 0; i < this.blockOrder.length; ++i) {
             const newBlock = document.createElement('div');
             this._dragArea.appendChild(newBlock);
-            if (this.storedSourceBlocks[i] === ' ') {
+            if (this.storedSourceBlocks[this.blockOrder[i]] === ' ') {
                 newBlock.innerHTML = '&nbsp;';
             } else {
                 if (this.hljsLanguage) {
-                    newBlock.innerHTML = hljs.highlight(this.storedSourceBlocks[i], {language: this.hljsLanguage, ignoreIllegals: true}).value
+                    newBlock.innerHTML = hljs.highlight(this.storedSourceBlocks[this.blockOrder[i]], {language: this.hljsLanguage, ignoreIllegals: true}).value
                 } else {
-                    newBlock.innerText = this.storedSourceBlocks[i];
+                    newBlock.innerText = this.storedSourceBlocks[this.blockOrder[i]];
                 }
             }
             newBlock.style.display = 'inline-block';
@@ -156,9 +163,9 @@ export class ParsonsInput implements IHParsonsInput {
                 this._onBlockClicked(newBlock);
             }
             // creating tooltip
-            if (this.storedSourceBlockExplanations && this.storedSourceBlockExplanations[i]) {
+            if (this.storedSourceBlockExplanations && this.storedSourceBlockExplanations[this.blockOrder[i]]) {
                 const tooltip = document.createElement('div');
-                tooltip.innerText = this.storedSourceBlockExplanations[i];
+                tooltip.innerText = this.storedSourceBlockExplanations[this.blockOrder[i]];
                 tooltip.classList.add('parsons-tooltip');
                 newBlock.appendChild(tooltip);
             }

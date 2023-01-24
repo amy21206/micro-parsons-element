@@ -11,6 +11,7 @@
 <h3>Default: No reuse, no randomize</h3>
 <div class="test-div-1" style="width:600px"></div>
 <button onclick="test1()">haha</button>
+<button onclick="reset('#micro-parsons-1')">reset</button>
 <script>
 function test1(){
     let parsonsElement = document.querySelector('#micro-parsons-1');
@@ -23,6 +24,7 @@ function test1(){
 <h3>No reuse, randomize</h3>
 <div class="test-div-2" style="width:600px"></div>
 <button onclick="test2()">haha</button>
+<button onclick="reset('#micro-parsons-2')">reset</button>
 <script>
 function test2(){
     let parsonsElement = document.querySelector('#micro-parsons-2');
@@ -35,11 +37,16 @@ function test2(){
 <h3>Reuse, no randomize</h3>
 <div class="test-div-3" style="width:600px"></div>
 <button onclick="test3()">haha</button>
+<button onclick="reset('#micro-parsons-3')">reset</button>
 <script>
 function test3(){
     let parsonsElement = document.querySelector('#micro-parsons-3');
     console.log('current input: ', parsonsElement.getCurrentInput(false));
     console.log('text array: ', parsonsElement.getParsonsTextArray());
+}
+function reset(selector){
+    let parsonsElement = document.querySelector(selector);
+    parsonsElement.resetInput()
 }
 window.addEventListener('micro-parsons', (ev) => {console.log(ev);})
 </script>
