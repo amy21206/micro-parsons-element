@@ -105,9 +105,9 @@ export const InitMicroParsons = (props: MicroParsonsProps) => {
         throw('micro-parsons: element not a div');
     }
     // TODO: add text support
-    const language = ['javascript', 'sql', 'java', 'xml', 'python'].indexOf(props.language || '') == -1 ? '' : `language='${props.language}'`;
+    const language = ['javascript', 'sql', 'java', 'html', 'python'].indexOf(props.language || '') == -1 ? '' : `language='${props.language}'`;
     const id = props.id ? `id='${props.id}'` : ''
-    const innerHTML = `<micro-parsons ${props.reuse ? 'reuse' : ''} ${props.randomize ? 'randomize' : ''} ${language} ${id}></micro-parsons>`
+    const innerHTML = `<micro-parsons ${props.reuse ? 'reuse' : ''} ${props.randomize === false ? '' : 'randomize'} ${language} ${id}></micro-parsons>`
     parentElem.innerHTML = innerHTML;
     (parentElem.firstChild as MicroParsonsElement).parsonsExplanation = props.parsonsTooltips;
     (parentElem.firstChild as MicroParsonsElement).parsonsData = props.parsonsBlocks;

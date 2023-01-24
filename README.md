@@ -16,17 +16,21 @@ npm run build
 
 Include the custom element in a webpage with the helper function:
 
+```html
+<div class='test-div-2'></div>
+```
+
 ```javascript
 import {InitMicroParsons} from 'micro-parsons';
 
 InitMicroParsons({
-	selector: '.test-div-2',
-    id: 'micro-parsons-2',
-	reuse: false,
-	randomize: true,
-	parsonsBlocks: ['print(', '"test"', ')'],
-	parsonsTooltips: ['print', 'string "test"', ''],
-	language: 'sql'
+	selector: '.test-div-2', // selector for the container (div)
+    id: 'micro-parsons-2', // id of the micro parsons element
+	reuse: false,	// if the blocks are reusable. default to false.
+	randomize: true,	// if the blocks are randomized. default to true.
+	parsonsBlocks: ['print(', '"test"', ')'], // parsons blocks.
+	parsonsTooltips: ['print', 'string "test"', ''], // tooltips. if not specified or is empty string, there will be no tooltips on the block.
+	language: 'sql' // language highlight (sql, html, python, javascrpit, java, text). default to text (no highlight).
 });
 ```
 
