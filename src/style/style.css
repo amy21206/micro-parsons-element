@@ -65,3 +65,7 @@
   height: auto;
   margin: 2px 0;
 }
+
+pre.context {
+  white-space: pre;
+}

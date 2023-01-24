@@ -1,23 +1,12 @@
 import Sortable from 'sortablejs';
 import { MicroParsonsEvent } from './LoggingEvents';
 import hljs from 'highlight.js/lib/core';
-import javascript from 'highlight.js/lib/languages/javascript';
-import python from 'highlight.js/lib/languages/python';
-import java from 'highlight.js/lib/languages/java';
-import sql from 'highlight.js/lib/languages/sql';
-import xml from 'highlight.js/lib/languages/xml';
-
-hljs.registerLanguage('javascript', javascript);
-hljs.registerLanguage('sql', sql);
-hljs.registerLanguage('java', java);
-hljs.registerLanguage('xml', xml);
-hljs.registerLanguage('python', python);
 
 declare class MicroParsons {
     logEvent(event: any): void;
     public temporaryInputEvent: any;
     public toolNumber: number;
-    public language: string;
+    public hljsLanguage: string | undefined;
 }
 
 export class ParsonsInput implements IParsonsInput {
@@ -77,15 +66,6 @@ export class ParsonsInput implements IParsonsInput {
         this._initSortable();
 
         this.initialized = false;
-
-        let languageMap = new Map(Object.entries({
-            'html': 'xml',
-            'python': 'python',
-            'javascript': 'javascript',
-            'java': 'java',
-            'sql': 'sql'
-        }))
-        this.hljsLanguage = languageMap.get(parentElement.language);
     }
 
     public getText = (addSpace: boolean): string => {
@@ -163,8 +143,8 @@ export class ParsonsInput implements IParsonsInput {
             if (this.storedSourceBlocks[this.blockOrder[i]] === ' ') {
                 newBlock.innerHTML = '&nbsp;';
             } else {
-                if (this.hljsLanguage) {
-                    newBlock.innerHTML = hljs.highlight(this.storedSourceBlocks[this.blockOrder[i]], {language: this.hljsLanguage, ignoreIllegals: true}).value
+                if (this.parentElement.hljsLanguage) {
+                    newBlock.innerHTML = hljs.highlight(this.storedSourceBlocks[this.blockOrder[i]], {language: this.parentElement.hljsLanguage, ignoreIllegals: true}).value
                 } else {
                     newBlock.innerText = this.storedSourceBlocks[this.blockOrder[i]];
                 }

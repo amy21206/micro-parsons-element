@@ -88,6 +88,18 @@ function test6(){
 }
 </script>
 
+<h3>Testing code with context</h3>
+<div class="test-div-7" style="width:600px"></div>
+<button onclick="test7()">haha</button>
+<button onclick="reset('#micro-parsons-7')">reset</button>
+<script>
+function test7(){
+    let parsonsElement = document.querySelector('#micro-parsons-7');
+    console.log('current input: ', parsonsElement.getCurrentInput(true));
+    console.log('text array: ', parsonsElement.getParsonsTextArray());
+}
+</script>
+
 <script type="module">
 import "./micro-parsons/micro-parsons.js";
 import {InitMicroParsons} from "./micro-parsons/micro-parsons.js"
@@ -136,6 +148,17 @@ InitMicroParsons({
 	selector: '.test-div-6',
     id: 'micro-parsons-6',
 	parsonsBlocks: ['txt = ', '"We are the', 'so-called \\"Vikings\\" ', 'from the north."'],
+});
+
+InitMicroParsons({
+	selector: '.test-div-7',
+    id: 'micro-parsons-7',
+	parsonsBlocks: ['temp', ' = ', 'x'],
+	context: {
+		before: 'x = 1\ny = 2',
+		after: 'x = y\ny = temp'
+	},
+	language: 'python'
 });
 
 </script>

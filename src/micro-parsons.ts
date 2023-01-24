@@ -1,6 +1,19 @@
 import { MicroParsonsEvent } from './LoggingEvents';
 import { ParsonsInput } from './ParsonsInput';
 import './style/style.css';
+import hljs from 'highlight.js/lib/core';
+
+import javascript from 'highlight.js/lib/languages/javascript';
+import python from 'highlight.js/lib/languages/python';
+import java from 'highlight.js/lib/languages/java';
+import sql from 'highlight.js/lib/languages/sql';
+import xml from 'highlight.js/lib/languages/xml';
+
+hljs.registerLanguage('javascript', javascript);
+hljs.registerLanguage('sql', sql);
+hljs.registerLanguage('java', java);
+hljs.registerLanguage('xml', xml);
+hljs.registerLanguage('python', python);
 
 export class MicroParsonsElement extends HTMLElement {
 
@@ -18,6 +31,10 @@ export class MicroParsonsElement extends HTMLElement {
     public temporaryInputEvent: MicroParsonsEvent.Input|null;
 
     public language: string;
+    public hljsLanguage: string | undefined;
+
+    public codeBefore: string | null;
+    public codeAfter: string | null;
 
     constructor() {
         super();
@@ -37,9 +54,20 @@ export class MicroParsonsElement extends HTMLElement {
         this.parsonsExplanation = null;
         this.inputType = 'parsons';
         this.language = this.getAttribute('language') || 'none';
+        let languageMap = new Map(Object.entries({
+            'html': 'xml',
+            'python': 'python',
+            'javascript': 'javascript',
+            'java': 'java',
+            'sql': 'sql'
+        }))
+        this.hljsLanguage = languageMap.get(this.language);
+
         this.initInput();
         this.temporaryInputEvent = null;
 
+        this.codeBefore = null;
+        this.codeAfter = null;
     }
 
     set parsonsData(data: Array<string>) {
@@ -92,6 +120,43 @@ export class MicroParsonsElement extends HTMLElement {
     public getParsonsTextArray() {
         return (this.hparsonsInput as ParsonsInput)._getTextArray();
     }
+
+    public setCodeContext(props: {before: string | null, after: string | null}) {
+        if (props.before) {
+            this.codeBefore = props.before;
+            let container: HTMLPreElement;
+            if (this.querySelector('.context.before')) {
+                container = this.querySelector('.context.before') as HTMLPreElement;
+            } else {
+                container = document.createElement('pre');
+                container.className = 'context before';
+                this.querySelector('.hparsons-input')!.insertBefore(container, this.querySelector('.drop-area'));
+            }
+            container.innerText = this.codeBefore;
+            if (this.hljsLanguage) {
+                container.className = '';
+                container.classList.add(this.hljsLanguage);
+                hljs.highlightElement(container);
+            }
+        }
+        if (props.after) {
+            this.codeAfter = props.after;
+            let container: HTMLPreElement;
+            if (this.querySelector('.context.after')) {
+                container = this.querySelector('.context.after') as HTMLPreElement;
+            } else {
+                container = document.createElement('pre');
+                container.className = 'context after';
+                this.querySelector('.hparsons-input')!.appendChild(container);
+            }
+            container.innerText = this.codeAfter;
+            // if (this.hljsLanguage) {
+            //     container.className = '';
+            //     container.classList.add(this.hljsLanguage);
+            //     hljs.highlightElement(container);
+            // }
+        }
+    }
 }
 
 export const InitMicroParsons = (props: MicroParsonsProps) => {
@@ -104,13 +169,16 @@ export const InitMicroParsons = (props: MicroParsonsProps) => {
     if (parentElem == null || parentElem.tagName != 'DIV') {
         throw('micro-parsons: element not a div');
     }
-    // TODO: add text support
     const language = ['javascript', 'sql', 'java', 'html', 'python'].indexOf(props.language || '') == -1 ? '' : `language='${props.language}'`;
     const id = props.id ? `id='${props.id}'` : ''
     const innerHTML = `<micro-parsons ${props.reuse ? 'reuse' : ''} ${props.randomize === false ? '' : 'randomize'} ${language} ${id}></micro-parsons>`
     parentElem.innerHTML = innerHTML;
-    (parentElem.firstChild as MicroParsonsElement).parsonsExplanation = props.parsonsTooltips;
-    (parentElem.firstChild as MicroParsonsElement).parsonsData = props.parsonsBlocks;
+    const mParsons = (parentElem).firstChild as MicroParsonsElement;
+    mParsons.parsonsExplanation = props.parsonsTooltips;
+    mParsons.parsonsData = props.parsonsBlocks;
+    if (props.context) {
+        mParsons.setCodeContext(props.context);
+    }
 }
 
 customElements.define('micro-parsons', MicroParsonsElement);

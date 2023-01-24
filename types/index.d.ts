@@ -16,6 +16,10 @@ interface MicroParsonsProps {
 	parsonsBlocks: Array<string>;
 	parsonsTooltips: Array<string>;
 	language: string | null;
+	context: {
+		before: string | null;
+		after: string | null;
+	} | null;
 }
 
 interface IRegexStatusTag {
