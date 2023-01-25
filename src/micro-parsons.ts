@@ -132,9 +132,9 @@ export class MicroParsonsElement extends HTMLElement {
                 container.className = 'context before';
                 this.querySelector('.hparsons-input')!.insertBefore(container, this.querySelector('.drop-area'));
             }
-            container.innerText = this.codeBefore;
+            container.innerHTML = this.codeBefore;
             if (this.hljsLanguage) {
-                container.className = '';
+                container.className = 'context before';
                 container.classList.add(this.hljsLanguage);
                 hljs.highlightElement(container);
             }
@@ -149,12 +149,12 @@ export class MicroParsonsElement extends HTMLElement {
                 container.className = 'context after';
                 this.querySelector('.hparsons-input')!.appendChild(container);
             }
-            container.innerText = this.codeAfter;
-            // if (this.hljsLanguage) {
-            //     container.className = '';
-            //     container.classList.add(this.hljsLanguage);
-            //     hljs.highlightElement(container);
-            // }
+            container.innerHTML = this.codeAfter;
+            if (this.hljsLanguage) {
+                container.className = 'context after';
+                container.classList.add(this.hljsLanguage);
+                hljs.highlightElement(container);
+            }
         }
     }
 }
