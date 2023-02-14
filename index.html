@@ -86,7 +86,22 @@ function test6(){
     console.log('text array: ', parsonsElement.getParsonsTextArray());
     console.log('text array first string: ', parsonsElement.getParsonsTextArray()[0]);
 }
+
+function restore(selector, answer) {
+    let parsonsElement = document.querySelector(selector);
+    parsonsElement.restoreAnswer(answer);
+}
 </script>
+
+<h3>testing restoring answer for not reusable ones</h3>
+<div class="test-div-7" style="width:600px"></div>
+<button onclick="restore('#micro-parsons-7', ['[a-z]', '[A-Z]'])">restore '[a-z][A-Z]'</button>
+<button onclick="reset('#micro-parsons-7')">reset</button>
+
+<h3>testing restoring answer for reusable ones with space</h3>
+<div class="test-div-8" style="width:600px"></div>
+<button onclick="restore('#micro-parsons-8', ['[A-Z]', ' ', '[A-Z]'])">restore '[A-Z] [A-Z]'</button>
+<button onclick="reset('#micro-parsons-8')">reset</button>
 
 <script type="module">
 import "./micro-parsons/micro-parsons.js";
@@ -136,6 +151,23 @@ InitMicroParsons({
 	selector: '.test-div-6',
     id: 'micro-parsons-6',
 	parsonsBlocks: ['txt = ', '"We are the', 'so-called \\"Vikings\\" ', 'from the north."'],
+});
+InitMicroParsons({
+	selector: '.test-div-7',
+    id: 'micro-parsons-7',
+	randomize: true,
+	parsonsBlocks: ['[A-Z]', ' ', '[a-z]', '^'],
+	parsonsTooltips: ['letter A-Z', 'space', '', 'beginning of a string'],
+	language: 'python'
+});
+InitMicroParsons({
+	selector: '.test-div-8',
+    id: 'micro-parsons-8',
+	randomize: true,
+	reuse:true,
+	parsonsBlocks: ['[A-Z]', ' ', '[a-z]', '^'],
+	parsonsTooltips: ['letter A-Z', 'space', '', 'beginning of a string'],
+	language: 'python'
 });
 
 </script>
