@@ -1,6 +1,6 @@
 {
   "name": "micro-parsons",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "An implentation of Micro Parsons input",
   "private": true,
   "scripts": {

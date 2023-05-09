@@ -171,7 +171,7 @@ export const InitMicroParsons = (props: MicroParsonsProps) => {
     if (parentElem == null || parentElem.tagName != 'DIV') {
         throw('micro-parsons: element not a div');
     }
-    const language = ['javascript', 'sql', 'java', 'html', 'python'].indexOf(props.language || '') == -1 ? '' : `language='${props.language}'`;
+    const language = ['javascript', 'sql', 'java', 'html', 'python', 'raw'].indexOf(props.language || '') == -1 ? '' : `language='${props.language}'`;
     const id = props.id ? `id='${props.id}'` : ''
     const innerHTML = `<micro-parsons ${props.reuse ? 'reuse' : ''} ${props.randomize === false ? '' : 'randomize'} ${language} ${id}></micro-parsons>`
     parentElem.innerHTML = innerHTML;
