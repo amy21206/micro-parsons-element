@@ -6,7 +6,6 @@ declare class MicroParsons {
     logEvent(event: any): void;
     public temporaryInputEvent: any;
     public toolNumber: number;
-    public language: string;
     public hljsLanguage: string | undefined;
 }
 
@@ -146,8 +145,6 @@ export class ParsonsInput implements IParsonsInput {
             } else {
                 if (this.parentElement.hljsLanguage) {
                     newBlock.innerHTML = hljs.highlight(this.storedSourceBlocks[this.blockOrder[i]], {language: this.parentElement.hljsLanguage, ignoreIllegals: true}).value
-                } else if (this.parentElement.language == 'raw') {
-                    newBlock.innerHTML = this.storedSourceBlocks[this.blockOrder[i]];
                 } else {
                     newBlock.innerText = this.storedSourceBlocks[this.blockOrder[i]];
                 }

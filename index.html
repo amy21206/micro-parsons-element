@@ -8,18 +8,6 @@
 </head>
 
 <body>
-<h3>Adding raw html</h3>
-<div class="test-div-raw" style="width:600px"></div>
-<button onclick="testraw()">haha</button>
-<button onclick="reset('#micro-parsons-raw')">reset</button>
-<script>
-function testraw(){
-    let parsonsElement = document.querySelector('#micro-parsons-raw');
-    console.log('current input: ', parsonsElement.getCurrentInput(true));
-    console.log('text array: ', parsonsElement.getParsonsTextArray());
-}
-</script>
-
 <h3>Default: No reuse, no randomize</h3>
 <div class="test-div-1" style="width:600px"></div>
 <button onclick="test1()">haha</button>
@@ -115,13 +103,6 @@ function test7(){
 <script type="module">
 import "./micro-parsons/micro-parsons.js";
 import {InitMicroParsons} from "./micro-parsons/micro-parsons.js"
-InitMicroParsons({
-	selector: '.test-div-raw',
-    id: 'micro-parsons-raw',
-	randomize: true,
-	parsonsBlocks: ['<code class="parsons-raw">SELECT</code>', '<code class="parsons-raw">*</code>', '<code class="parsons-raw">FROM</code>', '<code class="parsons-raw">test</code>'],
-	language: 'raw'
-});
 InitMicroParsons({
 	selector: '.test-div-1',
     id: 'micro-parsons-1',

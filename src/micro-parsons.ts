@@ -53,8 +53,6 @@ export class MicroParsonsElement extends HTMLElement {
         this._parsonsData = new Array<string>();
         this.parsonsExplanation = null;
         this.inputType = 'parsons';
-        // support all languages specified here, or "raw" for raw html.
-        // for other languages or none, render text as-is.
         this.language = this.getAttribute('language') || 'none';
         let languageMap = new Map(Object.entries({
             'html': 'xml',
