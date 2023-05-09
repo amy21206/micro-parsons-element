@@ -23,4 +23,9 @@ export namespace MicroParsonsEvent {
     export type Reset = {
         'type': 'reset';
     }
+
+    export type RestoreAnswer = {
+        'type': 'restore';
+        answer: Array<string>;
+    }
 }

@@ -108,11 +108,8 @@ export class MicroParsonsElement extends HTMLElement {
     }
 
     // restore student answer from outside storage
-    public restoreAnswer(type: string | undefined, answer: string | Array<string> | undefined) {
-        if (type == undefined || answer == undefined) {
-            return;
-        }
-        this.hparsonsInput.restoreAnswer(type, answer);
+    public restoreAnswer(answer: Array<string>) {
+        this.hparsonsInput.restoreAnswer(answer);
     }
 
     public getCurrentInput(addSpace: boolean) {

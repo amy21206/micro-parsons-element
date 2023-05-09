@@ -5,7 +5,7 @@ interface IParsonsInput {
 	updateTestStatus(string): void;
 	// highlightError(number): void;
 	removeFormat(): void;
-	restoreAnswer(type: string, answer: any): void;
+	restoreAnswer(answer: any): void;
 }
 
 interface MicroParsonsProps {
