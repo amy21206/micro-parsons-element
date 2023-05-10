@@ -87,6 +87,9 @@ export class ParsonsInput implements IParsonsInput {
 
     // getting the code from one block, and ignore tooltip text
     private _getTextFromBlock = (block: HTMLDivElement): string => {
+        if (this.parentElement.language == 'raw') {
+            return block.innerHTML;
+        }
         if (!block.lastChild || block.lastChild.nodeType != Node.ELEMENT_NODE) {
             return block.textContent || '';
         }

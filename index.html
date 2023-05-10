@@ -11,6 +11,7 @@
 <h3>Adding raw html</h3>
 <div class="test-div-raw" style="width:600px"></div>
 <button onclick="testraw()">haha</button>
+<button onclick="restore('#micro-parsons-raw', ['SE<b>LECT</b>', '<h3>*</h3>'])">restore 'select *'</button>
 <button onclick="reset('#micro-parsons-raw')">reset</button>
 <script>
 function testraw(){
@@ -133,7 +134,7 @@ InitMicroParsons({
 	selector: '.test-div-raw',
     id: 'micro-parsons-raw',
 	randomize: true,
-	parsonsBlocks: ['<code class="parsons-raw">SELECT</code>', '<code class="parsons-raw">*</code>', '<code class="parsons-raw">FROM</code>', '<code class="parsons-raw">test</code>'],
+	parsonsBlocks: ['SE<b>LECT</b>', '<h3>*</h3>', '<code class="parsons-raw">FROM</code>', '<code class="parsons-raw">test</code>'],
 	language: 'raw'
 });
 InitMicroParsons({
