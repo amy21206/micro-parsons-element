@@ -117,6 +117,34 @@ function test7(){
     console.log('text array: ', parsonsElement.getParsonsTextArray());
 }
 </script>
+
+<h3>Testing code with context 2</h3>
+Write a function capitalize that takes in a list of lists of strings, lst, and makes the first letter of each element capitalized and adds it to a new list and returns that new list. For example, capitalize([["hi"],["hello", "hey"]]) would return ['Hi', 'Hello', 'Hey'].
+<div class="test-div-for" style="width:600px"></div>
+<button onclick="testfor()">haha</button>
+<button onclick="reset('#micro-parsons-for')">reset</button>
+<script>
+function testfor(){
+    let parsonsElement = document.querySelector('#micro-parsons-for');
+    console.log('current input: ', parsonsElement.getCurrentInput(true));
+    console.log('text array: ', parsonsElement.getParsonsTextArray());
+}
+</script>
+
+<h3>Testing code with context 3</h3>
+Write a Python program to count the number of even and odd numbers in a series of numbers
+<div class="test-div-pseudo" style="width:600px"></div>
+<button onclick="testpseudo()">haha</button>
+<button onclick="reset('#micro-parsons-pseudo')">reset</button>
+<script>
+function testfor(){
+    let parsonsElement = document.querySelector('#micro-parsons-pseudo');
+    console.log('current input: ', parsonsElement.getCurrentInput(true));
+    console.log('text array: ', parsonsElement.getParsonsTextArray());
+}
+</script>
+
+
 <h3>testing restoring answer for not reusable ones</h3>
 <div class="test-div-8" style="width:600px"></div>
 <button onclick="restore('#micro-parsons-8', ['[a-z]', '[A-Z]'])">restore '[a-z][A-Z]'</button>
@@ -208,6 +236,44 @@ InitMicroParsons({
 	context: {
 		before: 'x = 1\ny = 2',
 		after: 'x = y\ny = temp'
+		// after: 'x = 3\ny = 4'
+	},
+	language: 'python'
+});
+
+InitMicroParsons({
+	selector: '.test-div-for',
+    id: 'micro-parsons-for',
+	parsonsBlocks: ['for', 'i', 'in', 'lst', 'while'],
+	context: {
+		before: 
+`def capitalize(lst):
+  new_list = []`,
+		after: 
+`      for j in i:
+  	    new_list.append(j.capitalize())
+  return new_list`
+		// after: 'x = 3\ny = 4'
+	},
+	language: 'python'
+});
+
+InitMicroParsons({
+	selector: '.test-div-pseudo',
+    id: 'micro-parsons-pseudo',
+	parsonsBlocks: ['if', 'not', 'x', '%', '2', ':'],
+	context: {
+		before: 
+`numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+count_odd = 0
+count_even = 0
+for x in numbers:`,
+
+		after: 
+`    # code that handles even numbers
+  else: 
+    # code that handles odd numbers
+`
 		// after: 'x = 3\ny = 4'
 	},
 	language: 'python'
