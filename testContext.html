@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="skulpt.min.js" type="text/javascript"></script>
+<script src="skulpt-stdlib.js" type="text/javascript"></script>
+<link rel="stylesheet" href="xcode.css">
+<link rel="stylesheet" href="./micro-parsons/micro-parsons.css">
+</head>
+
+<body>
+
+<script type="module">
+import "./micro-parsons/micro-parsons.js";
+</script>
+
+<h3>testing innerhtml</h3>
+<micro-parsons language="python" id="micro-parsons-pseudo">
+	<mp-context>
+	numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+	count_odd = 0
+	count_even = 0
+	for x in numbers:
+	</mp-context>
+	<mp-line reuse randomize>
+		<mp-block>if</mp-block>
+		<mp-block>not</mp-block>
+		<mp-block>x</mp-block>
+		<mp-block>%</mp-block>
+		<mp-block>2</mp-block>
+		<mp-block>:</mp-block>
+		<mp-block distractor>/</mp-block>
+	</mp-line>
+	<mp-context>
+		<mp-context subgoal>
+	    # code that handles even numbers
+		</mp-context>
+	  else: 
+		<mp-context subgoal>
+		# code that handles odd numbers
+			<mp-context>
+				count_odd += 1
+			</mp-context>
+		</mp-context>
+	</mp-context>
+</micro-parsons>
+</body>
+
+</html>

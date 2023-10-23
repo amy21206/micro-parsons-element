@@ -28,8 +28,9 @@ export class ParsonsInput implements IParsonsInput {
 
     // if the input has been initialized once
     private initialized: boolean;
-    constructor(parentElement: MicroParsons, reusable: boolean, randomize: boolean) {
-        this.el = document.createElement('div');
+    constructor(parentElement: MicroParsons, reusable: boolean, randomize: boolean, container: HTMLDivElement) {
+        this.el = container;
+        // this.el = document.createElement('div');
         this.el.classList.add('hparsons-input');
 
         this.parentElement = parentElement;

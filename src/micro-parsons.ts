@@ -2,6 +2,8 @@ import { MicroParsonsEvent } from './LoggingEvents';
 import { ParsonsInput } from './ParsonsInput';
 import './style/style.css';
 import hljs from 'highlight.js/lib/core';
+import { MPContext } from './MPContext';
+import { MPLine } from './MPLine';
 
 import javascript from 'highlight.js/lib/languages/javascript';
 import python from 'highlight.js/lib/languages/python';
@@ -21,7 +23,7 @@ export class MicroParsonsElement extends HTMLElement {
 
     private _parsonsData: Array<string>;
     public parsonsExplanation: Array<string> | null;
-    public hparsonsInput: IParsonsInput;
+    // public hparsonsInput: IParsonsInput;
     private inputType: string;
 
     public static toolCount: number = 0;
@@ -44,9 +46,9 @@ export class MicroParsonsElement extends HTMLElement {
 
         this.root = this;
 
-        const reusable = this.getAttribute('reuse') ? true : false;
-        const randomize = this.getAttribute('randomize') ? true : false;
-        this.hparsonsInput = new ParsonsInput(this, reusable, randomize);
+        // const reusable = this.getAttribute('reuse') ? true : false;
+        // const randomize = this.getAttribute('randomize') ? true : false;
+        // this.hparsonsInput = new ParsonsInput(this, reusable, randomize);
 
         // a div wrapping the input and the test case status
         // init regex input based on the input type
@@ -65,17 +67,30 @@ export class MicroParsonsElement extends HTMLElement {
         }))
         this.hljsLanguage = languageMap.get(this.language);
 
-        this.initInput();
+        //this.initInput();
         this.temporaryInputEvent = null;
 
         this.codeBefore = null;
         this.codeAfter = null;
     }
 
+    connectedCallback() {
+        // wait for innerHTML to load, and then init
+        console.log(this.innerHTML);// "" in all Browsers
+        setTimeout(() => {
+            // now runs asap 
+            console.log("connected");
+        });
+    }
+
+    private _hparsonsInput() {
+        return (this.querySelector('hp-line') as MPLine).hparsonsInput;
+    }
+
     set parsonsData(data: Array<string>) {
         this._parsonsData = data;
         if (this.inputType == 'parsons') {
-            (this.hparsonsInput as ParsonsInput).setSourceBlocks(data, this.parsonsExplanation);
+            (this._hparsonsInput() as ParsonsInput).setSourceBlocks(data, this.parsonsExplanation);
         }
     }
 
@@ -88,19 +103,20 @@ export class MicroParsonsElement extends HTMLElement {
         this.dispatchEvent(ev);
     }
 
-    private initInput() {
-        // the only mode supporting is parsons right now; removed the text entry mode
-        this.inputType = 'parsons';
-        this._parsonsData = new Array<string>();
-        this.parsonsExplanation = null;
-        const reusable = this.getAttribute('reuse') != null ? true : false;
-        const randomize = this.getAttribute('randomize') != null ? true : false;
-        this.hparsonsInput = new ParsonsInput(this, reusable, randomize);
-        this.root.appendChild(this.hparsonsInput.el);
-    }
+    // not sure why i need this function.. commenting out for now
+    // private initInput() {
+    //     // the only mode supporting is parsons right now; removed the text entry mode
+    //     this.inputType = 'parsons';
+    //     this._parsonsData = new Array<string>();
+    //     this.parsonsExplanation = null;
+    //     const reusable = this.getAttribute('reuse') != null ? true : false;
+    //     const randomize = this.getAttribute('randomize') != null ? true : false;
+    //     this.hparsonsInput = new ParsonsInput(this, reusable, randomize);
+    //     this.root.appendChild(this.hparsonsInput.el);
+    // }
 
     public resetInput() {
-        (this.hparsonsInput as ParsonsInput).resetInput();
+        (this._hparsonsInput() as ParsonsInput).resetInput();
         const resetEvent:MicroParsonsEvent.Reset = {
             'type': 'reset',
         };
@@ -109,15 +125,15 @@ export class MicroParsonsElement extends HTMLElement {
 
     // restore student answer from outside storage
     public restoreAnswer(answer: Array<string>) {
-        this.hparsonsInput.restoreAnswer(answer);
+        this._hparsonsInput()!.restoreAnswer(answer);
     }
 
     public getCurrentInput(addSpace: boolean) {
-        return this.hparsonsInput.getText(addSpace);
+        return this._hparsonsInput()!.getText(addSpace);
     }
 
     public getParsonsTextArray() {
-        return (this.hparsonsInput as ParsonsInput)._getTextArray();
+        return (this._hparsonsInput()! as ParsonsInput)._getTextArray();
     }
 
     public setCodeContext(props: {before: string | null, after: string | null}) {
@@ -181,3 +197,5 @@ export const InitMicroParsons = (props: MicroParsonsProps) => {
 }
 
 customElements.define('micro-parsons', MicroParsonsElement);
+customElements.define('mp-context', MPContext);
+customElements.define('mp-line', MPLine);
