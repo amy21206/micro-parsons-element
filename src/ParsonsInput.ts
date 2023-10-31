@@ -111,7 +111,11 @@ export class ParsonsInput implements IParsonsInput {
         }
     }
 
-    public setSourceBlocks = (data: Array<string>, tooltips: Array<string> | null): void => {
+    public setSourceBlocks = (data: Array<string>, tooltips?: Array<string> | null): void => {
+        if (!tooltips) {
+            tooltips = null;
+        }
+        
         this.blockOrder = [];
         for (let i = 0; i < data.length; ++i) {
             this.blockOrder.push(i)

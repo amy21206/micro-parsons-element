@@ -13,16 +13,20 @@
 import "./micro-parsons/micro-parsons.js";
 </script>
 
-<h3>testing innerhtml</h3>
+<h3>Testing Problem</h3>
+<div>
+	Write a Python program to count the number of even and odd numbers in a series of numbers.
+</div>
+<br>
 <micro-parsons language="python" id="micro-parsons-pseudo">
-	<mp-context>
-	numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-	count_odd = 0
-	count_even = 0
-	for x in numbers:
-	</mp-context>
-	<mp-line reuse randomize>
-		<mp-block>if</mp-block>
+<mp-context>
+numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+count_odd = 0
+count_even = 0
+for x in numbers:
+</mp-context>
+	<mp-line reuse randomize indentation="4">
+		<mp-block>if<mp-block-ttp>the beginning of an "if" statement</mp-block-ttp></mp-block>
 		<mp-block>not</mp-block>
 		<mp-block>x</mp-block>
 		<mp-block>%</mp-block>
@@ -34,14 +38,14 @@ import "./micro-parsons/micro-parsons.js";
 		<mp-context subgoal>
 	    # code that handles even numbers
 		</mp-context>
-	  else: 
+	else: 
 		<mp-context subgoal>
 		# code that handles odd numbers
-			<mp-context>
-				count_odd += 1
-			</mp-context>
+		<mp-context>
+			count_odd += 1
 		</mp-context>
 	</mp-context>
+</mp-context>
 </micro-parsons>
 </body>
 

@@ -10,6 +10,7 @@ import python from 'highlight.js/lib/languages/python';
 import java from 'highlight.js/lib/languages/java';
 import sql from 'highlight.js/lib/languages/sql';
 import xml from 'highlight.js/lib/languages/xml';
+import { MPBlock, MPBlockTtp } from './MPBlock';
 
 hljs.registerLanguage('javascript', javascript);
 hljs.registerLanguage('sql', sql);
@@ -75,12 +76,6 @@ export class MicroParsonsElement extends HTMLElement {
     }
 
     connectedCallback() {
-        // wait for innerHTML to load, and then init
-        console.log(this.innerHTML);// "" in all Browsers
-        setTimeout(() => {
-            // now runs asap 
-            console.log("connected");
-        });
     }
 
     private _hparsonsInput() {
@@ -198,4 +193,6 @@ export const InitMicroParsons = (props: MicroParsonsProps) => {
 
 customElements.define('micro-parsons', MicroParsonsElement);
 customElements.define('mp-context', MPContext);
+customElements.define('mp-block-ttp', MPBlockTtp);
+customElements.define('mp-block', MPBlock);
 customElements.define('mp-line', MPLine);
