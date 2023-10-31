@@ -1,4 +1,4 @@
-export class MPContext extends HTMLPreElement {
+export class MPContext extends HTMLElement {
 
     static count: number = 0;
 

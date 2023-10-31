@@ -1,4 +1,5 @@
 import { MPBlock } from "./MPBlock";
+import { MPContext } from "./MPContext";
 import { ParsonsInput } from "./ParsonsInput";
 import { MicroParsonsElement } from "./micro-parsons";
 
@@ -29,14 +30,23 @@ export class MPLine extends HTMLElement{
         }
         this.appendChild(this._inputDiv);
         
-        const indentation:number = parseInt(this.getAttribute('indentation') || '0');
         this._language = this._getParentMP().language; 
 
-        this._reusable = this.getAttribute('reuse') ? true : false;
-        this._randomize = this.getAttribute('randomize') ? true : false;
+        const indentation:number = parseInt(this.getAttribute('indentation') || '0');
+        const context:MPContext | null = this._getParentMP().querySelector('mp-context');
+        const contextFontSize = context ? parseInt(window.getComputedStyle(context).getPropertyValue('font-size')) : 15;
+        // const contextFontSize = context ? parseInt(context.style.fontSize.slice(0, context.style.fontSize.length - 2)) : 15;
+        console.log('hello??')
+        console.log(indentation)
+        console.log(contextFontSize)
+        this.style.marginLeft = `${indentation * 4 * contextFontSize}px`;
+        console.log(`${indentation * 4 * contextFontSize}px`);
+        console.log(this.style.marginLeft);
+
+        this._reusable = this.getAttribute('reuse') != null ? true : false;
+        this._randomize = this.getAttribute('randomize') != null ? true : false;
 
         this.hparsonsInput = new ParsonsInput(this._getParentMP(), this._reusable, this._randomize, this._inputDiv);
-        this.hparsonsInput.el.style.paddingLeft = (indentation * 4).toString();
 
         this.hparsonsInput.setSourceBlocks(this._getBlocksAsStringList(), this._getTooltipsAsStringList());
     }
