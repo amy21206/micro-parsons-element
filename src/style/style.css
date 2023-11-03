@@ -82,12 +82,11 @@ mp-context .pre {
   margin: 0px
 }
 
-mp-context {
+mp-context > div {
   display: block;
   font-family: monospace;
   white-space: pre;
   font-size: 15px;
-  margin: -30px 0 -20px 0;
 }
 
 micro-parsons {
@@ -98,4 +97,16 @@ micro-parsons {
 
 mp-line {
   display: block;
+  margin: -15px, 0;
 }
+
+/*
+mp-context.subgoal mp-context {
+  transition: height .25s ease-in-out;
+  overflow: hidden;
+}
+
+mp-context.subgoal > mp-context:not(.expanded) {
+  display: none;
+}
+*/

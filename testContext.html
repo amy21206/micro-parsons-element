@@ -24,7 +24,6 @@ numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 count_odd = 0
 count_even = 0
 for x in numbers:
-</mp-context>
 	<mp-line randomize indentation="1">
 		<mp-block>if<mp-block-ttp>the beginning of an "if" statement</mp-block-ttp></mp-block>
 		<mp-block>not</mp-block>
@@ -34,17 +33,15 @@ for x in numbers:
 		<mp-block>:</mp-block>
 		<mp-block distractor>/</mp-block>
 	</mp-line>
-	<mp-context>
 		<mp-context subgoal>
-	    # code that handles even numbers
+		# code that handles even numbers
 		</mp-context>
 	else: 
-		<mp-context subgoal>
+		<mp-context subgoal subgoal-line-count="2">
 		# code that handles odd numbers
-		<mp-context>
-			count_odd += 1
+		# and some extra words
+		count_odd += 1
 		</mp-context>
-	</mp-context>
 </mp-context>
 </micro-parsons>
 </body>
