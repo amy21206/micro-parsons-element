@@ -15,33 +15,47 @@ import "./micro-parsons/micro-parsons.js";
 
 <h3>Testing Problem</h3>
 <div>
-	Write a Python program to count the number of even and odd numbers in a series of numbers.
+	Write a function sum13(nums) to return the sum of the numbers in the list nums, returning 0 for an empty list. Except the number 13 is very unlucky, so it does not count and a number that comes immediately after a 13 also does not count.  For example, sum13([13,2]) returns 0, sum13([1, 13, 4, 2])  returns 3, sum13([1, 2, 3])  returns 6.
 </div>
 <br>
 <micro-parsons language="python" id="micro-parsons-pseudo">
-<mp-context>
-numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-count_odd = 0
-count_even = 0
-for x in numbers:
-	<mp-line randomize indentation="1">
-		<mp-block>if<mp-block-ttp>the beginning of an "if" statement</mp-block-ttp></mp-block>
-		<mp-block>not</mp-block>
-		<mp-block>x</mp-block>
-		<mp-block>%</mp-block>
-		<mp-block>2</mp-block>
-		<mp-block>:</mp-block>
-		<mp-block distractor>/</mp-block>
-	</mp-line>
+<mp-context subgoal>
+# Subgoal 1: Define function and initialize variables.
+def sum13(sums):
+	total = 0
+    found_13 = False
+	<mp-context subgoal>
+	# Subgoal 2: Start a loop to examine each number in the list.
+	for num in nums:
+	</mp-context>
 		<mp-context subgoal>
-		# code that handles even numbers
+		# Subgoal 3: Within the loop, handle the case for the number following 13.
+        if found_13:
+   			found_13 = False
 		</mp-context>
-	else: 
-		<mp-context subgoal subgoal-line-count="2">
-		# code that handles odd numbers
-		# and some extra words
-		count_odd += 1
+		<mp-context subgoal>
+		# Subgoal 4: Handle the case for encountering a 13 in the list.
+		<mp-line randomize indentation="3">
+		<mp-block>==<mp-block-ttp>equals</mp-block-ttp></mp-block>
+		<mp-block>else</mp-block>
+		<mp-block>num</mp-block>
+		<mp-block>:</mp-block>
+		<mp-block>13</mp-block>
+		<mp-block>elif</mp-block>
+		<mp-block distractor>!=</mp-block>
+		</mp-line>
+			found_13 = True
 		</mp-context>
+		<mp-context subgoal>
+		# Subgoal 5: Finally, handle the case for encountering a number that 
+        #            isn't 13 or doesn't follow a 13.
+		else:
+			total += num
+		</mp-context>
+	<mp-context subgoal>
+	# Subgoal 6: Return the accumulated total after the loop ends.
+	return total
+	</mp-context>
 </mp-context>
 </micro-parsons>
 </body>
