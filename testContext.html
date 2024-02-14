@@ -95,15 +95,16 @@ slider.oninput = function() {
 		document.querySelector('#write-code').style.display='block';
 		document.querySelector('#write-code').value = 
 `# Subgoal 1: Define function and initialize variables.
-
+def sum13(sums):
+    total = 0
+    found_13 = False
     # Subgoal 2: Start a loop to examine each number in the list.
 
         # Subgoal 3: Within the loop, handle the case for the number following 13.
 
         # Subgoal 4: Handle the case for encountering a 13 in the list.
 
-        # Subgoal 5: Finally, handle the case for encountering a number that 
-        #            isn't 13 or doesn't follow a 13.
+        # Subgoal 5: Finally, handle the case for encountering a number that isn't 13 or doesn't follow a 13.
 
     # Subgoal 6: Return the accumulated total after the loop ends.
 
@@ -111,6 +112,24 @@ slider.oninput = function() {
 	} else if (value == '2') {
 		document.querySelector('micro-parsons').style.display='block';
 		document.querySelector('#write-code').style.display='none';
+        // see if user wrote code for each subgoal
+        const subgoalReg = /# Subgoal .*\n/
+        const split = document.querySelector('#write-code').value.split(subgoalReg);
+        // from value 1
+        let subgoalWritten = [];
+        if (split.length > 6) {
+            for (let i = 1; i < split.length; ++i) {
+                if (split[i].trim() != '') {
+                    subgoalWritten.push(true);
+                } else {
+                    subgoalWritten.push(false);
+                }
+            }
+        }
+        // expand/collapse each subgoal
+        for (let i = 0; i < subgoalWritten.length; ++i) {
+            document.querySelector('micro-parsons').toggleSubgoalExpand(i, subgoalWritten[i]);
+        }
 	}
 }
 slider.oninput();

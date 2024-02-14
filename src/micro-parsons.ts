@@ -176,6 +176,14 @@ export class MicroParsonsElement extends HTMLElement {
             }
         }
     }
+
+    public toggleSubgoalExpand(subgoalIndex: number, toExpandStatus?:boolean) {
+        const target = this.querySelectorAll('div.subgoal')[subgoalIndex];
+        if (toExpandStatus == undefined || target.classList.contains('collapsed') && toExpandStatus || !target.classList.contains('collapsed') && !toExpandStatus) {
+            (target as HTMLDivElement).click();
+        }
+    }
+
 }
 
 export const InitMicroParsons = (props: MicroParsonsProps) => {
