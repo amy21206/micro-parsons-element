@@ -39,7 +39,8 @@ export class MPLine extends HTMLElement{
         console.log('hello??')
         console.log(indentation)
         console.log(contextFontSize)
-        this.style.marginLeft = `${indentation * 4 * contextFontSize}px`;
+        // this.style.marginLeft = `${indentation * 4 * contextFontSize}px`;
+        this.style.marginLeft = `72px`;
         console.log(`${indentation * 4 * contextFontSize}px`);
         console.log(this.style.marginLeft);
 

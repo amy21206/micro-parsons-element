@@ -1,6 +1,6 @@
-.hparsons-input {
+/* .hparsons-input {
   margin: 25px 0 20px 0;
-}
+} */
 .hparsons-tip {
   font-style: italic;
 }
@@ -90,7 +90,7 @@ mp-context > div {
 }
 
 micro-parsons {
-  padding: 20px 10px 10px 10px;
+  padding: 10px 10px 10px 10px;
   display: block;
   border: black 1px solid;
 }
@@ -102,9 +102,14 @@ mp-line {
 
 .subgoal {
   font-style:italic;
+  font-weight:bold;
   color: darkolivegreen;
-  background-color: rgba(246, 224, 169, 0.863);
+  /* background-color: rgba(246, 224, 169, 0.863); */
   
+}
+
+.subgoal.collapsed {
+  background-color: rgba(246, 224, 169, 0.863);
 }
 
 .subgoal.collapsed:hover {

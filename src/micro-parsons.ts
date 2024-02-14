@@ -39,6 +39,12 @@ export class MicroParsonsElement extends HTMLElement {
     public codeBefore: string | null;
     public codeAfter: string | null;
 
+    // different states for scaffolding
+    // 0: no help, write code from scratch
+    // 1: add subgoal to code
+    // 2: fill out code in subgoals (current context), and add micro Parsons
+    // public state: string;
+
     constructor() {
         super();
 
@@ -73,6 +79,9 @@ export class MicroParsonsElement extends HTMLElement {
 
         this.codeBefore = null;
         this.codeAfter = null;
+
+        // initialize state
+        // this.state = this.getAttribute('state') || '0';
     }
 
     connectedCallback() {
