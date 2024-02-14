@@ -10,7 +10,10 @@ export class MPLine extends HTMLElement{
     // not sure if this should be public... trying to get it to work
     public hparsonsInput: ParsonsInput | null;
 
+    // InputDiv contains the ParsonsInput
     private _inputDiv: HTMLDivElement;
+    // textDiv is a text entry alternative
+    private _textDiv: HTMLDivElement;
     private _language: string | null;
     private _reusable: boolean;
     private _randomize: boolean;
@@ -19,16 +22,49 @@ export class MPLine extends HTMLElement{
         super();
         this.hparsonsInput = null;
         this._inputDiv = document.createElement('div');
+        this._textDiv = document.createElement('div');
+        this._textDiv.contentEditable = 'true';
+        this._textDiv.classList.add('mp-line-text');
+        this._textDiv.style.display = 'none';
+        this._textDiv.spellcheck = false;
+
+        const toggleDiv = document.createElement('div');
+        toggleDiv.innerHTML = 
+        `<label class="mp-switch">
+            <span class="mp-switch-text">Help</span>
+            <input type="checkbox" checked>
+            <span class="mp-slider"></span>
+        </label>`;
+        this.appendChild(toggleDiv);
+        toggleDiv.classList.add('mp-line-toggle-container')
+        toggleDiv.querySelector('input')!.onclick = () => this.toggleParsonsText();
+
+        this.appendChild(this._inputDiv);
+        this.appendChild(this._textDiv);
+
+        toggleDiv.querySelector('input')!.click();
+
         this._language = null;
         this._reusable = false;
         this._randomize = true;
+    }
+
+    // toggle the visibility of text and parsons div
+    public toggleParsonsText() {
+        if (this._textDiv.style.display == 'none') {
+            this._inputDiv.style.display = 'none';
+            this._textDiv.style.display = 'block';
+        } else {
+            this._inputDiv.style.display = 'block';
+            this._textDiv.style.display = 'none';
+        }
     }
 
     connectedCallback() {
         if (!this.id) {
             this.id = `mp-line-${MPLine.count++}`;
         }
-        this.appendChild(this._inputDiv);
+
         
         this._language = this._getParentMP().language; 
 

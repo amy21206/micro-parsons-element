@@ -124,3 +124,79 @@ mp-context > .code {
 mp-context > .code:not(.expanded) {
   display: none;
 } */
+
+.mp-line-text {
+  font-family: monospace;
+  font-size: 15px;
+  background: lightyellow;
+  margin: 5px 0;
+}
+
+.mp-line-toggle-container {
+  float: right;
+}
+
+/* for the toggle switch*/
+/* The switch - the box around the slider */
+.mp-switch {
+  position: relative;
+  display: inline-block;
+  width: 45px;
+  height: 20px;
+  right: 40px;
+}
+
+/* Hide default HTML checkbox */
+.mp-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.mp-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+  border-radius: 34px;
+}
+
+
+.mp-slider:before {
+  position: absolute;
+  content: "";
+  height: 12px;
+  width: 12px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .mp-slider {
+  background-color: #2196F3;
+}
+
+input:focus + .mp-slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .mp-slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+.mp-switch-text {
+  position: absolute;
+  z-index: 5;
+  left: 48px;
+}
