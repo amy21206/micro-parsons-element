@@ -6,6 +6,7 @@
     font-family: monospace;
     margin: 5px 0;
     font-size: 15px;
+    background: lightgray;
 }
 
 .output-div {
@@ -13,4 +14,22 @@
     margin: 5px 0;
     width: 800px;
     font-size: 20px;
+}
+
+.options {
+    margin-bottom: 10px;
+    display: flex;
+    width: 800px;
+}
+
+.difficulty-vis-container {
+    display: flex;
+}
+
+.difficulty-vis {
+    align-self: center;
+}
+
+.difficulty-vis-label {
+    align-self: center;
 }
