@@ -4,6 +4,7 @@
 <script src="skulpt.min.js" type="text/javascript"></script>
 <script src="skulpt-stdlib.js" type="text/javascript"></script>
 <link rel="stylesheet" href="xcode.css">
+<link rel="stylesheet" href="demo.css">
 <link rel="stylesheet" href="./micro-parsons/micro-parsons.css">
 </head>
 
@@ -24,7 +25,7 @@ Less Help <input type="range" min="0" max="2" id="scaffolding-slider" value="0">
 <button style="
     margin-left: 40px;
     margin-bottom: 15px;
-">Check</button>
+" id="run-btn">Run</button>
 
 <textarea class="subgoal" id="write-code" style="width: 870px; height: 350px; overflow: scroll; white-space: pre; font-family: monospace;font-size: 15px;padding: 10px;" spellcheck="false"></textarea>
 
@@ -67,6 +68,13 @@ def sum13(sums):
     </mp-context>
 </mp-context>
 </micro-parsons>
+
+<div class="output-div">
+    Output: 
+    <br>
+    <pre id="output" class="output-pre"></pre>
+</div>
+
 </body>
 
 </html>
@@ -133,5 +141,48 @@ def sum13(sums):
 	}
 }
 slider.oninput();
+
+</script>
+
+<script>
+// this part of the script handles skulpt
+
+// output function: appends the output text to the "output" pre
+function outf(text) {
+    let mypre = document.getElementById("output");
+    mypre.innerHTML = mypre.innerHTML + text;
+}
+// took from Skulpt doc. I think it reads skulpt module.
+function builtinRead(x) {
+    if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined)
+            throw "File not found: '" + x + "'";
+    return Sk.builtinFiles["files"][x];
+}
+
+// also from Skulpt doc.
+// Here's everything you need to run a python program in skulpt
+// grab the code from your textarea
+// get a reference to your pre element for output
+// configure the output function
+// call Sk.importMainWithBody()
+function runit() { 
+   var prog = document.getElementById("write-code").value; 
+   var mypre = document.getElementById("output"); 
+   mypre.innerHTML = ''; 
+   Sk.pre = "output";
+   Sk.configure({output:outf, read:builtinRead}); 
+//    (Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).target = 'mycanvas';
+   var myPromise = Sk.misceval.asyncToPromise(function() {
+       return Sk.importMainWithBody("<stdin>", false, prog, true);
+   });
+   myPromise.then(function(mod) {
+       console.log('success');
+   },
+       function(err) {
+       console.log(err.toString());
+   });
+} 
+
+document.getElementById('run-btn').onclick = () => runit();
 
 </script>

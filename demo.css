@@ -1,0 +1,16 @@
+
+.output-pre {
+    border: 1px solid black;
+    min-height: 50px;
+    padding: 5px;
+    font-family: monospace;
+    margin: 5px 0;
+    font-size: 15px;
+}
+
+.output-div {
+    font-family: math;
+    margin: 5px 0;
+    width: 800px;
+    font-size: 20px;
+}
