@@ -45,12 +45,25 @@ import "./micro-parsons/micro-parsons.js";
         <button class="mdc-button mdc-button--raised mdc-button--leading" id="help-btn">
             <span class="mdc-button__ripple"></span>
             <!-- <i class="material-icons mdc-button__icon" aria-hidden="true">playarrow</i> -->
-            <span class="material-symbols-outlined">
-                help
-                </span>
-            <span class="mdc-button__label">Help</span>
+                <span class="material-symbols-outlined">
+                    person_raised_hand
+                    </span>
+            <span class="mdc-button__label">Help me</span>
         </button>
     </div>
+
+
+    <div>
+        <button class="mdc-button mdc-button--raised mdc-button--leading" id="challenge-btn">
+            <span class="mdc-button__ripple"></span>
+            <!-- <i class="material-icons mdc-button__icon" aria-hidden="true">playarrow</i> -->
+            <span class="material-symbols-outlined">
+                taunt
+            </span>
+            <span class="mdc-button__label">Challenge me</span>
+        </button>
+    </div>
+
 
     <!-- difficulty bar: hidden, just as a state holder -->
     <!-- 1 is easiest (micro parsons), 2 is provide subgoal, 3 is no help -->
@@ -58,7 +71,7 @@ import "./micro-parsons/micro-parsons.js";
 
     <div class="difficulty-vis-container">
         <div class="difficulty-vis-label">
-            Difficulty:
+            Current Difficulty:
         </div>
         <div class="difficulty-vis">
             <span class="material-symbols-outlined" data-difficulty="1">
@@ -162,10 +175,17 @@ function visualizeDifficulty(value) {
 
 function helpBtnOnClick() {
     let slider = document.querySelector('#scaffolding-slider');
-    slider.value = (slider.value - 1).toString();
+    slider.value = (parseInt(slider.value) - 1).toString();
     slider.oninput();
 }
 document.querySelector('#help-btn').onclick = () => helpBtnOnClick();
+
+function challengeBtnOnClick() {
+    let slider = document.querySelector('#scaffolding-slider');
+    slider.value = (parseInt(slider.value) + 1).toString();
+    slider.oninput();
+}
+document.querySelector('#challenge-btn').onclick = () => challengeBtnOnClick();
 
 var context = document.querySelector('mp-line').parentElement;
 while (context.tagName == 'MP-CONTEXT') {
@@ -185,18 +205,27 @@ slider.oninput = function() {
     visualizeDifficulty(value);
     // change current input mode
 	if (value == '3') {
+        
+        // save and restore previous level progress
+        if (window.prevLv && window.prevLv == '2') {
+            // changed from 2 to 3, save lv 2 answer;
+            window.lv2Input = testEditor.getValue();
+        }
+        if (window.lv3Input) {
+            testEditor.getDoc().setValue(window.lv3Input);
+        } else {
+            // testEditor.getDoc().setValue(`# Please write your code below`);
+        }
+
 		document.querySelector('micro-parsons').style.display='none';
         document.getElementById('run-btn').style.visibility = '';
         document.getElementById('help-btn').style.visibility = '';
+        document.getElementById('challenge-btn').style.visibility = 'hidden';
+        document.querySelector('.output-div').style.visibility = '';
         // window.testEditor.display.wrapper.style.display = "block";
 		//document.querySelector('#write-code').style.display='block';
 		//document.querySelector('#write-code').value = `# Please write your code below`;
 	} else if (value == '2') {
-		document.querySelector('micro-parsons').style.display='none';
-        window.testEditor.display.wrapper.style.display = "block";
-        document.getElementById('run-btn').style.visibility = '';
-        document.getElementById('help-btn').style.visibility = '';
-		//document.querySelector('#write-code').style.display='block';
         const subgoalText = 
 `# Subgoal 1: Define function and initialize variables.
 def sum13(sums):
@@ -213,7 +242,26 @@ def sum13(sums):
     # Subgoal 6: Return the accumulated total after the loop ends.
 
 		`;
-        testEditor.getDoc().setValue(subgoalText);
+
+        // save and restore previous level progress
+        if (window.prevLv && window.prevLv == '3') {
+            // changed from 3 to 2, save lv 3 answer;
+            window.lv3Input = testEditor.getValue();
+        }
+        if (window.lv2Input) {
+            testEditor.getDoc().setValue(window.lv2Input);
+        } else {
+            testEditor.getDoc().setValue(subgoalText);
+        }
+
+        window.testEditor.display.wrapper.style.display = '';
+		document.querySelector('micro-parsons').style.display='none';
+        window.testEditor.display.wrapper.style.display = "block";
+        document.getElementById('run-btn').style.visibility = '';
+        document.getElementById('help-btn').style.visibility = '';
+        document.getElementById('challenge-btn').style.visibility = '';
+        document.querySelector('.output-div').style.visibility = '';
+		//document.querySelector('#write-code').style.display='block';
 	} else if (value == '1') {
         // disable help button
 		document.querySelector('micro-parsons').style.display='block';
@@ -221,6 +269,7 @@ def sum13(sums):
         window.testEditor.display.wrapper.style.display = "none";
         document.getElementById('run-btn').style.visibility = 'hidden';
         document.getElementById('help-btn').style.visibility = 'hidden';
+        document.getElementById('challenge-btn').style.visibility = '';
         document.querySelector('.output-div').style.visibility = 'hidden';
         // see if user wrote code for each subgoal
         const subgoalReg = /# Subgoal .*\n/
@@ -241,6 +290,9 @@ def sum13(sums):
             document.querySelector('micro-parsons').toggleSubgoalExpand(i, subgoalWritten[i]);
         }
 	}
+
+    // saving previous value
+    window.prevLv = value;
 }
 slider.oninput();
 
@@ -292,7 +344,7 @@ document.getElementById('run-btn').onclick = () => runit();
 
 
 <script>
-// This parti of the script handles codemirror
+// This part of the script handles codemirror
 var myTextarea = document.getElementById('write-code');
 var editor = CodeMirror.fromTextArea(myTextarea, {
     lineNumbers: true,

@@ -33,3 +33,21 @@
 .difficulty-vis-label {
     align-self: center;
 }
+
+.CodeMirror {
+    font-size: 15px;
+    width: 900px;
+    border: 1px solid black;
+}
+
+.options > div {
+    margin: 5px;
+}
+
+micro-parsons {
+    width: 900px;
+}
+
+.difficulty-vis .material-symbols-outlined {
+    font-size: 35px;
+}

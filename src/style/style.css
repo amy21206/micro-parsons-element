@@ -115,6 +115,10 @@ mp-line {
 .subgoal.collapsed:hover {
   background-color: rgba(245, 204, 100, 0.863);
 }
+
+.subgoal:hover {
+  background-color: rgba(245, 204, 100, 0.863);
+}
 /* 
 mp-context > .code {
   transition: height .25s ease-in-out;
