@@ -11,4 +11,4 @@
 [ ] Add tooltip on the difficulty level for more explanation
 [x] Fix micro Parsons automatic indentation
 [ ] Adjust UI to make subgoals and code more readable
-[ ] Handle subgoal line wrap
+[x] Handle subgoal line wrap
