@@ -38,25 +38,31 @@ export class MPContext extends HTMLElement {
             const subgoalLineCount = parseInt(this.getAttribute('subgoal-line-count') || '1');
             const firstChild = this.firstChild as HTMLDivElement;
             let lines = firstChild.innerHTML.split('\n');
-            console.log(lines)
             const subgoalLines = lines.slice(0, subgoalLineCount).join('\n');
             const subgoalDiv = document.createElement('div');
             subgoalDiv.innerHTML = subgoalLines;
             subgoalDiv.classList.add('subgoal');
             this.insertBefore(subgoalDiv, firstChild);
 
-            // note: now the firstChild is actually in the 2nd place
-            if (subgoalLineCount < lines.length) {
-                // if there is extra code after, update the text in that div
-                const codeLines = lines.slice(subgoalLineCount).join('\n');
-                firstChild.innerHTML = codeLines;
-                firstChild.style.display = 'none';
-                subgoalDiv.onclick = (ev) => this._subgoalOnClick(ev);
-                subgoalDiv.classList.add('collapsed');
-            } else {
-                // else, remove the div
-                this.removeChild(firstChild);
-            }
+            // if there is extra code after, update the text in that div
+            const codeLines = lines.slice(subgoalLineCount).join('\n');
+            firstChild.innerHTML = codeLines;
+            firstChild.style.display = 'none';
+            subgoalDiv.onclick = (ev) => this._subgoalOnClick(ev);
+
+            subgoalDiv.click();
+
+            // // enclose all other siblings in one div if there are other content inside the subgoal
+            // // seems like it's always the case?
+            // if (this.children.length > 1) {
+            //     let childDiv = document.createElement('div');
+            //     childDiv.classList.add('subgoal-content')
+            //     while (this.childNodes.length > 0) {
+            //         childDiv.appendChild(this.childNodes[0]);
+            //     }
+            //     this.appendChild(childDiv.firstChild!);
+            //     this.appendChild(childDiv);
+            // }
         }
 
         // // if is a subgoal: add subgoal class that enables slidetoggle
@@ -67,19 +73,26 @@ export class MPContext extends HTMLElement {
 
     // called on subgoal div inside the context
     private _subgoalOnClick(ev:Event) {
-        const subgoalDiv = (ev.target as HTMLDivElement);
-        if (subgoalDiv.nextSibling) {
-            const sibling = subgoalDiv.nextSibling as HTMLDivElement;
-            if (sibling.classList.contains('code')) {
-                // the code following the subgoal
-                if (sibling.style.display != 'none') {
-                    sibling.style.display = 'none';
-                    subgoalDiv.classList.add('collapsed');
-                } else {
-                    sibling.style.display = '';
-                    subgoalDiv.classList.remove('collapsed');
-                }
+        let subgoalDiv = (ev.target as HTMLDivElement);
+        let action = '';
+        if (subgoalDiv.classList.contains('collapsed')) {
+            subgoalDiv.classList.remove('collapsed');
+            // (subgoalDiv.nextSibling as HTMLDivElement).style.display = '';
+            action = 'expand';
+        } else {
+            subgoalDiv.classList.add('collapsed');
+            action = 'collapse';
+            // (subgoalDiv.nextSibling as HTMLDivElement).style.display = 'none';
+        }
+        let sibling = subgoalDiv.nextSibling;
+        while (sibling) {
+            if (action == 'expand') {
+                (sibling as HTMLElement).style.display = '';
+            } else {
+                // action == collapse
+                (sibling as HTMLElement).style.display = 'none';
             }
+            sibling = sibling.nextSibling;
         }
         // if (!this.classList.contains('expanded')) {
         //     console.log('adding expanded')

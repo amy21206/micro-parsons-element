@@ -200,3 +200,15 @@ input:checked + .mp-slider:before {
   z-index: 5;
   left: 48px;
 }
+
+mp-line.mparsons-hidden div.hparsons-input {
+  display: none;
+}
+
+mp-line.mparsons-hidden div.mp-line-text {
+  display: block;
+}
+
+mp-line div.mp-line-text {
+  display: none;
+}

@@ -25,7 +25,6 @@ export class MPLine extends HTMLElement{
         this._textDiv = document.createElement('div');
         this._textDiv.contentEditable = 'true';
         this._textDiv.classList.add('mp-line-text');
-        this._textDiv.style.display = 'none';
         this._textDiv.spellcheck = false;
 
         const toggleDiv = document.createElement('div');
@@ -47,20 +46,7 @@ export class MPLine extends HTMLElement{
         this._language = null;
         this._reusable = false;
         this._randomize = true;
-    }
-
-    // toggle the visibility of text and parsons div
-    public toggleParsonsText() {
-        if (this._textDiv.style.display == 'none') {
-            this._inputDiv.style.display = 'none';
-            this._textDiv.style.display = 'block';
-        } else {
-            this._inputDiv.style.display = 'block';
-            this._textDiv.style.display = 'none';
-        }
-    }
-
-    connectedCallback() {
+        
         if (!this.id) {
             this.id = `mp-line-${MPLine.count++}`;
         }
@@ -72,13 +58,13 @@ export class MPLine extends HTMLElement{
         const context:MPContext | null = this._getParentMP().querySelector('mp-context');
         const contextFontSize = context ? parseInt(window.getComputedStyle(context).getPropertyValue('font-size')) : 15;
         // const contextFontSize = context ? parseInt(context.style.fontSize.slice(0, context.style.fontSize.length - 2)) : 15;
-        console.log('hello??')
-        console.log(indentation)
-        console.log(contextFontSize)
+        // console.log('hello??')
+        // console.log(indentation)
+        // console.log(contextFontSize)
         // this.style.marginLeft = `${indentation * 4 * contextFontSize}px`;
         this.style.marginLeft = `72px`;
-        console.log(`${indentation * 4 * contextFontSize}px`);
-        console.log(this.style.marginLeft);
+        // console.log(`${indentation * 4 * contextFontSize}px`);
+        // console.log(this.style.marginLeft);
 
         this._reusable = this.getAttribute('reuse') != null ? true : false;
         this._randomize = this.getAttribute('randomize') != null ? true : false;
@@ -86,6 +72,18 @@ export class MPLine extends HTMLElement{
         this.hparsonsInput = new ParsonsInput(this._getParentMP(), this._reusable, this._randomize, this._inputDiv);
 
         this.hparsonsInput.setSourceBlocks(this._getBlocksAsStringList(), this._getTooltipsAsStringList());
+    }
+
+    // toggle the visibility of text and parsons div
+    public toggleParsonsText() {
+        if (this.classList.contains('mparsons-hidden')) {
+            this.classList.remove('mparsons-hidden');
+        } else {
+            this.classList.add('mparsons-hidden');
+        }
+    }
+
+    connectedCallback() {
     }
 
     private _getParentMP() {
