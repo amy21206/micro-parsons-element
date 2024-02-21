@@ -1,9 +1,13 @@
+import { MicroParsonsElement } from "./micro-parsons";
+import hljs from 'highlight.js/lib/core';
 export class MPContext extends HTMLElement {
 
     static count: number = 0;
+    private _language: string | null;
 
     constructor() {
         super();
+        this._language = this._getParentMP().language; 
     }
     
     connectedCallback() {
@@ -49,7 +53,6 @@ export class MPContext extends HTMLElement {
             firstChild.innerHTML = codeLines;
             firstChild.style.display = 'none';
             subgoalDiv.onclick = (ev) => this._subgoalOnClick(ev);
-
             subgoalDiv.click();
 
             // // enclose all other siblings in one div if there are other content inside the subgoal
@@ -65,6 +68,17 @@ export class MPContext extends HTMLElement {
             // }
         }
 
+        // highlight code contexts
+        // go through each div with class "code" and use hljs to add syntax highlighting
+        if (this._language) {
+            let child = this.firstChild;
+            while (child) {
+                if ((child as HTMLElement).classList.contains('code')) {
+                    (child as HTMLElement).innerHTML = hljs.highlight((child as HTMLElement).innerText, {language: this._language, ignoreIllegals: true}).value;
+                }
+                child = child.nextSibling;
+            }
+        }
         // // if is a subgoal: add subgoal class that enables slidetoggle
         // if (this.hasAttribute('subgoal')) {
         //     // this.onclick = () => this._subgoalOnClick();
@@ -110,5 +124,9 @@ export class MPContext extends HTMLElement {
         //     this.style.height = '0px';
         //     this.classList.remove('expanded');
         // }
+    }
+
+    private _getParentMP() {
+        return this.closest('micro-parsons') as MicroParsonsElement;
     }
 }
