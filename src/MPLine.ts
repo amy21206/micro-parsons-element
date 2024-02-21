@@ -18,6 +18,8 @@ export class MPLine extends HTMLElement{
     private _reusable: boolean;
     private _randomize: boolean;
 
+    static _singleIndentWidth: number = this._calcSingleIndentWidth();
+
     constructor(){
         super();
         this.hparsonsInput = null;
@@ -56,15 +58,14 @@ export class MPLine extends HTMLElement{
 
         const indentation:number = parseInt(this.getAttribute('indentation') || '0');
         const context:MPContext | null = this._getParentMP().querySelector('mp-context');
-        const contextFontSize = context ? parseInt(window.getComputedStyle(context).getPropertyValue('font-size')) : 15;
         // const contextFontSize = context ? parseInt(context.style.fontSize.slice(0, context.style.fontSize.length - 2)) : 15;
         // console.log('hello??')
         // console.log(indentation)
         // console.log(contextFontSize)
         // this.style.marginLeft = `${indentation * 4 * contextFontSize}px`;
-        this.style.marginLeft = `72px`;
-        // console.log(`${indentation * 4 * contextFontSize}px`);
-        // console.log(this.style.marginLeft);
+        this.style.marginLeft = `${MPLine._singleIndentWidth * indentation}px`;
+        console.log(`${MPLine._singleIndentWidth * indentation}px`);
+        console.log(this.style.marginLeft);
 
         this._reusable = this.getAttribute('reuse') != null ? true : false;
         this._randomize = this.getAttribute('randomize') != null ? true : false;
@@ -121,5 +122,24 @@ export class MPLine extends HTMLElement{
         } else {
             return null;
         }
+    }
+
+    static _calcSingleIndentWidth() {
+        let singleIndentDiv = document.createElement('div');
+        // any 4 characters: the indentation is 4 letters, hardcoded (TODO: change to options)
+        singleIndentDiv.innerText = 'abcd';
+        singleIndentDiv.style.position = 'absolute';
+        singleIndentDiv.style.float = 'left';
+        singleIndentDiv.style.fontFamily = 'monospace';
+        singleIndentDiv.style.fontSize = '15px';
+        // singleIndentDiv.style.visibility = 'hidden';
+        document.querySelector('body')!.appendChild(singleIndentDiv);
+        // this.appendChild(singleIndentDiv);
+        console.log(singleIndentDiv);
+
+        const width = singleIndentDiv.clientWidth;
+        console.log(width);
+        singleIndentDiv.remove();
+        return width;
     }
 }

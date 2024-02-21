@@ -9,4 +9,6 @@
 [ ] Use code mirror/hljs to highlight the single line
 [ ] Add a button to switch to more difficult levels
 [ ] Add tooltip on the difficulty level for more explanation
-[ ] Fix micro Parsons automatic indentation
+[x] Fix micro Parsons automatic indentation
+[ ] Adjust UI to make subgoals and code more readable
+[ ] Handle subgoal line wrap
