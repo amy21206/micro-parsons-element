@@ -24,6 +24,7 @@ export class ParsonsInput implements IParsonsInput {
     private storedSourceBlocks: Array<string>;
     private storedSourceBlockExplanations: Array<string> | null;
     private blockOrder: Array<number>;
+    private blockAnswer: Array<number>;
     private hljsLanguage: string | undefined;
 
     // if the input has been initialized once
@@ -68,6 +69,8 @@ export class ParsonsInput implements IParsonsInput {
         this._initSortable();
 
         this.initialized = false;
+
+        this.blockAnswer = [];
     }
 
     public getText = (addSpace: boolean): string => {
@@ -412,5 +415,9 @@ export class ParsonsInput implements IParsonsInput {
             answer: answer,
         }
         this.parentElement.logEvent(restoreEvent);
+    }
+
+    public setBlockAnswer(blockAnswer: Array<number>) {
+        this.blockAnswer = blockAnswer;
     }
 }

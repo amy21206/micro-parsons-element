@@ -19,6 +19,11 @@ export class MPLine extends HTMLElement{
     private _randomize: boolean;
 
     static _singleIndentWidth: number = this._calcSingleIndentWidth();
+    
+    private _checkBtn: HTMLButtonElement;
+    private _resetBtn: HTMLButtonElement;
+
+    private originalBlocks: string[];
 
     constructor(){
         super();
@@ -72,7 +77,17 @@ export class MPLine extends HTMLElement{
 
         this.hparsonsInput = new ParsonsInput(this._getParentMP(), this._reusable, this._randomize, this._inputDiv);
 
+        this.originalBlocks = this._getBlocksAsStringList();
         this.hparsonsInput.setSourceBlocks(this._getBlocksAsStringList(), this._getTooltipsAsStringList());
+        this.hparsonsInput.setBlockAnswer(this.getBlockAnswer());
+        this._checkBtn = document.createElement('button');
+        this._checkBtn.innerText = "Check Me";
+        this._checkBtn.classList.add('check-me-btn');
+        this._resetBtn = document.createElement('button');
+        this._resetBtn.innerText = "Reset";
+        this._resetBtn.classList.add('reset-btn');
+        this.append(this._checkBtn);
+        this.append(this._resetBtn);
     }
 
     // toggle the visibility of text and parsons div
@@ -141,5 +156,20 @@ export class MPLine extends HTMLElement{
         console.log(width);
         singleIndentDiv.remove();
         return width;
+    }
+
+    private getBlockAnswer(): Array<number> {
+        const blockAnswer = [];
+        const blocks = this.querySelectorAll('mp-block');
+        for (let i = 0; i < blocks.length; ++i) {
+            // when to specify feedback and how?
+            console.log(blocks[i])
+            if (!(blocks[i] as MPBlock).hasAttribute('distractor')) {
+                blockAnswer.push(i);
+            }
+            console.log(blockAnswer)
+        }
+        console.log('final', blockAnswer)
+        return blockAnswer;
     }
 }
