@@ -36,14 +36,14 @@ export default INPUTS.map((input) => {
       commonjs(),
       css(),
       json(),
-      externals({ // comment out when packing dependencies for local testing
-        include:'highlight.js/lib/languages/sql'
-      }),
+      // externals({ // comment out when packing dependencies for local testing
+      //   include:'highlight.js/lib/languages/sql'
+      // }),
       nodeResolve()
     ],
     context: 'window',
-    external: [  // comment out when packing dependencies for local testing
-      '/node_modules/'
-    ]
+    // external: [  // comment out when packing dependencies for local testing
+    //   '/node_modules/'
+    // ]
   }
 });
